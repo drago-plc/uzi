@@ -29,7 +29,7 @@ fun GoogleMapScreen(
         mutableStateOf(MapUiSettings(compassEnabled = false))
     }
     val mapProperties by remember {
-        mutableStateOf(MapProperties(mapType = MapType.NORMAL))
+        mutableStateOf(MapProperties(mapType = MapType.TERRAIN))
     }
 
     Box(Modifier.fillMaxSize()) {
