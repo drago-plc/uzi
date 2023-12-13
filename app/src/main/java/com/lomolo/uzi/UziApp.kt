@@ -11,7 +11,7 @@ fun UziApplication() {
     UziNavHost(navController = rememberNavController())
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun UziApplicationPreview() {
     UziTheme {
