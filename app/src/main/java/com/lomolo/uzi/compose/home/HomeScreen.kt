@@ -2,6 +2,7 @@ package com.lomolo.uzi.compose.home
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.google.android.gms.maps.model.LatLng
 import com.lomolo.uzi.compose.map.GoogleMapScreen
 import com.lomolo.uzi.compose.navigation.Navigation
 
@@ -12,7 +13,8 @@ object HomeScreenDestination: Navigation {
 
 @Composable
 fun HomeScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    deviceLocation: LatLng = LatLng(0.0, 0.0)
 ) {
     GoogleMapScreen()
 }
