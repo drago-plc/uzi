@@ -33,11 +33,6 @@
             android:value="@integer/google_play_services_version" />
         <!-- Recommended for Android 9 (API level 28) and lower. -->
         <!-- Required for Android 10 (API level 29) and higher. -->
-        <service
-            android:name="UziApp"
-            android:foregroundServiceType="location">
-        <!-- Any inner elements would go here. -->
-    </service>
         <!-- Trigger Google Play services to install the back-ported photo picker module. -->
         <!--suppress AndroidDomInspection -->
         <service android:name="com.google.android.gms.metadata.ModuleDependencies"
