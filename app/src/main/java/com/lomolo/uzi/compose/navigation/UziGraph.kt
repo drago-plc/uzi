@@ -22,7 +22,7 @@ fun UziNavHost(
     navController: NavHostController,
     mainViewModel: MainViewModel = viewModel(factory = UziViewModelProvider.Factory)
 ) {
-    val deviceDetails by mainViewModel.deviceDetails.collectAsState()
+    val deviceDetails by mainViewModel.deviceDetailsUiState.collectAsState()
 
     NavHost(
         modifier = modifier,
