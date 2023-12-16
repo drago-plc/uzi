@@ -18,5 +18,5 @@ class MainViewModel: ViewModel() {
 }
 
 data class DeviceDetails(
-    val deviceLocation: LatLng = LatLng(0.0, 0.0)
+    val deviceLocation: LatLng = LatLng(-1.3696, 36.6667)
 )

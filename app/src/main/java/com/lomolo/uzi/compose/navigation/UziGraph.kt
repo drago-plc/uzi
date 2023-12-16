@@ -24,6 +24,8 @@ fun UziNavHost(
 ) {
     val deviceDetails by mainViewModel.deviceDetailsUiState.collectAsState()
 
+    val deviceGps = deviceDetails.deviceLocation
+
     NavHost(
         modifier = modifier,
         navController = navController,
@@ -36,7 +38,7 @@ fun UziNavHost(
                         .padding(innerPadding)
                 ) {
                     HomeScreen(
-                        deviceLocation = deviceDetails.deviceLocation
+                        deviceLocation = deviceGps
                     )
                 }
             }

@@ -14,7 +14,9 @@ object HomeScreenDestination: Navigation {
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    deviceLocation: LatLng = LatLng(0.0, 0.0)
+    deviceLocation: LatLng
 ) {
-    GoogleMapScreen()
+    GoogleMapScreen(
+        deviceLocation = deviceLocation
+    )
 }

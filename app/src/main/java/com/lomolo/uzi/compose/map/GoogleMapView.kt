@@ -11,7 +11,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import com.google.maps.android.compose.CameraPositionState
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
@@ -22,8 +23,12 @@ import com.lomolo.uzi.compose.loader.Loader
 @Composable
 fun GoogleMapScreen(
     modifier: Modifier = Modifier,
-    cameraPositionState: CameraPositionState = rememberCameraPositionState()
+    deviceLocation: LatLng
 ) {
+    val gps = LatLng(deviceLocation.longitude, deviceLocation.longitude)
+    val cameraPositionState = rememberCameraPositionState {
+        position = CameraPosition.fromLatLngZoom(gps, 15f)
+    }
     var isMapLoaded by remember { mutableStateOf(false) }
     val uiSettings by remember {
         mutableStateOf(MapUiSettings(compassEnabled = false))
