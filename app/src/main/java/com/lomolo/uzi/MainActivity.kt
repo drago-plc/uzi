@@ -28,6 +28,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -44,7 +45,8 @@ import java.util.concurrent.TimeUnit
 
 class MainActivity : ComponentActivity() {
     private lateinit var locationServices: LocationPermission
-    private var fusedLocationClient: FusedLocationProviderClient? = null
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private var locationPriority: Int = Priority.PRIORITY_HIGH_ACCURACY
     private val mainViewModel: MainViewModel by viewModels { UziViewModelProvider.Factory }
 
     @SuppressLint("MissingPermission")
@@ -55,26 +57,33 @@ class MainActivity : ComponentActivity() {
             fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
             var shouldShowPermissionRationale by remember { mutableStateOf(false) }
             var shouldRedirectToUserLocationSettings by remember { mutableStateOf(false) }
-            var locationPriority: Int  = Priority.PRIORITY_BALANCED_POWER_ACCURACY
-            val locationRequest = LocationRequest.Builder(locationPriority, TimeUnit.SECONDS.toMillis(3)).build()
             var hasLocationPermission by remember { mutableStateOf(locationServices.checkSelfLocationPermission(this)) }
             val locationPermissionLauncher = rememberLauncherForActivityResult(
                 contract = ActivityResultContracts.RequestMultiplePermissions(),
             ) { permissions ->
-                hasLocationPermission = locationServices.hasLocationPermission(
-                    permissions[Manifest.permission.ACCESS_FINE_LOCATION] ?: false,
-                    permissions[Manifest.permission.ACCESS_COARSE_LOCATION] ?: false
-                )
+                when {
+                    permissions[Manifest.permission.ACCESS_FINE_LOCATION] ?: false -> {
+                        hasLocationPermission = true
+                        locationPriority = Priority.PRIORITY_HIGH_ACCURACY
+                    }
+                    permissions[Manifest.permission.ACCESS_COARSE_LOCATION] ?: false -> {
+                        hasLocationPermission = true
+                        locationPriority = Priority.PRIORITY_BALANCED_POWER_ACCURACY
+                    }
+                    else -> {
+                        shouldShowPermissionRationale = ActivityCompat
+                            .shouldShowRequestPermissionRationale(
+                                this,
+                                Manifest.permission.ACCESS_COARSE_LOCATION
+                            )
+                    }
+                }
                 if (hasLocationPermission) {
-                    locationPriority = locationServices.locationPriority(
-                        permissions[Manifest.permission.ACCESS_FINE_LOCATION] ?: false,
-                        permissions[Manifest.permission.ACCESS_COARSE_LOCATION] ?: false
-                    )
-                    fusedLocationClient?.getCurrentLocation(
+                    fusedLocationClient.getCurrentLocation(
                         locationPriority,
                         CancellationTokenSource().token
                     )
-                        ?.addOnSuccessListener { location: Location? ->
+                        .addOnSuccessListener { location: Location? ->
                             if (location != null) {
                                 mainViewModel.setDeviceLocation(LatLng(
                                     location.latitude,
@@ -84,15 +93,12 @@ class MainActivity : ComponentActivity() {
                         }
                 }
 
-                if (!hasLocationPermission) {
-                    shouldShowPermissionRationale = true
-                }
-
                 shouldRedirectToUserLocationSettings = !shouldShowPermissionRationale && !hasLocationPermission
             }
 
             val lifecycleOwner = LocalLifecycleOwner.current
             DisposableEffect(hasLocationPermission, lifecycleOwner) {
+                val locationRequest = LocationRequest.Builder(locationPriority, TimeUnit.SECONDS.toMillis(3)).build()
                 val locationCallback: LocationCallback = object: LocationCallback() {
                     override fun onLocationResult(p0: LocationResult) {
                         for (location in p0.locations) {
@@ -104,15 +110,15 @@ class MainActivity : ComponentActivity() {
                     if (event == Lifecycle.Event.ON_START && !hasLocationPermission && !shouldShowPermissionRationale) {
                         locationPermissionLauncher.launch(locationServices.permissions)
                     } else if (event == Lifecycle.Event.ON_START && hasLocationPermission) {
-                        fusedLocationClient?.requestLocationUpdates(
+                        fusedLocationClient.requestLocationUpdates(
                             locationRequest,
                             locationCallback,
                             Looper.getMainLooper()
                         )
                     } else if (hasLocationPermission && event == Lifecycle.Event.ON_STOP) {
-                        fusedLocationClient?.removeLocationUpdates(locationCallback)
+                        fusedLocationClient.removeLocationUpdates(locationCallback)
                     } else if (hasLocationPermission && event == Lifecycle.Event.ON_PAUSE) {
-                        fusedLocationClient?.removeLocationUpdates(locationCallback)
+                        fusedLocationClient.removeLocationUpdates(locationCallback)
                     }
                 }
 

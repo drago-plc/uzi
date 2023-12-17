@@ -4,8 +4,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -22,10 +20,6 @@ fun UziNavHost(
     navController: NavHostController,
     mainViewModel: MainViewModel = viewModel(factory = UziViewModelProvider.Factory)
 ) {
-    val deviceDetails by mainViewModel.deviceDetailsUiState.collectAsState()
-
-    val deviceGps = deviceDetails.deviceLocation
-
     NavHost(
         modifier = modifier,
         navController = navController,
@@ -38,7 +32,7 @@ fun UziNavHost(
                         .padding(innerPadding)
                 ) {
                     HomeScreen(
-                        deviceLocation = deviceGps
+                        mainViewModel = mainViewModel
                     )
                 }
             }

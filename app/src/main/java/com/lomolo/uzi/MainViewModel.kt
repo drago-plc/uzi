@@ -9,14 +9,15 @@ import kotlinx.coroutines.flow.update
 class MainViewModel: ViewModel() {
     private val _deviceDetails: MutableStateFlow<DeviceDetails> = MutableStateFlow(DeviceDetails())
     val deviceDetailsUiState = _deviceDetails.asStateFlow()
+    val defaultGps = LatLng(-1.3693693693693694,36.677141346659695)
 
     fun setDeviceLocation(gps: LatLng) {
         _deviceDetails.update {
-            it.copy(deviceLocation = gps)
+            it.copy(gps = gps)
         }
     }
 }
 
 data class DeviceDetails(
-    val deviceLocation: LatLng = LatLng(-1.3696, 36.6667)
+    val gps: LatLng = LatLng(0.0, 0.0)
 )
