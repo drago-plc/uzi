@@ -1,8 +1,5 @@
 package com.lomolo.uzi.compose.home
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -11,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.maps.android.compose.GoogleMap
@@ -19,7 +17,7 @@ import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.lomolo.uzi.MainViewModel
-
+import com.lomolo.uzi.compose.loader.Loader
 import com.lomolo.uzi.compose.navigation.Navigation
 
 object HomeScreenDestination: Navigation {
@@ -38,13 +36,8 @@ fun HomeScreen(
         gps.latitude != 0.0 && gps.longitude != 0.0
     }
 
-    AnimatedVisibility(
-        modifier = modifier.fillMaxSize(),
-        enter = EnterTransition.None,
-        visible = isValidGps(),
-        exit = fadeOut()
-    ) {
-        Box(Modifier.fillMaxSize()) {
+    Box(Modifier.fillMaxSize()) {
+        if (isValidGps()) {
             val uiSettings by remember {
                 mutableStateOf(MapUiSettings())
             }
@@ -53,8 +46,8 @@ fun HomeScreen(
             }
             val cameraPositionState = rememberCameraPositionState {
                 position = CameraPosition.fromLatLngZoom(
-                    if (isValidGps()) deviceDetails.gps else mainViewModel.defaultGps,
-                    15f
+                    deviceDetails.gps,
+                    16f
                 )
             }
 
@@ -63,6 +56,11 @@ fun HomeScreen(
                 properties = mapProperties,
                 uiSettings = uiSettings,
                 cameraPositionState = cameraPositionState
+            )
+        } else {
+            Loader(
+                modifier = Modifier
+                    .align(Alignment.Center)
             )
         }
     }

@@ -11,7 +11,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 object UziViewModelProvider {
     val Factory = viewModelFactory {
         initializer {
-            MainViewModel()
+            MainViewModel(uziApplication().container.uziRestApiService)
         }
     }
 }
