@@ -39,7 +39,7 @@ fun HomeScreen(
     Box(modifier.fillMaxSize()) {
         if (isValidGps()) {
             val uiSettings by remember {
-                mutableStateOf(MapUiSettings())
+                mutableStateOf(MapUiSettings(zoomControlsEnabled = false))
             }
             val mapProperties by remember {
                 mutableStateOf(MapProperties(mapType = MapType.TERRAIN))
