@@ -36,7 +36,7 @@ fun HomeScreen(
         gps.latitude != 0.0 && gps.longitude != 0.0
     }
 
-    Box(Modifier.fillMaxSize()) {
+    Box(modifier.fillMaxSize()) {
         if (isValidGps()) {
             val uiSettings by remember {
                 mutableStateOf(MapUiSettings())
