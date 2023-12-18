@@ -3,8 +3,9 @@ package com.lomolo.uzi
 import android.app.Application
 
 class UziApp: Application() {
-    val container = DefaultContainer()
+    lateinit var container: AppContainer
     override fun onCreate() {
         super.onCreate()
+        container = DefaultContainer()
     }
 }

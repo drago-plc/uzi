@@ -1,7 +1,6 @@
 package com.lomolo.uzi
 
 import com.lomolo.uzi.network.UziRestApiService
-import com.lomolo.uzi.repository.DeviceIpinfoRepository
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import okhttp3.OkHttpClient
