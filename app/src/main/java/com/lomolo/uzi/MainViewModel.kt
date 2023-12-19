@@ -53,6 +53,12 @@ class MainViewModel(
         }
     }
 
+    fun setMapLoaded(l: Boolean) {
+        _deviceDetails.update {
+            it.copy(mapLoaded = l)
+        }
+    }
+
     init {
        getIpinfo()
     }
@@ -61,7 +67,8 @@ class MainViewModel(
 data class DeviceDetails(
     val gps: LatLng = LatLng(0.0, 0.0),
     val country: String = "",
-    val hasGps: Boolean = false
+    val hasGps: Boolean = false,
+    val mapLoaded: Boolean = false
 )
 
 interface DeviceDetailsUiState {

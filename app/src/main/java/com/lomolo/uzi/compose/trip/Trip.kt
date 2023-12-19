@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -17,9 +16,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.lomolo.uzi.R
 
 @Composable
 fun StartTrip(
@@ -32,20 +33,21 @@ fun StartTrip(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            "Start trip",
+            stringResource(R.string.trip_details),
             style = MaterialTheme.typography.labelMedium,
-            textAlign = TextAlign.Center,
+            textAlign = TextAlign.Start,
             modifier = Modifier
-                .padding(8.dp)
+                .fillMaxWidth()
+                .padding(bottom = 8.dp)
         )
         OutlinedTextField(
             value = "",
             placeholder = {
-                Text("Pickup")
+                Text(stringResource(R.string.pickup_location))
             },
             onValueChange = {},
             singleLine = true,
-            modifier = Modifier.wrapContentHeight(),
+            modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(
                 imeAction = ImeAction.Next
             )
@@ -56,22 +58,23 @@ fun StartTrip(
         ) {
             Icon(
                 Icons.AutoMirrored.TwoTone.ArrowForward,
-                contentDescription = "",
+                contentDescription = stringResource(R.string.arrow_down),
                 modifier = Modifier.rotate(90f)
             )
             Icon(
                 Icons.AutoMirrored.TwoTone.ArrowForward,
-                contentDescription = "",
+                contentDescription = stringResource(R.string.arrow_up),
                 modifier = Modifier.rotate(-90f)
             )
         }
         OutlinedTextField(
             value = "",
             placeholder = {
-                Text("Drop-off")
+                Text(stringResource(R.string.drop_off_location))
             },
             onValueChange = {},
             singleLine = true,
+            modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(
                 imeAction = ImeAction.Go
             ),

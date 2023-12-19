@@ -13,6 +13,7 @@ import com.lomolo.uzi.MainViewModel
 import com.lomolo.uzi.UziViewModelProvider
 import com.lomolo.uzi.compose.home.HomeScreen
 import com.lomolo.uzi.compose.home.HomeScreenDestination
+import com.lomolo.uzi.compose.navigation.graphs.user
 
 @Composable
 fun UziNavHost(
@@ -37,5 +38,8 @@ fun UziNavHost(
                 }
             }
         }
+        user(
+            navController = navController,
+        )
     }
 }

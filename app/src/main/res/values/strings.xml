@@ -6,4 +6,10 @@
     <string name="approve">Approve</string>
     <string name="retry">Retry</string>
     <string name="not_your_fault_err">Something went wrong and it\'s not your fault</string>
+    <string name="proceed">Proceed</string>
+    <string name="trip_details">Trip details</string>
+    <string name="pickup_location">Pickup location</string>
+    <string name="drop_off_location">Drop-off location</string>
+    <string name="arrow_down">arrow down</string>
+    <string name="arrow_up">arrow up</string>
 </resources>
