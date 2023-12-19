@@ -13,13 +13,14 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun GetStarted(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onGetStartedClick: () -> Unit = {}
 ) {
     Column(
         modifier = modifier
     ) {
         Button(
-            onClick = { /*TODO*/ },
+            onClick = onGetStartedClick,
             shape = MaterialTheme.shapes.small,
             modifier = Modifier
                 .fillMaxWidth()

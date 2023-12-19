@@ -13,6 +13,7 @@ import com.lomolo.uzi.MainViewModel
 import com.lomolo.uzi.UziViewModelProvider
 import com.lomolo.uzi.compose.home.HomeScreen
 import com.lomolo.uzi.compose.home.HomeScreenDestination
+import com.lomolo.uzi.compose.navigation.graphs.UserGraphDestination
 import com.lomolo.uzi.compose.navigation.graphs.user
 
 @Composable
@@ -33,7 +34,8 @@ fun UziNavHost(
                         .padding(innerPadding)
                 ) {
                     HomeScreen(
-                        mainViewModel = mainViewModel
+                        mainViewModel = mainViewModel,
+                        onGetStartedClick = { navController.navigate(UserGraphDestination.route) }
                     )
                 }
             }

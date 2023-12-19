@@ -47,6 +47,7 @@ object HomeScreenDestination: Navigation {
 fun HomeScreen(
     modifier: Modifier = Modifier,
     mainViewModel: MainViewModel = viewModel(),
+    onGetStartedClick: () -> Unit = {}
 ) {
     val deviceDetails by mainViewModel.deviceDetailsUiState.collectAsState()
 
@@ -126,7 +127,9 @@ fun HomeScreen(
                                     shape = MaterialTheme.shapes.small
                                 )
                         ) {
-                            GetStarted()
+                            GetStarted(
+                                onGetStartedClick = onGetStartedClick
+                            )
                         }
                     }
                 }

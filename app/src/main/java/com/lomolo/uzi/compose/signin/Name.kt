@@ -2,6 +2,9 @@ package com.lomolo.uzi.compose.signin
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -15,15 +18,18 @@ import com.lomolo.uzi.compose.navigation.Navigation
 
 object UserNameDestination: Navigation {
     override val route ="signin/name"
-    override val title = null
+    override val title = "Enter your details"
 }
 
 @Composable
 fun Name(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onNextSubmit: () -> Unit = {}
 ) {
     Column(
         modifier = modifier
+            .fillMaxSize()
+            .padding(20.dp)
     ) {
         OutlinedTextField(
             value = "",
@@ -31,6 +37,8 @@ fun Name(
                 Text("Firstname")
             },
             onValueChange = {},
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(
                 imeAction = ImeAction.Next
             ),
@@ -42,11 +50,15 @@ fun Name(
                 Text("Lastname")
             },
             onValueChange = {},
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(
                 imeAction = ImeAction.Next
             ),
             keyboardActions = KeyboardActions(
-                onNext = {}
+                onNext = {
+                    onNextSubmit()
+                }
             )
         )
     }
