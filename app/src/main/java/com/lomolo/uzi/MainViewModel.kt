@@ -27,7 +27,7 @@ class MainViewModel(
         }
     }
 
-    private fun getIpinfo() {
+    fun getIpinfo() {
         viewModelScope.launch {
             deviceDetailsState = DeviceDetailsUiState.Loading
             try {

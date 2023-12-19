@@ -1,7 +1,10 @@
 package com.lomolo.uzi.compose.home
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,17 +40,30 @@ fun HomeScreen(
     val deviceDetails by mainViewModel.deviceDetailsUiState.collectAsState()
 
     Box(modifier.fillMaxSize()) {
-        when(val s = mainViewModel.deviceDetailsState) {
+        when(mainViewModel.deviceDetailsState) {
             is DeviceDetailsUiState.Loading -> Loader(
                 modifier = Modifier.matchParentSize()
             )
             is DeviceDetailsUiState.Error -> {
-                Text(
-                    text = "Something went wrong and it's not your fault",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.align(Alignment.Center)
-                )
+                Column(
+                    modifier = Modifier.align(Alignment.Center),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "Something went wrong and it's not your fault",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.error,
+                    )
+                    Button(
+                        onClick = { mainViewModel.getIpinfo() },
+                        shape = MaterialTheme.shapes.small
+                    ) {
+                       Text(
+                           text = "Retry"
+                       )
+                    }
+                }
             }
             is DeviceDetailsUiState.Success -> {
                 val uiSettings by remember {
