@@ -1,9 +1,14 @@
 package com.lomolo.uzi.compose.home
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -15,6 +20,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.maps.android.compose.GoogleMap
@@ -27,6 +34,7 @@ import com.lomolo.uzi.MainViewModel
 import com.lomolo.uzi.R
 import com.lomolo.uzi.compose.loader.Loader
 import com.lomolo.uzi.compose.navigation.Navigation
+import com.lomolo.uzi.compose.trip.StartTrip
 
 object HomeScreenDestination: Navigation {
     override val route = "home"
@@ -86,7 +94,54 @@ fun HomeScreen(
                     uiSettings = uiSettings,
                     cameraPositionState = cameraPositionState
                 )
+                Box(
+                    modifier = Modifier
+                        .wrapContentHeight()
+                        .align(Alignment.TopCenter)
+                        .background(
+                            MaterialTheme.colorScheme.background,
+                            shape = MaterialTheme.shapes.small
+                        )
+                ) {
+                    StartTrip()
+                }
+                Box(
+                    modifier = Modifier
+                        .padding(bottom = 28.dp, start = 8.dp, end = 8.dp)
+                        .fillMaxWidth()
+                        .align(Alignment.BottomCenter)
+                        .wrapContentHeight()
+                        .background(
+                            MaterialTheme.colorScheme.background,
+                            shape = MaterialTheme.shapes.small
+                        )
+                ) {
+                    GetStarted()
+                }
             }
+        }
+    }
+}
+
+@Composable
+fun GetStarted(
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+    ) {
+        Button(
+            onClick = { /*TODO*/ },
+            shape = MaterialTheme.shapes.small,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(72.dp)
+                .padding(8.dp)
+        ) {
+            Text(
+                text = "Get started",
+                style = MaterialTheme.typography.labelMedium
+            )
         }
     }
 }

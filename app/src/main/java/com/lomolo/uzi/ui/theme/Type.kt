@@ -54,5 +54,10 @@ val Typography = Typography(
         fontFamily = MabryFont,
         fontSize = 20.sp,
         fontWeight = FontWeight.SemiBold
+    ),
+    labelLarge = TextStyle(
+        fontFamily = MabryFont,
+        fontSize = 24.sp,
+        fontWeight = FontWeight.SemiBold
     )
 )
