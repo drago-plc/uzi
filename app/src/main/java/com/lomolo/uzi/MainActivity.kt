@@ -141,29 +141,29 @@ class MainActivity : ComponentActivity() {
                                 Button(
                                     onClick = {
                                         shouldShowPermissionRationale = false
-                                        locationPermissionLauncher.launch(locationServices?.permissions)
+                                        locationPermissionLauncher.launch(locationServices.permissions)
                                     }
                                 ) {
                                     Text(
-                                        text = "Approve",
+                                        text = getString(R.string.approve),
                                         style = MaterialTheme.typography.labelSmall
                                     )
                                 }
 
                             },
                             title = {
-                                Text("Location required")
+                                Text(getString(R.string.location_required))
                             },
                             text = {
                                 Text(
-                                    text = "You experience here would be better if we know your device location.",
+                                    text = getString(R.string.why_gps_perm),
                                     style = MaterialTheme.typography.bodyMedium
                                 )
                             },
                             icon = {
                                 Icon(
                                     Icons.TwoTone.Info,
-                                    contentDescription = "content info"
+                                    contentDescription = getString(R.string.content_info)
                                 )
                             }
                         )

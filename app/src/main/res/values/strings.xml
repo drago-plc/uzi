@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Uzi</string>
+    <string name="content_info">content info</string>
+    <string name="why_gps_perm">You experience here would be better if we know your device location.</string>
+    <string name="location_required">Location required</string>
+    <string name="approve">Approve</string>
+    <string name="retry">Retry</string>
+    <string name="not_your_fault_err">Something went wrong and it\'s not your fault</string>
 </resources>

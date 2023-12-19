@@ -14,6 +14,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.maps.android.compose.GoogleMap
@@ -23,6 +24,7 @@ import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.lomolo.uzi.DeviceDetailsUiState
 import com.lomolo.uzi.MainViewModel
+import com.lomolo.uzi.R
 import com.lomolo.uzi.compose.loader.Loader
 import com.lomolo.uzi.compose.navigation.Navigation
 
@@ -50,7 +52,7 @@ fun HomeScreen(
                     verticalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = "Something went wrong and it's not your fault",
+                        text = stringResource(R.string.not_your_fault_err),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.error,
                     )
@@ -59,7 +61,7 @@ fun HomeScreen(
                         shape = MaterialTheme.shapes.small
                     ) {
                        Text(
-                           text = "Retry"
+                           text = stringResource(R.string.retry)
                        )
                     }
                 }
