@@ -94,6 +94,9 @@ class MainActivity : ComponentActivity() {
                 }
 
                 shouldRedirectToUserLocationSettings = !shouldShowPermissionRationale && !hasLocationPermission
+                if (shouldRedirectToUserLocationSettings) {
+                    mainViewModel.setHasGps(shouldRedirectToUserLocationSettings)
+                }
             }
 
             val lifecycleOwner = LocalLifecycleOwner.current
