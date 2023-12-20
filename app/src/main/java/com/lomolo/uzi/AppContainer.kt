@@ -25,7 +25,7 @@ class DefaultContainer: AppContainer {
         .build()
 
     private val retrofit = Retrofit.Builder()
-        .baseUrl("https://e952-102-217-127-1.ngrok-free.app")
+        .baseUrl("https://948d-102-217-127-1.ngrok-free.app")
         .addConverterFactory(MoshiConverterFactory.create(moshi))
         .client(okhttpClient)
         .build()
