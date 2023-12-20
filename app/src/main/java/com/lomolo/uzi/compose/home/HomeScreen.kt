@@ -69,7 +69,6 @@ fun HomeScreen(
                     )
                     Button(
                         onClick = { mainViewModel.getIpinfo() },
-                        shape = MaterialTheme.shapes.small
                     ) {
                        Text(
                            text = stringResource(R.string.retry)
@@ -122,10 +121,6 @@ fun HomeScreen(
                                 .fillMaxWidth()
                                 .align(Alignment.BottomCenter)
                                 .wrapContentHeight()
-                                .background(
-                                    MaterialTheme.colorScheme.background,
-                                    shape = MaterialTheme.shapes.small
-                                )
                         ) {
                             GetStarted(
                                 onGetStartedClick = onGetStartedClick

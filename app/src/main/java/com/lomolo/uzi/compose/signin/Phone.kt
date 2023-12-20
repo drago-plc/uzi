@@ -49,7 +49,6 @@ fun Phone(
         Button(
             onClick = { /*TODO*/ },
             modifier = Modifier.fillMaxWidth().height(60.dp),
-            shape = MaterialTheme.shapes.small
         ) {
            Text(
                text = "Sign In",

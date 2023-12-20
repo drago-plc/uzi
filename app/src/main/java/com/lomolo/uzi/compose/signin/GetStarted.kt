@@ -21,7 +21,6 @@ fun GetStarted(
     ) {
         Button(
             onClick = onGetStartedClick,
-            shape = MaterialTheme.shapes.small,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(72.dp)
