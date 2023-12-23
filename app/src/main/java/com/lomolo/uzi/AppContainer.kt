@@ -78,7 +78,8 @@ class DefaultContainer(private val context: Context): AppContainer {
 
     override val sessionRepository: SessionRepository by lazy {
         SessionRepository(
-            sessionDao = UziStore.getStore(context).sessionDao()
+            sessionDao = UziStore.getStore(context).sessionDao(),
+            uziRestApiService = uziRestApiService
         )
     }
 
