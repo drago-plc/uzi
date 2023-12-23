@@ -71,7 +71,8 @@ fun HomeScreen(
                         onClick = { mainViewModel.getIpinfo() },
                     ) {
                        Text(
-                           text = stringResource(R.string.retry)
+                           text = stringResource(R.string.retry),
+                           style = MaterialTheme.typography.labelSmall
                        )
                     }
                 }
