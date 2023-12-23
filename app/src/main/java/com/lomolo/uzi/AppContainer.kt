@@ -1,8 +1,21 @@
 package com.lomolo.uzi
 
+import android.content.Context
+import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo3.api.http.HttpRequest
+import com.apollographql.apollo3.api.http.HttpResponse
+import com.apollographql.apollo3.network.http.HttpInterceptor
+import com.apollographql.apollo3.network.http.HttpInterceptorChain
 import com.lomolo.uzi.network.UziRestApiService
+import com.lomolo.uzi.repository.AuthSession
+import com.lomolo.uzi.repository.SessionRepository
+import com.lomolo.uzi.sql.UziStore
+import com.lomolo.uzi.sql.dao.SessionDao
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
@@ -10,9 +23,38 @@ import java.util.concurrent.TimeUnit
 
 interface AppContainer {
     val uziRestApiService: UziRestApiService
+    val sessionRepository: AuthSession
+    val apolloClient: ApolloClient
 }
 
-class DefaultContainer: AppContainer {
+class AuthInterceptor(
+    private val sessionRepository: SessionDao
+): HttpInterceptor {
+    private val mutex = Mutex()
+
+    override suspend fun intercept(
+        request: HttpRequest,
+        chain: HttpInterceptorChain
+    ): HttpResponse {
+        val token = mutex.withLock {
+            sessionRepository
+                .getSession()
+                .firstOrNull()
+        }
+
+        return if (token!!.isNotEmpty()) {
+            chain.proceed(
+                request.newBuilder().addHeader("Authorization", "Bearer ${token.first().token}").build()
+            )
+        } else {
+            chain.proceed(
+                request.newBuilder().build()
+            )
+        }
+    }
+}
+
+class DefaultContainer(private val context: Context): AppContainer {
     private val moshi = Moshi.Builder()
         .add(KotlinJsonAdapterFactory())
         .build()
@@ -33,4 +75,19 @@ class DefaultContainer: AppContainer {
     override val uziRestApiService: UziRestApiService by lazy {
         retrofit.create(UziRestApiService::class.java)
     }
+
+    override val sessionRepository: SessionRepository by lazy {
+        SessionRepository(
+            sessionDao = UziStore.getStore(context).sessionDao()
+        )
+    }
+
+    override val apolloClient = ApolloClient.Builder()
+        .serverUrl("https://948d-102-217-127-1.ngrok-free.app/api")
+        .addHttpInterceptor(
+            AuthInterceptor(
+                UziStore.getStore(context).sessionDao()
+            )
+        )
+        .build()
 }

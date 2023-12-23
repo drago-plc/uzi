@@ -92,10 +92,8 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 }
 
-/*
 apollo {
     service("uzi") {
         packageName.set("com.lomolo.uzi")
     }
 }
- */

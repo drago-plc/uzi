@@ -111,7 +111,6 @@ fun HomeScreen(
                                 .align(Alignment.TopCenter)
                                 .background(
                                     MaterialTheme.colorScheme.background,
-                                    shape = MaterialTheme.shapes.small
                                 )
                         ) {
                             StartTrip()
