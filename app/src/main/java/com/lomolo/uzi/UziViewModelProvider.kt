@@ -23,6 +23,11 @@ object UziViewModelProvider {
                 mainViewModel
             )
         }
+        initializer {
+            SessionViewModel(
+                uziApplication().container.sessionRepository
+            )
+        }
     }
 }
 

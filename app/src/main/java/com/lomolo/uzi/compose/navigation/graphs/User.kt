@@ -84,7 +84,15 @@ fun NavGraphBuilder.user(
                 ) {
                     Phone(
                         signInViewModel = signInViewModel,
-                        mainViewModel = mainViewModel
+                        mainViewModel = mainViewModel,
+                        onNavigateTo = {
+                            navController.navigate(it) {
+                                popUpTo(it) {
+                                    inclusive = true
+                                    saveState = false
+                                }
+                            }
+                        }
                     )
                 }
             }

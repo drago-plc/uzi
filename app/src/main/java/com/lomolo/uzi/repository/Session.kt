@@ -18,5 +18,9 @@ class SessionRepository(
 ): AuthSession {
     override suspend fun createSession(session: Session) = sessionDao.createSession(session)
     override fun getSession() = sessionDao.getSession()
-    override suspend fun signIn(input: SignIn) = uziRestApiService.signIn(input)
+    override suspend fun signIn(input: SignIn): Session {
+        val res = uziRestApiService.signIn(input)
+        createSession(Session(id = res.id, token = res.token))
+        return res
+    }
 }

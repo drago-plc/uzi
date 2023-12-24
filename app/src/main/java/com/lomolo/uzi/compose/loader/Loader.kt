@@ -1,6 +1,6 @@
 package com.lomolo.uzi.compose.loader
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -17,7 +17,7 @@ fun Loader(
         color = MaterialTheme.colorScheme.secondary,
         trackColor = MaterialTheme.colorScheme.surfaceVariant,
         modifier = modifier
-            .background(MaterialTheme.colorScheme.background)
             .wrapContentSize()
+            .size(16.dp)
     )
 }

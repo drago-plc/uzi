@@ -47,6 +47,7 @@ object HomeScreenDestination: Navigation {
 fun HomeScreen(
     modifier: Modifier = Modifier,
     mainViewModel: MainViewModel = viewModel(),
+    isAuthed: Boolean,
     onGetStartedClick: () -> Unit = {}
 ) {
     val deviceDetails by mainViewModel.deviceDetailsUiState.collectAsState()
@@ -105,26 +106,30 @@ fun HomeScreen(
                     enter = EnterTransition.None
                 ) {
                     Box(Modifier.matchParentSize()) {
-                        Box(
-                            modifier = Modifier
-                                .wrapContentHeight()
-                                .align(Alignment.TopCenter)
-                                .background(
-                                    MaterialTheme.colorScheme.background,
-                                )
-                        ) {
-                            StartTrip()
+                        if (isAuthed) {
+                            Box(
+                                modifier = Modifier
+                                    .wrapContentHeight()
+                                    .align(Alignment.TopCenter)
+                                    .background(
+                                        MaterialTheme.colorScheme.background,
+                                    )
+                            ) {
+                                StartTrip()
+                            }
                         }
-                        Box(
-                            modifier = Modifier
-                                .padding(bottom = 28.dp, start = 8.dp, end = 8.dp)
-                                .fillMaxWidth()
-                                .align(Alignment.BottomCenter)
-                                .wrapContentHeight()
-                        ) {
-                            GetStarted(
-                                onGetStartedClick = onGetStartedClick
-                            )
+                        if (!isAuthed) {
+                            Box(
+                                modifier = Modifier
+                                    .padding(bottom = 28.dp, start = 8.dp, end = 8.dp)
+                                    .fillMaxWidth()
+                                    .align(Alignment.BottomCenter)
+                                    .wrapContentHeight()
+                            ) {
+                                GetStarted(
+                                    onGetStartedClick = onGetStartedClick
+                                )
+                            }
                         }
                     }
                 }

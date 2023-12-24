@@ -13,4 +13,5 @@
     <string name="arrow_down">arrow down</string>
     <string name="arrow_up">arrow up</string>
     <string name="go_back">go back</string>
+    <string name="sign_in">Sign In</string>
 </resources>

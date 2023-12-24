@@ -8,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.google.i18n.phonenumbers.Phonenumber
 import com.lomolo.uzi.MainViewModel
-import com.lomolo.uzi.model.Session
 import com.lomolo.uzi.model.SignIn
 import com.lomolo.uzi.network.UziRestApiService
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,7 +24,7 @@ class SignInViewModel(
     private val _signInInput = MutableStateFlow(SignIn())
     val signInInput: StateFlow<SignIn> = _signInInput.asStateFlow()
 
-    var signInUiState: SignInUiState by mutableStateOf(SignInUiState.Data())
+    var signInUiState: SignInUiState by mutableStateOf(SignInUiState.Success)
         private set
 
     private val phoneUtil = PhoneNumberUtil.getInstance()
@@ -78,13 +77,14 @@ class SignInViewModel(
         }
     }
 
-    fun signIn() {
+    fun signIn(cb: () -> Unit = {}) {
+        signInUiState = SignInUiState.Loading
         viewModelScope.launch {
-            signInUiState = SignInUiState.Loading
-            try {
-                println(signInInput.value)
+            signInUiState = try {
+                uziRestApiService.signIn(signInInput.value)
+                SignInUiState.Success.also { cb() }
             } catch(e: Exception) {
-                signInUiState = SignInUiState.Error(e.localizedMessage)
+                SignInUiState.Error(e.localizedMessage)
             }
         }
     }
@@ -92,6 +92,6 @@ class SignInViewModel(
 
 interface SignInUiState {
     data object Loading: SignInUiState
-    data class Data(val res: Session? = null): SignInUiState
+    data object Success: SignInUiState
     data class Error(val message: String?): SignInUiState
 }

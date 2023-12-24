@@ -1,6 +1,8 @@
 package com.lomolo.uzi.compose.signin
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,12 +21,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import com.lomolo.uzi.MainViewModel
+import com.lomolo.uzi.R
+import com.lomolo.uzi.compose.home.HomeScreenDestination
+import com.lomolo.uzi.compose.loader.Loader
 import com.lomolo.uzi.compose.navigation.Navigation
 
 object UserPhoneDestination: Navigation {
@@ -36,6 +42,7 @@ object UserPhoneDestination: Navigation {
 fun Phone(
     modifier: Modifier = Modifier,
     signInViewModel: SignInViewModel,
+    onNavigateTo: (String) -> Unit = {},
     mainViewModel: MainViewModel
 ) {
     val signInUiState by signInViewModel.signInInput.collectAsState()
@@ -84,16 +91,35 @@ fun Phone(
             ),
         )
         Spacer(modifier = Modifier.size(16.dp))
-        Button(
-            onClick = { signInViewModel.signIn() },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(60.dp),
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center
         ) {
-           Text(
-               text = "Sign In",
-               style = MaterialTheme.typography.labelMedium
-           )
+            when (val s = signInViewModel.signInUiState) {
+                is SignInUiState.Success -> {
+                    Button(
+                        onClick = { signInViewModel.signIn { onNavigateTo(HomeScreenDestination.route)} },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(60.dp),
+                    ) {
+                        Text(
+                            text = stringResource(R.string.sign_in),
+                            style = MaterialTheme.typography.labelMedium
+                        )
+                    }
+                }
+                is SignInUiState.Loading -> {
+                    Loader()
+                }
+                is SignInUiState.Error -> {
+                    Text(
+                        text = s.message!!,
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.labelSmall
+                    )
+                }
+            }
         }
     }
 }
