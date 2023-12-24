@@ -17,6 +17,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import com.lomolo.uzi.compose.navigation.Navigation
 
@@ -56,7 +57,8 @@ fun Name(
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Next
+                imeAction = ImeAction.Next,
+                capitalization = KeyboardCapitalization.Words
             ),
         )
         Spacer(modifier = Modifier.size(16.dp))
@@ -76,11 +78,12 @@ fun Name(
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Next
+                imeAction = ImeAction.Next,
+                capitalization = KeyboardCapitalization.Words
             ),
             keyboardActions = KeyboardActions(
                 onNext = {
-                    onNextSubmit()
+                    if (!validFirstname && !validLastname) onNextSubmit()
                 }
             )
         )

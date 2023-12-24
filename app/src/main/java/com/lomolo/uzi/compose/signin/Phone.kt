@@ -98,7 +98,12 @@ fun Phone(
             when (val s = signInViewModel.signInUiState) {
                 is SignInUiState.Success -> {
                     Button(
-                        onClick = { signInViewModel.signIn { onNavigateTo(HomeScreenDestination.route)} },
+                        onClick = {
+                            if (validPhone)
+                                signInViewModel.signIn {
+                                    onNavigateTo(HomeScreenDestination.route)
+                                }
+                        },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(60.dp),
