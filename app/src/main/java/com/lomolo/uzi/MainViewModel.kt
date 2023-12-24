@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
+import com.lomolo.uzi.common.countryPhoneCode
 import com.lomolo.uzi.network.UziRestApiService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -37,7 +38,9 @@ class MainViewModel(
                     deviceDetailsState = DeviceDetailsUiState.Success
                     it.copy(
                         gps = LatLng(ipGps[0].toDouble(), ipGps[1].toDouble()),
-                        country = response.country
+                        country = response.country,
+                        countryFlag = response.countryFlag,
+                        countryPhoneCode = countryPhoneCode[response.country]!!
                     )
                 }
             } catch (e: Throwable) {
@@ -67,6 +70,8 @@ class MainViewModel(
 data class DeviceDetails(
     val gps: LatLng = LatLng(0.0, 0.0),
     val country: String = "",
+    val countryFlag: String = "",
+    val countryPhoneCode: String = "",
     val hasGps: Boolean = false,
     val mapLoaded: Boolean = false
 )

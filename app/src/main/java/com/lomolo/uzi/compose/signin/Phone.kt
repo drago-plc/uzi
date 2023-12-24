@@ -10,13 +10,21 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
+import coil.decode.SvgDecoder
+import coil.request.ImageRequest
+import com.lomolo.uzi.MainViewModel
 import com.lomolo.uzi.compose.navigation.Navigation
 
 object UserPhoneDestination: Navigation {
@@ -26,19 +34,49 @@ object UserPhoneDestination: Navigation {
 
 @Composable
 fun Phone(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    signInViewModel: SignInViewModel,
+    mainViewModel: MainViewModel
 ) {
+    val signInUiState by signInViewModel.signInInput.collectAsState()
+    val validPhone = signInViewModel.validPhone(signInUiState)
+    val deviceUiState by mainViewModel.deviceDetailsUiState.collectAsState()
+
     Column(
         modifier = modifier
             .fillMaxSize()
             .padding(20.dp)
     ) {
-        OutlinedTextField(
-            value = "",
+        TextField(
+            isError = !validPhone,
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = if (!validPhone) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.background,
+                unfocusedContainerColor = if (!validPhone) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.background,
+                unfocusedIndicatorColor = MaterialTheme.colorScheme.primary,
+                errorTextColor = MaterialTheme.colorScheme.error
+            ),
+            value = signInUiState.phone,
             placeholder = {
                 Text("Phone number")
             },
-            onValueChange = {},
+            onValueChange = { signInViewModel.setPhone(it) },
+            leadingIcon = {
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(deviceUiState.countryFlag)
+                        .decoderFactory(SvgDecoder.Factory())
+                        .build(),
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(32.dp),
+                    contentDescription = "country flag"
+                )
+            },
+            prefix = {
+                Text(
+                    text = "+${deviceUiState.countryPhoneCode}"
+                )
+            },
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(
@@ -47,8 +85,10 @@ fun Phone(
         )
         Spacer(modifier = Modifier.size(16.dp))
         Button(
-            onClick = { /*TODO*/ },
-            modifier = Modifier.fillMaxWidth().height(60.dp),
+            onClick = { signInViewModel.signIn() },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(60.dp),
         ) {
            Text(
                text = "Sign In",

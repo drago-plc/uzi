@@ -11,10 +11,12 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import com.lomolo.uzi.MainViewModel
 import com.lomolo.uzi.compose.TopBar
 import com.lomolo.uzi.compose.navigation.Navigation
 import com.lomolo.uzi.compose.signin.Name
 import com.lomolo.uzi.compose.signin.Phone
+import com.lomolo.uzi.compose.signin.SignInViewModel
 import com.lomolo.uzi.compose.signin.UserNameDestination
 import com.lomolo.uzi.compose.signin.UserPhoneDestination
 
@@ -25,7 +27,9 @@ object UserGraphDestination: Navigation {
 
 @OptIn(ExperimentalMaterial3Api::class)
 fun NavGraphBuilder.user(
-    navController: NavHostController
+    navController: NavHostController,
+    signInViewModel: SignInViewModel,
+    mainViewModel: MainViewModel
 ) {
     navigation(
         startDestination = UserNameDestination.route,
@@ -52,7 +56,8 @@ fun NavGraphBuilder.user(
                         .padding(innerPadding)
                 ) {
                     Name(
-                        onNextSubmit = { navController.navigate(UserPhoneDestination.route) }
+                        onNextSubmit = { navController.navigate(UserPhoneDestination.route) },
+                        signInViewModel = signInViewModel
                     )
                 }
             }
@@ -77,7 +82,10 @@ fun NavGraphBuilder.user(
                         .fillMaxSize()
                         .padding(innerPadding)
                 ) {
-                    Phone()
+                    Phone(
+                        signInViewModel = signInViewModel,
+                        mainViewModel = mainViewModel
+                    )
                 }
             }
         }

@@ -15,12 +15,14 @@ import com.lomolo.uzi.compose.home.HomeScreen
 import com.lomolo.uzi.compose.home.HomeScreenDestination
 import com.lomolo.uzi.compose.navigation.graphs.UserGraphDestination
 import com.lomolo.uzi.compose.navigation.graphs.user
+import com.lomolo.uzi.compose.signin.SignInViewModel
 
 @Composable
 fun UziNavHost(
     modifier: Modifier = Modifier,
     navController: NavHostController,
-    mainViewModel: MainViewModel = viewModel(factory = UziViewModelProvider.Factory)
+    mainViewModel: MainViewModel = viewModel(factory = UziViewModelProvider.Factory),
+    signInViewModel: SignInViewModel = viewModel(factory = UziViewModelProvider.Factory)
 ) {
     NavHost(
         modifier = modifier,
@@ -42,6 +44,8 @@ fun UziNavHost(
         }
         user(
             navController = navController,
+            signInViewModel = signInViewModel,
+            mainViewModel = mainViewModel
         )
     }
 }

@@ -61,6 +61,7 @@ dependencies {
     ksp("androidx.room:room-compiler:2.6.1")
     implementation("com.apollographql.apollo3:apollo-runtime:4.0.0-alpha.3")
     implementation("com.googlecode.libphonenumber:libphonenumber:8.2.0")
+    implementation("io.coil-kt:coil-svg:2.4.0")
     implementation("io.coil-kt:coil-compose:2.4.0")
     implementation(platform("com.squareup.okhttp3:okhttp-bom:4.11.0"))
     implementation("com.squareup.okhttp3:okhttp")
