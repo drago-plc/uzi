@@ -23,6 +23,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.decode.SvgDecoder
@@ -46,7 +47,7 @@ fun Phone(
     mainViewModel: MainViewModel
 ) {
     val signInUiState by signInViewModel.signInInput.collectAsState()
-    val validPhone = signInViewModel.validPhone(signInUiState)
+    val isPhoneValid = signInViewModel.isPhoneValid(signInUiState)
     val deviceUiState by mainViewModel.deviceDetailsUiState.collectAsState()
 
     Column(
@@ -55,10 +56,10 @@ fun Phone(
             .padding(20.dp)
     ) {
         TextField(
-            isError = !validPhone,
+            isError = signInUiState.phone.isNotBlank() && !isPhoneValid,
             colors = TextFieldDefaults.colors(
-                focusedContainerColor = if (!validPhone) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.background,
-                unfocusedContainerColor = if (!validPhone) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.background,
+                focusedContainerColor = if (signInUiState.phone.isNotBlank() && !isPhoneValid) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.background,
+                unfocusedContainerColor = if (signInUiState.phone.isNotBlank() && !isPhoneValid) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.background,
                 unfocusedIndicatorColor = MaterialTheme.colorScheme.primary,
                 errorTextColor = MaterialTheme.colorScheme.error
             ),
@@ -99,7 +100,7 @@ fun Phone(
                 is SignInUiState.Success -> {
                     Button(
                         onClick = {
-                            if (validPhone)
+                            if (isPhoneValid)
                                 signInViewModel.signIn {
                                     onNavigateTo(HomeScreenDestination.route)
                                 }
@@ -118,11 +119,30 @@ fun Phone(
                     Loader()
                 }
                 is SignInUiState.Error -> {
-                    Text(
-                        text = s.message!!,
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.labelSmall
-                    )
+                    Column {
+                        Text(
+                            text = stringResource(R.string.not_your_fault_err),
+                            color = MaterialTheme.colorScheme.error,
+                            textAlign = TextAlign.Center,
+                            style = MaterialTheme.typography.labelSmall
+                        )
+                        Button(
+                            onClick = {
+                                if (isPhoneValid)
+                                    signInViewModel.signIn {
+                                        onNavigateTo(HomeScreenDestination.route)
+                                    }
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(60.dp),
+                        ) {
+                            Text(
+                                text = stringResource(R.string.retry),
+                                style = MaterialTheme.typography.labelMedium
+                            )
+                        }
+                    }
                 }
             }
         }

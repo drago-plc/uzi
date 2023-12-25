@@ -12,6 +12,6 @@ interface UziRestApiService {
     @GET("ipinfo")
     suspend fun getIpinfo(): Ipinfo
     @Headers("Content-Type: application/json")
-    @POST("login")
+    @POST("signin")
     suspend fun signIn(@Body input: SignIn): Session
 }

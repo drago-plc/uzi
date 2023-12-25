@@ -46,28 +46,18 @@ class SignInViewModel(
         }
     }
 
-    private fun validName(name: String): Boolean {
-        return name.contains(Regex("[^A-Za-z ]"))
-    }
-    fun validFirstname(uiState: SignIn): Boolean {
-        return with(uiState) {
-            validName(firstName)
-        }
-    }
-    fun validLastname(uiState: SignIn): Boolean {
-        return with(uiState) {
-            validName(lastName)
-        }
+    fun isNameValid(name: String): Boolean {
+        return name.trim().isNotBlank() && name.trim().matches(Regex("^[a-zA-Z ]*$"))
     }
 
-    fun validPhone(uiState: SignIn): Boolean {
+    fun isPhoneValid(uiState: SignIn): Boolean {
         return with(uiState) {
-            validatePhonenumber(phone)
+            isPhoneNumberValid(phone)
         }
     }
-    private fun validatePhonenumber(number: String): Boolean {
+    private fun isPhoneNumberValid(number: String): Boolean {
         return try {
-            if (number.isEmpty()) return true
+            if (number.isEmpty()) return false
             val p = Phonenumber.PhoneNumber()
             p.countryCode = deviceDetails.value.countryPhoneCode.toInt()
             p.nationalNumber = number.toLong()
