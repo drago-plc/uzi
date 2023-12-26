@@ -6,8 +6,8 @@ import com.apollographql.apollo3.api.http.HttpRequest
 import com.apollographql.apollo3.api.http.HttpResponse
 import com.apollographql.apollo3.network.http.HttpInterceptor
 import com.apollographql.apollo3.network.http.HttpInterceptorChain
-import com.lomolo.uzi.network.UziRestApiService
-import com.lomolo.uzi.repository.AuthSession
+import com.lomolo.uzi.network.UziRestApiServiceInterface
+import com.lomolo.uzi.repository.SessionInterface
 import com.lomolo.uzi.repository.SessionRepository
 import com.lomolo.uzi.sql.UziStore
 import com.lomolo.uzi.sql.dao.SessionDao
@@ -22,8 +22,8 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 import java.util.concurrent.TimeUnit
 
 interface AppContainer {
-    val uziRestApiService: UziRestApiService
-    val sessionRepository: AuthSession
+    val uziRestApiService: UziRestApiServiceInterface
+    val sessionRepository: SessionInterface
     val apolloClient: ApolloClient
 }
 
@@ -72,8 +72,8 @@ class DefaultContainer(private val context: Context): AppContainer {
         .client(okhttpClient)
         .build()
 
-    override val uziRestApiService: UziRestApiService by lazy {
-        retrofit.create(UziRestApiService::class.java)
+    override val uziRestApiService: UziRestApiServiceInterface by lazy {
+        retrofit.create(UziRestApiServiceInterface::class.java)
     }
 
     override val sessionRepository: SessionRepository by lazy {

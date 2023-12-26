@@ -18,7 +18,7 @@ abstract class UziStore: RoomDatabase() {
         fun getStore(context: Context): UziStore {
             return Instance ?: synchronized(this) {
                 Room
-                    .databaseBuilder(context, UziStore::class.java, "uzi-store")
+                    .databaseBuilder(context, UziStore::class.java, "uzistore.db")
                     .fallbackToDestructiveMigration()
                     .build()
                     .also { Instance = it }

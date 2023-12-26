@@ -19,7 +19,7 @@ object UziViewModelProvider {
         }
         initializer {
             SignInViewModel(
-                uziApplication().container.uziRestApiService,
+                uziApplication().container.sessionRepository,
                 mainViewModel
             )
         }

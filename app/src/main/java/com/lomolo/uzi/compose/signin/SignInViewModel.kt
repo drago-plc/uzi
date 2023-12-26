@@ -9,7 +9,7 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.google.i18n.phonenumbers.Phonenumber
 import com.lomolo.uzi.MainViewModel
 import com.lomolo.uzi.model.SignIn
-import com.lomolo.uzi.network.UziRestApiService
+import com.lomolo.uzi.repository.SessionInterface
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 import java.lang.Exception
 
 class SignInViewModel(
-    private val uziRestApiService: UziRestApiService,
+    private val sessionRepository: SessionInterface,
     mainViewModel: MainViewModel
 ): ViewModel() {
     private val _signInInput = MutableStateFlow(SignIn())
@@ -71,7 +71,7 @@ class SignInViewModel(
         signInUiState = SignInUiState.Loading
         viewModelScope.launch {
             signInUiState = try {
-                uziRestApiService.signIn(signInInput.value)
+                sessionRepository.signIn(signInInput.value)
                 SignInUiState.Success.also { cb() }
             } catch(e: Exception) {
                 SignInUiState.Error(e.localizedMessage)

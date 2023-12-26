@@ -7,14 +7,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
 import com.lomolo.uzi.common.countryPhoneCode
-import com.lomolo.uzi.network.UziRestApiService
+import com.lomolo.uzi.network.UziRestApiServiceInterface
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class MainViewModel(
-    private val uziRestApiService: UziRestApiService
+    private val uziRestApiService: UziRestApiServiceInterface
 ): ViewModel() {
     private val _deviceDetails: MutableStateFlow<DeviceDetails> = MutableStateFlow(DeviceDetails())
     val deviceDetailsUiState = _deviceDetails.asStateFlow()
@@ -68,13 +68,22 @@ class MainViewModel(
 }
 
 data class DeviceDetails(
-    val gps: LatLng = LatLng(0.0, 0.0),
-    val country: String = "",
-    val countryFlag: String = "",
-    val countryPhoneCode: String = "",
-    val hasGps: Boolean = false,
-    val mapLoaded: Boolean = false
-)
+    val gps: LatLng,
+    val country: String,
+    val countryFlag: String,
+    val countryPhoneCode: String,
+    val hasGps: Boolean,
+    val mapLoaded: Boolean
+) {
+    constructor(): this(
+        LatLng(0.0, 0.0),
+        "",
+        "",
+        "",
+        false,
+        false
+    )
+}
 
 interface DeviceDetailsUiState {
     data object Loading: DeviceDetailsUiState

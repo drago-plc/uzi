@@ -8,7 +8,7 @@ import retrofit2.http.GET
 import retrofit2.http.Headers
 import retrofit2.http.POST
 
-interface UziRestApiService {
+interface UziRestApiServiceInterface {
     @GET("ipinfo")
     suspend fun getIpinfo(): Ipinfo
     @Headers("Content-Type: application/json")
