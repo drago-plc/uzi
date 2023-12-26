@@ -7,4 +7,6 @@ import androidx.room.PrimaryKey
 data class Session(
     @PrimaryKey(autoGenerate = false) val id: String,
     val token: String
-)
+) {
+    constructor(): this("", "")
+}

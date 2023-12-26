@@ -8,11 +8,16 @@ import androidx.lifecycle.viewModelScope
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.google.i18n.phonenumbers.Phonenumber
 import com.lomolo.uzi.MainViewModel
+import com.lomolo.uzi.model.Session
 import com.lomolo.uzi.model.SignIn
 import com.lomolo.uzi.repository.SessionInterface
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.lang.Exception
@@ -21,6 +26,25 @@ class SignInViewModel(
     private val sessionRepository: SessionInterface,
     mainViewModel: MainViewModel
 ): ViewModel() {
+    val sessionUiState: StateFlow<Session> = sessionRepository
+        .getSession()
+        .filterNotNull()
+        .map {
+            if (it.isNotEmpty()) {
+                Session(
+                    token = it[0].token,
+                    id = it[0].id
+                )
+            } else {
+                Session()
+            }
+        }
+        .stateIn(
+            scope = viewModelScope,
+            initialValue = Session(),
+            started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS)
+        )
+
     private val _signInInput = MutableStateFlow(SignIn())
     val signInInput: StateFlow<SignIn> = _signInInput.asStateFlow()
 
@@ -77,6 +101,9 @@ class SignInViewModel(
                 SignInUiState.Error(e.localizedMessage)
             }
         }
+    }
+    companion object {
+        private const val TIMEOUT_MILLIS = 5_000L
     }
 }
 

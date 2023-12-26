@@ -12,7 +12,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.lomolo.uzi.MainViewModel
-import com.lomolo.uzi.SessionViewModel
 import com.lomolo.uzi.UziViewModelProvider
 import com.lomolo.uzi.compose.home.HomeScreen
 import com.lomolo.uzi.compose.home.HomeScreenDestination
@@ -26,9 +25,8 @@ fun UziNavHost(
     navController: NavHostController,
     mainViewModel: MainViewModel = viewModel(factory = UziViewModelProvider.Factory),
     signInViewModel: SignInViewModel = viewModel(factory = UziViewModelProvider.Factory),
-    sessionViewModel: SessionViewModel = viewModel(factory = UziViewModelProvider.Factory)
 ) {
-    val sessionUiState by sessionViewModel.sessionUiState.collectAsState()
+    val sessionUiState by signInViewModel.sessionUiState.collectAsState()
 
     NavHost(
         modifier = modifier,
@@ -43,7 +41,7 @@ fun UziNavHost(
                 ) {
                     HomeScreen(
                         mainViewModel = mainViewModel,
-                        isAuthed = sessionUiState.token.isNotEmpty(),
+                        isAuthed = sessionUiState.token.isNotBlank(),
                         onGetStartedClick = { navController.navigate(UserGraphDestination.route) }
                     )
                 }
