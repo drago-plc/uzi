@@ -5,8 +5,10 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "sessions")
 data class Session(
-    @PrimaryKey(autoGenerate = false) val id: String,
-    val token: String
-) {
-    constructor(): this("", "")
-}
+    @PrimaryKey(autoGenerate = false) val id: String = "",
+    val token: String = "",
+    val status: Status = Status.OFFLINE,
+    val isCourier: Boolean = false
+)
+
+enum class Status{OFFLINE, ONLINE}

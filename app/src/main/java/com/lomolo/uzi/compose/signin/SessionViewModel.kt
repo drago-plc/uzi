@@ -10,6 +10,7 @@ import com.google.i18n.phonenumbers.Phonenumber
 import com.lomolo.uzi.MainViewModel
 import com.lomolo.uzi.model.Session
 import com.lomolo.uzi.model.SignIn
+import com.lomolo.uzi.model.Status
 import com.lomolo.uzi.repository.SessionInterface
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -33,7 +34,9 @@ class SignInViewModel(
             if (it.isNotEmpty()) {
                 Session(
                     token = it[0].token,
-                    id = it[0].id
+                    id = it[0].id,
+                    status = Status.OFFLINE,
+                    isCourier = false
                 )
             } else {
                 Session()
