@@ -7,8 +7,9 @@ import androidx.room.PrimaryKey
 data class Session(
     @PrimaryKey(autoGenerate = false) val id: String = "",
     val token: String = "",
-    val status: Status = Status.OFFLINE,
-    val isCourier: Boolean = false
+    val courierStatus: CourierStatus = CourierStatus.OFFLINE,
+    val isCourier: Boolean = false,
+    val onboarding: Boolean = false
 )
 
-enum class Status{OFFLINE, ONLINE}
+enum class CourierStatus{OFFLINE, ONLINE}
