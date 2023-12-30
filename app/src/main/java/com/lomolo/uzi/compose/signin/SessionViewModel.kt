@@ -23,7 +23,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.lang.Exception
 
-class SignInViewModel(
+class SessionViewModel(
     private val sessionRepository: SessionInterface,
     mainViewModel: MainViewModel
 ): ViewModel() {

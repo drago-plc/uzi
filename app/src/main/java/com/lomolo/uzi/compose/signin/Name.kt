@@ -36,11 +36,11 @@ object UserNameDestination: Navigation {
 fun Name(
     modifier: Modifier = Modifier,
     onNextSubmit: () -> Unit = {},
-    signInViewModel: SignInViewModel = viewModel()
+    sessionViewModel: SessionViewModel = viewModel()
 ) {
-    val signInUiState by signInViewModel.signInInput.collectAsState()
-    val isFirstnameValid = signInViewModel.isNameValid(signInUiState.firstName)
-    val isLastnameValid = signInViewModel.isNameValid(signInUiState.lastName)
+    val signInUiState by sessionViewModel.signInInput.collectAsState()
+    val isFirstnameValid = sessionViewModel.isNameValid(signInUiState.firstName)
+    val isLastnameValid = sessionViewModel.isNameValid(signInUiState.lastName)
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -58,7 +58,7 @@ fun Name(
             placeholder = {
                 Text("Firstname")
             },
-            onValueChange = { signInViewModel.setFirstname(it) },
+            onValueChange = { sessionViewModel.setFirstname(it) },
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(
@@ -79,7 +79,7 @@ fun Name(
             placeholder = {
                 Text("Lastname")
             },
-            onValueChange = { signInViewModel.setLastname(it) },
+            onValueChange = { sessionViewModel.setLastname(it) },
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(

@@ -42,13 +42,14 @@ object UserPhoneDestination: Navigation {
 @Composable
 fun Phone(
     modifier: Modifier = Modifier,
-    signInViewModel: SignInViewModel,
+    sessionViewModel: SessionViewModel,
     onNavigateTo: (String) -> Unit = {},
     mainViewModel: MainViewModel
 ) {
-    val signInUiState by signInViewModel.signInInput.collectAsState()
-    val isPhoneValid = signInViewModel.isPhoneValid(signInUiState)
+    val signInUiState by sessionViewModel.signInInput.collectAsState()
+    val isPhoneValid = sessionViewModel.isPhoneValid(signInUiState)
     val deviceUiState by mainViewModel.deviceDetailsUiState.collectAsState()
+    val sessionUiState by sessionViewModel.sessionUiState.collectAsState()
 
     Column(
         modifier = modifier
@@ -67,7 +68,7 @@ fun Phone(
             placeholder = {
                 Text("Phone number")
             },
-            onValueChange = { signInViewModel.setPhone(it) },
+            onValueChange = { sessionViewModel.setPhone(it) },
             leadingIcon = {
                 AsyncImage(
                     model = ImageRequest.Builder(LocalContext.current)
@@ -96,13 +97,17 @@ fun Phone(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center
         ) {
-            when (val s = signInViewModel.signInUiState) {
+            when (val s = sessionViewModel.signInUiState) {
                 is SignInUiState.Success -> {
                     Button(
                         onClick = {
                             if (isPhoneValid)
-                                signInViewModel.signIn {
-                                    onNavigateTo(HomeScreenDestination.route)
+                                sessionViewModel.signIn {
+                                    if (sessionUiState.onboarding) {
+                                        onNavigateTo(UserNameDestination.route)
+                                    } else {
+                                        onNavigateTo(HomeScreenDestination.route)
+                                    }
                                 }
                         },
                         modifier = Modifier
@@ -129,7 +134,7 @@ fun Phone(
                         Button(
                             onClick = {
                                 if (isPhoneValid)
-                                    signInViewModel.signIn {
+                                    sessionViewModel.signIn {
                                         onNavigateTo(HomeScreenDestination.route)
                                     }
                             },

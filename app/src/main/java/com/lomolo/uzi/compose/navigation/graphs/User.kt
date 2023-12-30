@@ -6,6 +6,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -16,7 +17,7 @@ import com.lomolo.uzi.compose.TopBar
 import com.lomolo.uzi.compose.navigation.Navigation
 import com.lomolo.uzi.compose.signin.Name
 import com.lomolo.uzi.compose.signin.Phone
-import com.lomolo.uzi.compose.signin.SignInViewModel
+import com.lomolo.uzi.compose.signin.SessionViewModel
 import com.lomolo.uzi.compose.signin.UserNameDestination
 import com.lomolo.uzi.compose.signin.UserPhoneDestination
 
@@ -25,77 +26,100 @@ object UserGraphDestination: Navigation {
     override val title = null
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 fun NavGraphBuilder.user(
     navController: NavHostController,
-    signInViewModel: SignInViewModel,
+    sessionViewModel: SessionViewModel,
     mainViewModel: MainViewModel
 ) {
     navigation(
-        startDestination = UserNameDestination.route,
+        startDestination = UserPhoneDestination.route,
         route = UserGraphDestination.route
     ) {
         composable(route = UserNameDestination.route) {
-            val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-
-            Scaffold(
-                topBar = {
-                    TopBar(
-                        title = UserNameDestination.title,
-                        scrollBehavior = scrollBehavior,
-                        canNavigateBack = true,
-                        navigateBack = {
-                            navController.popBackStack()
-                        }
-                    )
-                }
-            ) {innerPadding ->
-                Surface(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding)
-                ) {
-                    Name(
-                        onNextSubmit = { navController.navigate(UserPhoneDestination.route) },
-                        signInViewModel = signInViewModel
-                    )
-                }
-            }
+           NameScreen(
+               navController = navController,
+               sessionViewModel = sessionViewModel
+           )
         }
         composable(route = UserPhoneDestination.route) {
-            val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+           PhoneScreen(
+               navController = navController,
+               sessionViewModel = sessionViewModel,
+               mainViewModel = mainViewModel
+           )
+        }
+    }
+}
 
-            Scaffold(
-                topBar = {
-                    TopBar(
-                        title = UserPhoneDestination.title,
-                        scrollBehavior = scrollBehavior,
-                        canNavigateBack = true,
-                        navigateBack = {
-                            navController.popBackStack()
-                        }
-                    )
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun NameScreen(
+    modifier: Modifier = Modifier,
+    navController: NavHostController,
+    sessionViewModel: SessionViewModel
+) {
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+
+    Scaffold(
+        topBar = {
+            TopBar(
+                title = UserNameDestination.title,
+                scrollBehavior = scrollBehavior,
+                canNavigateBack = true,
+                navigateBack = {
+                    navController.popBackStack()
                 }
-            ) { innerPadding ->
-                Surface(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding)
-                ) {
-                    Phone(
-                        signInViewModel = signInViewModel,
-                        mainViewModel = mainViewModel,
-                        onNavigateTo = {
-                            navController.navigate(it) {
-                                popUpTo(it) {
-                                    inclusive = true
-                                    saveState = false
-                                }
-                            }
+            )
+        }
+    ) {innerPadding ->
+        Surface(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
+            Name(
+                onNextSubmit = { navController.navigate(UserPhoneDestination.route) },
+                sessionViewModel = sessionViewModel
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun PhoneScreen(
+    modifier: Modifier = Modifier,
+    navController: NavHostController,
+    sessionViewModel: SessionViewModel,
+    mainViewModel: MainViewModel
+) {
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+
+    Scaffold(
+        topBar = {
+            TopBar(
+                title = UserPhoneDestination.title,
+                scrollBehavior = scrollBehavior,
+            )
+        }
+    ) { innerPadding ->
+        Surface(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
+            Phone(
+                sessionViewModel = sessionViewModel,
+                mainViewModel = mainViewModel,
+                onNavigateTo = {
+                    navController.navigate(it) {
+                        popUpTo(it) {
+                            inclusive = true
+                            saveState = false
                         }
-                    )
+                    }
                 }
-            }
+            )
         }
     }
 }

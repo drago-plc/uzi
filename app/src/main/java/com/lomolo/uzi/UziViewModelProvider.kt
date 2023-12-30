@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import com.lomolo.uzi.compose.signin.SignInViewModel
+import com.lomolo.uzi.compose.signin.SessionViewModel
 
 /*
  * Uzi app view model factory provider
@@ -18,7 +18,7 @@ object UziViewModelProvider {
             mainViewModel
         }
         initializer {
-            SignInViewModel(
+            SessionViewModel(
                 uziApplication().container.sessionRepository,
                 mainViewModel
             )
