@@ -24,7 +24,6 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.lomolo.uzi.R
-import com.lomolo.uzi.compose.home.HomeScreenDestination
 import com.lomolo.uzi.compose.navigation.Navigation
 
 object UserNameDestination: Navigation {
@@ -41,6 +40,7 @@ fun Name(
     val signInUiState by sessionViewModel.signInInput.collectAsState()
     val isFirstnameValid = sessionViewModel.isNameValid(signInUiState.firstName)
     val isLastnameValid = sessionViewModel.isNameValid(signInUiState.lastName)
+
     Column(
         modifier = modifier
             .fillMaxSize()
