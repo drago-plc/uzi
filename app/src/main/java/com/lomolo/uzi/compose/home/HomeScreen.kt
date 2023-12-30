@@ -30,6 +30,7 @@ import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.rememberCameraPositionState
+import com.lomolo.uzi.DeviceDetails
 import com.lomolo.uzi.DeviceDetailsUiState
 import com.lomolo.uzi.MainViewModel
 import com.lomolo.uzi.R
@@ -58,80 +59,108 @@ fun HomeScreen(
                 modifier = Modifier.matchParentSize()
             )
             is DeviceDetailsUiState.Error -> {
-                Column(
-                    modifier = Modifier.align(Alignment.Center),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        text = stringResource(R.string.not_your_fault_err),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.error,
-                    )
-                    Button(
-                        onClick = { mainViewModel.getIpinfo() },
-                    ) {
-                       Text(
-                           text = stringResource(R.string.retry),
-                           style = MaterialTheme.typography.labelSmall
-                       )
-                    }
-                }
+               HomeErrorScreen(
+                   mainViewModel = mainViewModel,
+                   modifier = Modifier.align(Alignment.Center)
+               )
             }
             is DeviceDetailsUiState.Success -> {
-                val uiSettings by remember {
-                    mutableStateOf(MapUiSettings(zoomControlsEnabled = false))
-                }
-                val mapProperties by remember {
-                    mutableStateOf(MapProperties(mapType = MapType.TERRAIN))
-                }
-                val cP = CameraPosition(deviceDetails.gps, 17f, 45f, 0f)
-                val cameraPositionState = rememberCameraPositionState {
-                    position = cP
-                }
+               HomeSuccessScreen(
+                   modifier = Modifier.matchParentSize(),
+                   mainViewModel = mainViewModel,
+                   deviceDetails = deviceDetails,
+                   isAuthed = isAuthed,
+                   onGetStartedClick = onGetStartedClick
+               )
+            }
+        }
+    }
+}
 
-                GoogleMap(
-                    modifier = Modifier.matchParentSize(),
-                    properties = mapProperties,
-                    onMapLoaded = { mainViewModel.setMapLoaded(true) },
-                    uiSettings = uiSettings,
-                    cameraPositionState = cameraPositionState
-                )
-                AnimatedVisibility(
-                    visible = deviceDetails.mapLoaded,
-                    modifier = Modifier.matchParentSize(),
-                    exit = fadeOut(),
-                    enter = EnterTransition.None
+@Composable
+fun HomeSuccessScreen(
+    modifier: Modifier = Modifier,
+    mainViewModel: MainViewModel,
+    deviceDetails: DeviceDetails,
+    isAuthed: Boolean,
+    onGetStartedClick: () -> Unit
+) {
+    val uiSettings by remember {
+        mutableStateOf(MapUiSettings(zoomControlsEnabled = false))
+    }
+    val mapProperties by remember {
+        mutableStateOf(MapProperties(mapType = MapType.TERRAIN))
+    }
+    val cP = CameraPosition(deviceDetails.gps, 17f, 45f, 0f)
+    val cameraPositionState = rememberCameraPositionState {
+        position = cP
+    }
+
+    GoogleMap(
+        modifier = modifier,
+        properties = mapProperties,
+        onMapLoaded = { mainViewModel.setMapLoaded(true) },
+        uiSettings = uiSettings,
+        cameraPositionState = cameraPositionState
+    )
+    AnimatedVisibility(
+        visible = deviceDetails.mapLoaded,
+        modifier = modifier,
+        exit = fadeOut(),
+        enter = EnterTransition.None
+    ) {
+        Box(modifier = modifier) {
+            if (isAuthed) {
+                Box(
+                    modifier = Modifier
+                        .wrapContentHeight()
+                        .align(Alignment.TopCenter)
+                        .background(
+                            MaterialTheme.colorScheme.background,
+                        )
                 ) {
-                    Box(Modifier.matchParentSize()) {
-                        if (isAuthed) {
-                            Box(
-                                modifier = Modifier
-                                    .wrapContentHeight()
-                                    .align(Alignment.TopCenter)
-                                    .background(
-                                        MaterialTheme.colorScheme.background,
-                                    )
-                            ) {
-                                StartTrip()
-                            }
-                        }
-                        if (!isAuthed) {
-                            Box(
-                                modifier = Modifier
-                                    .padding(bottom = 28.dp, start = 8.dp, end = 8.dp)
-                                    .fillMaxWidth()
-                                    .align(Alignment.BottomCenter)
-                                    .wrapContentHeight()
-                            ) {
-                                GetStarted(
-                                    onGetStartedClick = onGetStartedClick
-                                )
-                            }
-                        }
-                    }
+                    StartTrip()
                 }
             }
+            if (!isAuthed) {
+                Box(
+                    modifier = Modifier
+                        .padding(bottom = 28.dp, start = 8.dp, end = 8.dp)
+                        .fillMaxWidth()
+                        .align(Alignment.BottomCenter)
+                        .wrapContentHeight()
+                ) {
+                    GetStarted(
+                        onGetStartedClick = onGetStartedClick
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun HomeErrorScreen(
+    modifier: Modifier = Modifier,
+    mainViewModel: MainViewModel
+) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = stringResource(R.string.not_your_fault_err),
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.error,
+        )
+        Button(
+            onClick = { mainViewModel.getIpinfo() },
+        ) {
+            Text(
+                text = stringResource(R.string.retry),
+                style = MaterialTheme.typography.labelSmall
+            )
         }
     }
 }
