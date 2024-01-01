@@ -76,7 +76,7 @@ class DefaultContainer(private val context: Context): AppContainer {
         retrofit.create(UziRestApiServiceInterface::class.java)
     }
 
-    override val sessionRepository: SessionRepository by lazy {
+    override val sessionRepository: SessionInterface by lazy {
         SessionRepository(
             sessionDao = UziStore.getStore(context).sessionDao(),
             uziRestApiService = uziRestApiService
