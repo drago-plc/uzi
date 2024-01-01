@@ -68,22 +68,13 @@ class MainViewModel(
 }
 
 data class DeviceDetails(
-    val gps: LatLng,
-    val country: String,
-    val countryFlag: String,
-    val countryPhoneCode: String,
-    val hasGps: Boolean,
-    val mapLoaded: Boolean
-) {
-    constructor(): this(
-        LatLng(0.0, 0.0),
-        "",
-        "",
-        "",
-        false,
-        false
-    )
-}
+    val gps: LatLng = LatLng(0.0, 0.0),
+    val country: String = "",
+    val countryFlag: String = "",
+    val countryPhoneCode: String = "",
+    val hasGps: Boolean = false,
+    val mapLoaded: Boolean = false
+)
 
 interface DeviceDetailsUiState {
     data object Loading: DeviceDetailsUiState
