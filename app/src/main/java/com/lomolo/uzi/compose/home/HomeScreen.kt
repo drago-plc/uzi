@@ -132,9 +132,8 @@ fun DefaultHomeScreen(
         mutableStateOf(MapProperties(mapType = MapType.TERRAIN))
     }
 
-    val cP = CameraPosition(deviceDetails.gps, 17f, 45f, 0f)
     val cameraPositionState = rememberCameraPositionState {
-        position = cP
+        position = CameraPosition.fromLatLngZoom(deviceDetails.gps, 16f)
     }
 
     GoogleMap(
