@@ -8,6 +8,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -26,7 +27,7 @@ fun UziNavHost(
     mainViewModel: MainViewModel = viewModel(factory = UziViewModelProvider.Factory),
     sessionViewModel: SessionViewModel = viewModel(factory = UziViewModelProvider.Factory),
 ) {
-    val sessionUiState by sessionViewModel.sessionUiState.collectAsState()
+    val session by sessionViewModel.sessionUiState.collectAsState()
 
     NavHost(
         modifier = modifier,
@@ -41,8 +42,23 @@ fun UziNavHost(
                 ) {
                     HomeScreen(
                         mainViewModel = mainViewModel,
-                        isAuthed = sessionUiState.token.isNotBlank(),
-                        onGetStartedClick = { navController.navigate(UserGraphDestination.route) }
+                        session = session,
+                        onGetStartedClick = { navController.navigate(UserGraphDestination.route) },
+                        onNavigateTo = {
+                            navController.navigate(it) {
+                                // Pop up to the start destination of the graph to
+                                // avoid building up a large stack of destinations
+                                // on the back stack as users select items
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                                // Avoid multiple copies of the same destination when
+                                // re-selecting the same item
+                                launchSingleTop = true
+                                // Restore state when re-selecting a previously selected item
+                                restoreState = true
+                            }
+                        }
                     )
                 }
             }

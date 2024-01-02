@@ -9,6 +9,7 @@ data class Session(
     val token: String = "",
     val courierStatus: CourierStatus = CourierStatus.OFFLINE,
     val isCourier: Boolean = false,
+    val phone: String = "",
     val onboarding: Boolean = false
 )
 

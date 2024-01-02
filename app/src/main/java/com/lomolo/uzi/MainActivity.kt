@@ -31,6 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.navigation.compose.rememberNavController
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -53,6 +54,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            val navController = rememberNavController()
             locationServices = LocationPermission
             fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
             var shouldShowPermissionRationale by remember { mutableStateOf(false) }
@@ -171,7 +173,8 @@ class MainActivity : ComponentActivity() {
                             }
                         )
                     }
-                    UziApplication()
+
+                    UziApplication(navController)
                 }
             }
         }

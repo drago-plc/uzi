@@ -1,6 +1,8 @@
 package com.lomolo.uzi.compose.signin
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,9 +23,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.lomolo.uzi.R
+import com.lomolo.uzi.compose.home.HomeScreenDestination
+import com.lomolo.uzi.compose.loader.Loader
 import com.lomolo.uzi.compose.navigation.Navigation
 
 object UserNameDestination: Navigation {
@@ -34,8 +39,8 @@ object UserNameDestination: Navigation {
 @Composable
 fun Name(
     modifier: Modifier = Modifier,
-    onNextSubmit: () -> Unit = {},
-    sessionViewModel: SessionViewModel = viewModel()
+    sessionViewModel: SessionViewModel = viewModel(),
+    onNavigateTo: (String) -> Unit = {}
 ) {
     val signInUiState by sessionViewModel.signInInput.collectAsState()
     val isFirstnameValid = sessionViewModel.isNameValid(signInUiState.firstName)
@@ -89,24 +94,66 @@ fun Name(
             keyboardActions = KeyboardActions(
                 onNext = {
                     if (isFirstnameValid &&
-                        isLastnameValid) onNextSubmit()
+                        isLastnameValid) sessionViewModel.onboardUser {
+                        onNavigateTo(HomeScreenDestination.route)
+                    }
                 }
             )
         )
         Spacer(modifier = Modifier.size(16.dp))
-        Button(
-            onClick = {
-                if (isFirstnameValid && isLastnameValid)
-                    onNextSubmit()
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(60.dp),
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center
         ) {
-            Text(
-                text = stringResource(R.string.proceed),
-                style = MaterialTheme.typography.labelMedium
-            )
+            when (val s = sessionViewModel.signInUiState) {
+                is SignInUiState.Success -> {
+                    Button(
+                        onClick = {
+                            if (isFirstnameValid && isLastnameValid)
+                                sessionViewModel.onboardUser {
+                                    onNavigateTo(HomeScreenDestination.route)
+                                }
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(60.dp),
+                    ) {
+                        Text(
+                            text = stringResource(R.string.proceed),
+                            style = MaterialTheme.typography.labelMedium
+                        )
+                    }
+                }
+                is SignInUiState.Loading -> {
+                    Loader()
+                }
+                is SignInUiState.Error -> {
+                    Column {
+                        Text(
+                            text = stringResource(R.string.not_your_fault_err),
+                            color = MaterialTheme.colorScheme.error,
+                            textAlign = TextAlign.Center,
+                            style = MaterialTheme.typography.labelSmall
+                        )
+                        Button(
+                            onClick = {
+                                if (isFirstnameValid && isLastnameValid)
+                                    sessionViewModel.onboardUser {
+                                        onNavigateTo(HomeScreenDestination.route)
+                                    }
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(60.dp),
+                        ) {
+                            Text(
+                                text = stringResource(R.string.retry),
+                                style = MaterialTheme.typography.labelMedium
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
 }

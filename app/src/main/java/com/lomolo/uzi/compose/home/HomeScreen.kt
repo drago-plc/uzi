@@ -3,7 +3,6 @@ package com.lomolo.uzi.compose.home
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,7 +36,8 @@ import com.lomolo.uzi.R
 import com.lomolo.uzi.compose.loader.Loader
 import com.lomolo.uzi.compose.navigation.Navigation
 import com.lomolo.uzi.compose.signin.GetStarted
-import com.lomolo.uzi.compose.trip.StartTrip
+import com.lomolo.uzi.compose.signin.UserNameDestination
+import com.lomolo.uzi.model.Session
 
 object HomeScreenDestination: Navigation {
     override val route = "home"
@@ -48,8 +48,9 @@ object HomeScreenDestination: Navigation {
 fun HomeScreen(
     modifier: Modifier = Modifier,
     mainViewModel: MainViewModel = viewModel(),
-    isAuthed: Boolean,
-    onGetStartedClick: () -> Unit = {}
+    session: Session,
+    onGetStartedClick: () -> Unit = {},
+    onNavigateTo: (String) -> Unit = {}
 ) {
     val deviceDetails by mainViewModel.deviceDetailsUiState.collectAsState()
 
@@ -59,19 +60,20 @@ fun HomeScreen(
                 modifier = Modifier.matchParentSize()
             )
             is DeviceDetailsUiState.Error -> {
-               HomeErrorScreen(
-                   mainViewModel = mainViewModel,
-                   modifier = Modifier.align(Alignment.Center)
-               )
+                HomeErrorScreen(
+                    mainViewModel = mainViewModel,
+                    modifier = Modifier.align(Alignment.Center)
+                )
             }
             is DeviceDetailsUiState.Success -> {
-               HomeSuccessScreen(
-                   modifier = Modifier.matchParentSize(),
-                   mainViewModel = mainViewModel,
-                   deviceDetails = deviceDetails,
-                   isAuthed = isAuthed,
-                   onGetStartedClick = onGetStartedClick
-               )
+                HomeSuccessScreen(
+                    modifier = Modifier.matchParentSize(),
+                    mainViewModel = mainViewModel,
+                    deviceDetails = deviceDetails,
+                    session = session,
+                    onGetStartedClick = onGetStartedClick,
+                    onNavigateTo = onNavigateTo
+                )
             }
         }
     }
@@ -82,15 +84,54 @@ fun HomeSuccessScreen(
     modifier: Modifier = Modifier,
     mainViewModel: MainViewModel,
     deviceDetails: DeviceDetails,
-    isAuthed: Boolean,
-    onGetStartedClick: () -> Unit
+    session: Session,
+    onGetStartedClick: () -> Unit,
+    onNavigateTo: (String) -> Unit = {}
+) {
+    val isAuthed = session.token.isNotBlank()
+    val isOnboarding = session.onboarding
+
+    when {
+        isAuthed && !isOnboarding -> {
+            DefaultHomeScreen(
+                modifier = modifier,
+                mainViewModel = mainViewModel,
+                deviceDetails = deviceDetails,
+                onGetStartedClick = onGetStartedClick,
+                isAuthed = isAuthed
+            )
+        }
+        isAuthed && isOnboarding -> {
+            onNavigateTo(UserNameDestination.route)
+        }
+        else -> {
+            DefaultHomeScreen(
+                modifier = modifier,
+                mainViewModel = mainViewModel,
+                deviceDetails = deviceDetails,
+                onGetStartedClick = onGetStartedClick,
+                isAuthed = isAuthed
+            )
+        }
+    }
+}
+
+@Composable
+fun DefaultHomeScreen(
+    modifier: Modifier = Modifier,
+    mainViewModel: MainViewModel,
+    deviceDetails: DeviceDetails,
+    onGetStartedClick: () -> Unit,
+    isAuthed: Boolean
 ) {
     val uiSettings by remember {
         mutableStateOf(MapUiSettings(zoomControlsEnabled = false))
     }
+
     val mapProperties by remember {
         mutableStateOf(MapProperties(mapType = MapType.TERRAIN))
     }
+
     val cP = CameraPosition(deviceDetails.gps, 17f, 45f, 0f)
     val cameraPositionState = rememberCameraPositionState {
         position = cP
@@ -110,18 +151,6 @@ fun HomeSuccessScreen(
         enter = EnterTransition.None
     ) {
         Box(modifier = modifier) {
-            if (isAuthed) {
-                Box(
-                    modifier = Modifier
-                        .wrapContentHeight()
-                        .align(Alignment.TopCenter)
-                        .background(
-                            MaterialTheme.colorScheme.background,
-                        )
-                ) {
-                    StartTrip()
-                }
-            }
             if (!isAuthed) {
                 Box(
                     modifier = Modifier

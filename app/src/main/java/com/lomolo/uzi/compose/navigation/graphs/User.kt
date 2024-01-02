@@ -36,17 +36,17 @@ fun NavGraphBuilder.user(
         route = UserGraphDestination.route
     ) {
         composable(route = UserNameDestination.route) {
-           NameScreen(
-               navController = navController,
-               sessionViewModel = sessionViewModel
-           )
+            NameScreen(
+                navController = navController,
+                sessionViewModel = sessionViewModel
+            )
         }
         composable(route = UserPhoneDestination.route) {
-           PhoneScreen(
-               navController = navController,
-               sessionViewModel = sessionViewModel,
-               mainViewModel = mainViewModel
-           )
+            PhoneScreen(
+                navController = navController,
+                sessionViewModel = sessionViewModel,
+                mainViewModel = mainViewModel
+            )
         }
     }
 }
@@ -65,10 +65,6 @@ fun NameScreen(
             TopBar(
                 title = UserNameDestination.title,
                 scrollBehavior = scrollBehavior,
-                canNavigateBack = true,
-                navigateBack = {
-                    navController.popBackStack()
-                }
             )
         }
     ) {innerPadding ->
@@ -78,8 +74,15 @@ fun NameScreen(
                 .padding(innerPadding)
         ) {
             Name(
-                onNextSubmit = { navController.navigate(UserPhoneDestination.route) },
-                sessionViewModel = sessionViewModel
+                sessionViewModel = sessionViewModel,
+                onNavigateTo = {
+                    navController.navigate(it) {
+                        popUpTo(it) {
+                            inclusive = true
+                            saveState = true
+                        }
+                    }
+                }
             )
         }
     }

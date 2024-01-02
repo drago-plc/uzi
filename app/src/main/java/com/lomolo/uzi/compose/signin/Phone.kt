@@ -135,7 +135,11 @@ fun Phone(
                             onClick = {
                                 if (isPhoneValid)
                                     sessionViewModel.signIn {
-                                        onNavigateTo(HomeScreenDestination.route)
+                                        if (sessionUiState.onboarding) {
+                                            onNavigateTo(UserNameDestination.route)
+                                        } else {
+                                            onNavigateTo(HomeScreenDestination.route)
+                                        }
                                     }
                             },
                             modifier = Modifier
