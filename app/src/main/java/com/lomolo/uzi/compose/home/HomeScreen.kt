@@ -20,10 +20,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
@@ -38,6 +40,7 @@ import com.lomolo.uzi.compose.navigation.Navigation
 import com.lomolo.uzi.compose.signin.GetStarted
 import com.lomolo.uzi.compose.signin.UserNameDestination
 import com.lomolo.uzi.model.Session
+import com.lomolo.uzi.permissions.LocationPermission
 
 object HomeScreenDestination: Navigation {
     override val route = "home"
@@ -92,15 +95,18 @@ fun HomeSuccessScreen(
     val isOnboarding = session.onboarding
 
     when {
-        isAuthed && !isOnboarding -> {
+        isAuthed && !isOnboarding && LocationPermission.checkSelfLocationPermission(LocalContext.current) && !deviceDetails.isDevelopment -> {
             DefaultHomeScreen(
                 modifier = modifier,
                 mainViewModel = mainViewModel,
                 deviceDetails = deviceDetails,
                 onGetStartedClick = onGetStartedClick,
+                gps = deviceDetails.deviceGps,
                 isAuthed = isAuthed
             )
         }
+        // TODO - redo location permission re-grant logic here
+        !LocationPermission.checkSelfLocationPermission(LocalContext.current) -> Loader()
         isAuthed && isOnboarding -> {
             onNavigateTo(UserNameDestination.route)
         }
@@ -108,6 +114,7 @@ fun HomeSuccessScreen(
             DefaultHomeScreen(
                 modifier = modifier,
                 mainViewModel = mainViewModel,
+                gps = deviceDetails.ipGps,
                 deviceDetails = deviceDetails,
                 onGetStartedClick = onGetStartedClick,
                 isAuthed = isAuthed
@@ -120,6 +127,7 @@ fun HomeSuccessScreen(
 fun DefaultHomeScreen(
     modifier: Modifier = Modifier,
     mainViewModel: MainViewModel,
+    gps: LatLng,
     deviceDetails: DeviceDetails,
     onGetStartedClick: () -> Unit,
     isAuthed: Boolean
@@ -133,7 +141,7 @@ fun DefaultHomeScreen(
     }
 
     val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(deviceDetails.gps, 16f)
+        position = CameraPosition.fromLatLngZoom(gps, 16f)
     }
 
     GoogleMap(

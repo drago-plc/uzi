@@ -24,7 +24,7 @@ class MainViewModel(
 
     fun setDeviceLocation(gps: LatLng) {
         _deviceDetails.update {
-            it.copy(gps = gps)
+            it.copy(deviceGps = gps)
         }
     }
 
@@ -37,7 +37,7 @@ class MainViewModel(
                 _deviceDetails.update {
                     deviceDetailsState = DeviceDetailsUiState.Success
                     it.copy(
-                        gps = LatLng(ipGps[0].toDouble(), ipGps[1].toDouble()),
+                        ipGps = LatLng(ipGps[0].toDouble(), ipGps[1].toDouble()),
                         country = response.country,
                         countryFlag = response.countryFlag,
                         countryPhoneCode = countryPhoneCode[response.country]!!
@@ -50,15 +50,9 @@ class MainViewModel(
         }
     }
 
-    fun setHasGps(b: Boolean) {
+    fun setMapLoaded(loaded: Boolean) {
         _deviceDetails.update {
-            it.copy(hasGps = b)
-        }
-    }
-
-    fun setMapLoaded(l: Boolean) {
-        _deviceDetails.update {
-            it.copy(mapLoaded = l)
+            it.copy(mapLoaded = loaded)
         }
     }
 
@@ -68,12 +62,13 @@ class MainViewModel(
 }
 
 data class DeviceDetails(
-    val gps: LatLng = LatLng(0.0, 0.0),
+    val deviceGps: LatLng = LatLng(0.0, 0.0),
+    val ipGps: LatLng = LatLng(0.0, 0.0),
     val country: String = "",
     val countryFlag: String = "",
     val countryPhoneCode: String = "",
-    val hasGps: Boolean = false,
-    val mapLoaded: Boolean = false
+    val mapLoaded: Boolean = false,
+    val isDevelopment: Boolean = true // TODO - figure how to use env variable locally and in release??
 )
 
 interface DeviceDetailsUiState {
