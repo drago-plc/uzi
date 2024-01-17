@@ -157,7 +157,9 @@ private fun DefaultHomeScreen(
                     )
                 }
             } else {
-                StartTrip()
+                StartTrip(
+                    Modifier.background(MaterialTheme.colorScheme.background)
+                )
             }
         }
     }

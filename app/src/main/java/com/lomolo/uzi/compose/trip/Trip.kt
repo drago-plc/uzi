@@ -25,7 +25,6 @@ fun StartTrip(
 ) {
     Column(
         modifier = modifier
-            .background(MaterialTheme.colorScheme.background)
             .fillMaxWidth()
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
