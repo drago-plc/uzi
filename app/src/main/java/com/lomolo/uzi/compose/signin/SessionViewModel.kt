@@ -106,9 +106,8 @@ class SessionViewModel(
             signInUiState = try {
                 sessionRepository.signIn(
                     SignIn(
-                        firstName = signInInput.value.firstName,
-                        lastName = signInInput.value.lastName,
-                        phone = parsePhoneNumber(signInInput.value.phone)
+                        phone = parsePhoneNumber(signInInput.value.phone),
+                        courier = signInInput.value.courier
                     )
                 )
                 SignInUiState.Success.also { cb() }
@@ -139,7 +138,7 @@ class SessionViewModel(
     }
 
     companion object {
-        private const val TIMEOUT_MILLIS = 5_000L
+        private const val TIMEOUT_MILLIS = 2_000L
     }
 }
 

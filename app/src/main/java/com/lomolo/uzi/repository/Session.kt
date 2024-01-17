@@ -9,7 +9,8 @@ import kotlinx.coroutines.flow.Flow
 interface SessionInterface {
     fun getSession(): Flow<List<Session>>
     suspend fun signIn(input: SignIn)
-    suspend fun onboardUser(sessionId: Int, input: SignIn)
+    suspend fun onboardUser(sessionId: String, input: SignIn)
+    suspend fun refreshSession(session: Session)
 }
 
 class SessionRepository(
@@ -19,35 +20,39 @@ class SessionRepository(
     override fun getSession() = sessionDao.getSession()
     override suspend fun signIn(input: SignIn) {
         val res = uziRestApiService.signIn(input)
-        sessionDao.createSession(
-            createLocalUserSession(res)
+        val newSession = Session(
+            token = res.token,
+            courierStatus = res.courierStatus,
+            phone = res.phone,
+            isCourier = res.isCourier,
+            onboarding = res.onboarding
         )
+        sessionDao.createSession(newSession)
     }
 
-    override suspend fun onboardUser(sessionId: Int, input: SignIn) {
+    override suspend fun refreshSession(session: Session) {
+        val res = uziRestApiService.signIn(SignIn(phone = session.phone))
+        val newSession = Session(
+            id = session.id,
+            token = res.token,
+            courierStatus = res.courierStatus,
+            phone = res.phone,
+            isCourier = res.isCourier,
+            onboarding = res.onboarding
+        )
+        sessionDao.updateSession(newSession)
+    }
+
+    override suspend fun onboardUser(sessionId: String, input: SignIn) {
         val res = uziRestApiService.onboardUser(input)
-        sessionDao.updateSession(
-            updateLocalUserSession(sessionId, res)
-        )
-    }
-
-    private fun createLocalUserSession(session: Session): Session {
-        return Session(
-            token = session.token,
-            courierStatus = session.courierStatus,
-            phone = session.phone,
-            isCourier = session.isCourier,
-            onboarding = session.onboarding
-        )
-    }
-    private fun updateLocalUserSession(sessionId: Int, session: Session): Session {
-        return Session(
+        val newSession = Session(
             id = sessionId,
-            token = session.token,
-            phone = session.phone,
-            courierStatus = session.courierStatus,
-            isCourier = session.isCourier,
-            onboarding = session.onboarding
+            token = res.token,
+            phone = res.phone,
+            courierStatus = res.courierStatus,
+            isCourier = res.isCourier,
+            onboarding = res.onboarding
         )
+        sessionDao.updateSession(newSession)
     }
 }

@@ -49,7 +49,6 @@ fun Phone(
     val signInUiState by sessionViewModel.signInInput.collectAsState()
     val isPhoneValid = sessionViewModel.isPhoneValid(signInUiState)
     val deviceUiState by mainViewModel.deviceDetailsUiState.collectAsState()
-    val sessionUiState by sessionViewModel.sessionUiState.collectAsState()
 
     Column(
         modifier = modifier
@@ -103,11 +102,7 @@ fun Phone(
                         onClick = {
                             if (isPhoneValid)
                                 sessionViewModel.signIn {
-                                    if (sessionUiState.onboarding) {
-                                        onNavigateTo(UserNameDestination.route)
-                                    } else {
-                                        onNavigateTo(HomeScreenDestination.route)
-                                    }
+                                    onNavigateTo(UserNameDestination.route)
                                 }
                         },
                         modifier = Modifier
@@ -135,11 +130,7 @@ fun Phone(
                             onClick = {
                                 if (isPhoneValid)
                                     sessionViewModel.signIn {
-                                        if (sessionUiState.onboarding) {
-                                            onNavigateTo(UserNameDestination.route)
-                                        } else {
-                                            onNavigateTo(HomeScreenDestination.route)
-                                        }
+                                        onNavigateTo(HomeScreenDestination.route)
                                     }
                             },
                             modifier = Modifier

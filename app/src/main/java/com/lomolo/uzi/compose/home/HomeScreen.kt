@@ -20,12 +20,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.android.gms.maps.model.CameraPosition
-import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
@@ -40,7 +38,6 @@ import com.lomolo.uzi.compose.navigation.Navigation
 import com.lomolo.uzi.compose.signin.GetStarted
 import com.lomolo.uzi.compose.signin.UserNameDestination
 import com.lomolo.uzi.model.Session
-import com.lomolo.uzi.permissions.LocationPermission
 
 object HomeScreenDestination: Navigation {
     override val route = "home"
@@ -51,9 +48,9 @@ object HomeScreenDestination: Navigation {
 fun HomeScreen(
     modifier: Modifier = Modifier,
     mainViewModel: MainViewModel = viewModel(),
-    session: Session,
     onGetStartedClick: () -> Unit = {},
-    onNavigateTo: (String) -> Unit = {}
+    onNavigateTo: (String) -> Unit = {},
+    session: Session
 ) {
     val deviceDetails by mainViewModel.deviceDetailsUiState.collectAsState()
 
@@ -73,9 +70,9 @@ fun HomeScreen(
                     modifier = Modifier.matchParentSize(),
                     mainViewModel = mainViewModel,
                     deviceDetails = deviceDetails,
-                    session = session,
                     onGetStartedClick = onGetStartedClick,
-                    onNavigateTo = onNavigateTo
+                    onNavigateTo = onNavigateTo,
+                    session = session
                 )
             }
         }
@@ -83,30 +80,18 @@ fun HomeScreen(
 }
 
 @Composable
-fun HomeSuccessScreen(
+private fun HomeSuccessScreen(
     modifier: Modifier = Modifier,
     mainViewModel: MainViewModel,
     deviceDetails: DeviceDetails,
-    session: Session,
     onGetStartedClick: () -> Unit,
-    onNavigateTo: (String) -> Unit = {}
+    session: Session,
+    onNavigateTo: (String) -> Unit = {},
 ) {
     val isAuthed = session.token.isNotBlank()
     val isOnboarding = session.onboarding
 
     when {
-        isAuthed && !isOnboarding && LocationPermission.checkSelfLocationPermission(LocalContext.current) && !deviceDetails.isDevelopment -> {
-            DefaultHomeScreen(
-                modifier = modifier,
-                mainViewModel = mainViewModel,
-                deviceDetails = deviceDetails,
-                onGetStartedClick = onGetStartedClick,
-                gps = deviceDetails.deviceGps,
-                isAuthed = isAuthed
-            )
-        }
-        // TODO - redo location permission re-grant logic here
-        !LocationPermission.checkSelfLocationPermission(LocalContext.current) -> Loader()
         isAuthed && isOnboarding -> {
             onNavigateTo(UserNameDestination.route)
         }
@@ -114,7 +99,6 @@ fun HomeSuccessScreen(
             DefaultHomeScreen(
                 modifier = modifier,
                 mainViewModel = mainViewModel,
-                gps = deviceDetails.ipGps,
                 deviceDetails = deviceDetails,
                 onGetStartedClick = onGetStartedClick,
                 isAuthed = isAuthed
@@ -124,10 +108,9 @@ fun HomeSuccessScreen(
 }
 
 @Composable
-fun DefaultHomeScreen(
+private fun DefaultHomeScreen(
     modifier: Modifier = Modifier,
     mainViewModel: MainViewModel,
-    gps: LatLng,
     deviceDetails: DeviceDetails,
     onGetStartedClick: () -> Unit,
     isAuthed: Boolean
@@ -140,8 +123,9 @@ fun DefaultHomeScreen(
         mutableStateOf(MapProperties(mapType = MapType.TERRAIN))
     }
 
+    val cP = CameraPosition(deviceDetails.gps, 17f, 45f, 0f)
     val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(gps, 16f)
+        position = cP
     }
 
     GoogleMap(
@@ -195,7 +179,7 @@ fun HomeErrorScreen(
         ) {
             Text(
                 text = stringResource(R.string.retry),
-                style = MaterialTheme.typography.labelSmall
+                style = MaterialTheme.typography.labelMedium
             )
         }
     }

@@ -67,7 +67,7 @@ class DefaultContainer(private val context: Context): AppContainer {
         .build()
 
     private val retrofit = Retrofit.Builder()
-        .baseUrl("https://948d-102-217-127-1.ngrok-free.app")
+        .baseUrl("https://8480-102-217-127-1.ngrok-free.app")
         .addConverterFactory(MoshiConverterFactory.create(moshi))
         .client(okhttpClient)
         .build()
@@ -84,7 +84,7 @@ class DefaultContainer(private val context: Context): AppContainer {
     }
 
     override val apolloClient = ApolloClient.Builder()
-        .serverUrl("https://948d-102-217-127-1.ngrok-free.app/api")
+        .serverUrl("https://8480-102-217-127-1.ngrok-free.app/api")
         .addHttpInterceptor(
             AuthInterceptor(
                 UziStore.getStore(context).sessionDao()

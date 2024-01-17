@@ -5,12 +5,12 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "sessions")
 data class Session(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    @PrimaryKey val id: String = "",
     val token: String = "",
-    val courierStatus: CourierStatus = CourierStatus.OFFLINE,
+    val courierStatus: CourierStatus = CourierStatus.ONBOARDING,
     val isCourier: Boolean = false,
     val phone: String = "",
     val onboarding: Boolean = false
 )
 
-enum class CourierStatus{OFFLINE, ONLINE}
+enum class CourierStatus{OFFLINE, ONLINE, ONBOARDING}
