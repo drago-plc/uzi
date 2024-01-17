@@ -174,7 +174,7 @@ private fun DefaultHomeScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
-                        .height(48.dp)
+                        .height(56.dp)
                         .align(Alignment.BottomCenter),
                     shape = MaterialTheme.shapes.small,
                     onClick = { /*TODO*/ }
