@@ -3,6 +3,7 @@ package com.lomolo.uzi.compose.home
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,6 +38,7 @@ import com.lomolo.uzi.compose.loader.Loader
 import com.lomolo.uzi.compose.navigation.Navigation
 import com.lomolo.uzi.compose.signin.GetStarted
 import com.lomolo.uzi.compose.signin.UserNameDestination
+import com.lomolo.uzi.compose.trip.StartTrip
 import com.lomolo.uzi.model.Session
 
 object HomeScreenDestination: Navigation {
@@ -123,7 +125,7 @@ private fun DefaultHomeScreen(
         mutableStateOf(MapProperties(mapType = MapType.TERRAIN))
     }
 
-    val cP = CameraPosition(deviceDetails.gps, 17f, 45f, 0f)
+    val cP = CameraPosition(deviceDetails.gps, 17f, 0f, 0f)
     val cameraPositionState = rememberCameraPositionState {
         position = cP
     }
@@ -154,6 +156,8 @@ private fun DefaultHomeScreen(
                         onGetStartedClick = onGetStartedClick
                     )
                 }
+            } else {
+                StartTrip()
             }
         }
     }
