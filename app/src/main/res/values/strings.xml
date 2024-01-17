@@ -16,4 +16,7 @@
     <string name="sign_in">Sign In</string>
     <string name="start_trip">Start trip</string>
     <string name="enter_details">Enter details</string>
+    <string name="drop_location">Drop location</string>
+    <string name="enter_your_details">Enter your details</string>
+    <string name="enter_your_phone">Enter your phone</string>
 </resources>

@@ -8,6 +8,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
@@ -63,7 +64,7 @@ fun NameScreen(
     Scaffold(
         topBar = {
             TopBar(
-                title = UserNameDestination.title,
+                title = stringResource(UserNameDestination.title),
                 scrollBehavior = scrollBehavior,
             )
         }
@@ -101,7 +102,7 @@ fun PhoneScreen(
     Scaffold(
         topBar = {
             TopBar(
-                title = UserPhoneDestination.title,
+                title = stringResource(UserPhoneDestination.title),
                 scrollBehavior = scrollBehavior,
             )
         }

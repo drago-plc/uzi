@@ -36,7 +36,7 @@ import com.lomolo.uzi.compose.navigation.Navigation
 
 object UserPhoneDestination: Navigation {
     override val route = "signin/phone"
-    override val title = "Enter your phone"
+    override val title = R.string.enter_your_phone
 }
 
 @Composable

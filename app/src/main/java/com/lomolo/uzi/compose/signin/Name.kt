@@ -33,7 +33,7 @@ import com.lomolo.uzi.compose.navigation.Navigation
 
 object UserNameDestination: Navigation {
     override val route ="signin/name"
-    override val title = "Enter your details"
+    override val title = R.string.enter_your_details
 }
 
 @Composable

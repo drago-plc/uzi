@@ -17,6 +17,7 @@ import com.lomolo.uzi.UziViewModelProvider
 import com.lomolo.uzi.compose.home.HomeScreen
 import com.lomolo.uzi.compose.home.HomeScreenDestination
 import com.lomolo.uzi.compose.navigation.graphs.UserGraphDestination
+import com.lomolo.uzi.compose.navigation.graphs.trip
 import com.lomolo.uzi.compose.navigation.graphs.user
 import com.lomolo.uzi.compose.signin.SessionViewModel
 
@@ -44,6 +45,9 @@ fun UziNavHost(
                         mainViewModel = mainViewModel,
                         session = session,
                         onGetStartedClick = { navController.navigate(UserGraphDestination.route) },
+                        onNavigateToTrip = {
+                            navController.navigate(it)
+                        },
                         onNavigateTo = {
                             navController.navigate(it) {
                                 // Pop up to the start destination of the graph to
@@ -67,6 +71,9 @@ fun UziNavHost(
             navController = navController,
             sessionViewModel = sessionViewModel,
             mainViewModel = mainViewModel
+        )
+        trip(
+            navController = navController
         )
     }
 }

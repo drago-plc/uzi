@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.Button
@@ -38,6 +39,8 @@ import com.lomolo.uzi.compose.loader.Loader
 import com.lomolo.uzi.compose.navigation.Navigation
 import com.lomolo.uzi.compose.signin.GetStarted
 import com.lomolo.uzi.compose.signin.UserNameDestination
+import com.lomolo.uzi.compose.trip.SearchDropoffLocationScreenDestination
+import com.lomolo.uzi.compose.trip.SearchPickupLocationScreenDestination
 import com.lomolo.uzi.compose.trip.StartTrip
 import com.lomolo.uzi.model.Session
 
@@ -52,6 +55,7 @@ fun HomeScreen(
     mainViewModel: MainViewModel = viewModel(),
     onGetStartedClick: () -> Unit = {},
     onNavigateTo: (String) -> Unit = {},
+    onNavigateToTrip: (String) -> Unit = {},
     session: Session
 ) {
     val deviceDetails by mainViewModel.deviceDetailsUiState.collectAsState()
@@ -74,6 +78,7 @@ fun HomeScreen(
                     deviceDetails = deviceDetails,
                     onGetStartedClick = onGetStartedClick,
                     onNavigateTo = onNavigateTo,
+                    onNavigateToTrip = onNavigateToTrip,
                     session = session
                 )
             }
@@ -87,6 +92,7 @@ private fun HomeSuccessScreen(
     mainViewModel: MainViewModel,
     deviceDetails: DeviceDetails,
     onGetStartedClick: () -> Unit,
+    onNavigateToTrip: (String) -> Unit,
     session: Session,
     onNavigateTo: (String) -> Unit = {},
 ) {
@@ -103,6 +109,7 @@ private fun HomeSuccessScreen(
                 mainViewModel = mainViewModel,
                 deviceDetails = deviceDetails,
                 onGetStartedClick = onGetStartedClick,
+                onEnterTripClick = onNavigateToTrip,
                 isAuthed = isAuthed
             )
         }
@@ -115,6 +122,7 @@ private fun DefaultHomeScreen(
     mainViewModel: MainViewModel,
     deviceDetails: DeviceDetails,
     onGetStartedClick: () -> Unit,
+    onEnterTripClick: (String) -> Unit,
     isAuthed: Boolean
 ) {
     val uiSettings by remember {
@@ -158,8 +166,24 @@ private fun DefaultHomeScreen(
                 }
             } else {
                 StartTrip(
-                    Modifier.background(MaterialTheme.colorScheme.background)
+                    Modifier.background(MaterialTheme.colorScheme.background),
+                    onEnterPickupClick = { onEnterTripClick(SearchPickupLocationScreenDestination.route) },
+                    onEnterDropoffClick = { onEnterTripClick(SearchDropoffLocationScreenDestination.route) }
                 )
+                Button(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
+                        .height(48.dp)
+                        .align(Alignment.BottomCenter),
+                    shape = MaterialTheme.shapes.small,
+                    onClick = { /*TODO*/ }
+                ) {
+                   Text(
+                       stringResource(id = R.string.proceed),
+                       style = MaterialTheme.typography.labelMedium
+                   )
+                }
             }
         }
     }
