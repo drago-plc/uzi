@@ -120,7 +120,13 @@ fun PickupMap(
                         IconButton(
                             onClick = {
                                 scope.launch {
-                                    cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(deviceDetails.gps, 17f), 1000)
+                                    cameraPositionState.animate(
+                                        CameraUpdateFactory.newLatLngZoom(
+                                            deviceDetails.gps,
+                                            17f
+                                        ),
+                                        1000
+                                    )
                                 }
 
                             },
