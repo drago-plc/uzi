@@ -19,4 +19,5 @@
     <string name="drop_location">Drop location</string>
     <string name="enter_your_details">Enter your details</string>
     <string name="enter_your_phone">Enter your phone</string>
+    <string name="enter_location">Enter location</string>
 </resources>

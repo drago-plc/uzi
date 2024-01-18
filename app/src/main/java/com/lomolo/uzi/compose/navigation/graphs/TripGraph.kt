@@ -21,6 +21,7 @@ import com.lomolo.uzi.compose.trip.SearchDropoff
 import com.lomolo.uzi.compose.trip.SearchDropoffLocationScreenDestination
 import com.lomolo.uzi.compose.trip.SearchPickup
 import com.lomolo.uzi.compose.trip.SearchPickupLocationScreenDestination
+import com.lomolo.uzi.compose.trip.TripViewModel
 
 object TripGraphDestination: Navigation {
     override val route = "trip/graph"
@@ -29,7 +30,8 @@ object TripGraphDestination: Navigation {
 
 @OptIn(ExperimentalMaterial3Api::class)
 fun NavGraphBuilder.trip(
-    navController: NavHostController
+    navController: NavHostController,
+    tripViewModel: TripViewModel
 ) {
     navigation(
         startDestination = PickupMapScreenDestination.route,
@@ -76,7 +78,12 @@ fun NavGraphBuilder.trip(
             }
         }
         composable(SearchPickupLocationScreenDestination.route) {
-            SearchPickup()
+            SearchPickup(
+                onNavigateUp = {
+                    navController.popBackStack()
+                },
+                tripViewModel = tripViewModel
+            )
         }
         composable(SearchDropoffLocationScreenDestination.route) {
             SearchDropoff()

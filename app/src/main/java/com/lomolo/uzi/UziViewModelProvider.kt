@@ -5,6 +5,7 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.lomolo.uzi.compose.signin.SessionViewModel
+import com.lomolo.uzi.compose.trip.TripViewModel
 
 /*
  * Uzi app view model factory provider
@@ -22,6 +23,9 @@ object UziViewModelProvider {
                 uziApplication().container.sessionRepository,
                 mainViewModel
             )
+        }
+        initializer {
+            TripViewModel()
         }
     }
 }

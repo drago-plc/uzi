@@ -20,6 +20,7 @@ import com.lomolo.uzi.compose.navigation.graphs.UserGraphDestination
 import com.lomolo.uzi.compose.navigation.graphs.trip
 import com.lomolo.uzi.compose.navigation.graphs.user
 import com.lomolo.uzi.compose.signin.SessionViewModel
+import com.lomolo.uzi.compose.trip.TripViewModel
 
 @Composable
 fun UziNavHost(
@@ -27,6 +28,7 @@ fun UziNavHost(
     navController: NavHostController,
     mainViewModel: MainViewModel = viewModel(factory = UziViewModelProvider.Factory),
     sessionViewModel: SessionViewModel = viewModel(factory = UziViewModelProvider.Factory),
+    tripViewModel: TripViewModel = viewModel(factory = UziViewModelProvider.Factory)
 ) {
     val session by sessionViewModel.sessionUiState.collectAsState()
 
@@ -73,7 +75,8 @@ fun UziNavHost(
             mainViewModel = mainViewModel
         )
         trip(
-            navController = navController
+            navController = navController,
+            tripViewModel = tripViewModel
         )
     }
 }
