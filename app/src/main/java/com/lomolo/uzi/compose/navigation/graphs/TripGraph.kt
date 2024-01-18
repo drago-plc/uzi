@@ -11,7 +11,10 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import com.lomolo.uzi.DeviceDetails
+import com.lomolo.uzi.MainViewModel
 import com.lomolo.uzi.compose.TopBar
+import com.lomolo.uzi.compose.home.HomeScreenDestination
 import com.lomolo.uzi.compose.navigation.Navigation
 import com.lomolo.uzi.compose.trip.DropoffMap
 import com.lomolo.uzi.compose.trip.DropoffMapScreenDestination
@@ -31,31 +34,29 @@ object TripGraphDestination: Navigation {
 @OptIn(ExperimentalMaterial3Api::class)
 fun NavGraphBuilder.trip(
     navController: NavHostController,
-    tripViewModel: TripViewModel
+    tripViewModel: TripViewModel,
+    mainViewModel: MainViewModel,
 ) {
     navigation(
         startDestination = PickupMapScreenDestination.route,
         route = TripGraphDestination.route
     ) {
         composable(PickupMapScreenDestination.route) {
-            Scaffold(
-                topBar = {
-                    TopBar(
-                        title = stringResource(PickupMapScreenDestination.title),
-                        canNavigateBack = true,
-                        navigateBack = {
-                            navController.popBackStack()
+            PickupMap(
+                mainViewModel = mainViewModel,
+                tripViewModel = tripViewModel,
+                onNavigateBackToTrip = {
+                    navController.navigate(HomeScreenDestination.route) {
+                        popUpTo(HomeScreenDestination.route) {
+                            saveState = true
                         }
-                    )
+                        launchSingleTop = true
+                    }
+                },
+                onNavigateUp = {
+                    navController.popBackStack()
                 }
-            ) { innerPadding ->
-                Surface(
-                    Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding)) {
-                    PickupMap()
-                }
-            }
+            )
         }
         composable(DropoffMapScreenDestination.route) {
             Scaffold(
@@ -82,7 +83,10 @@ fun NavGraphBuilder.trip(
                 onNavigateUp = {
                     navController.popBackStack()
                 },
-                tripViewModel = tripViewModel
+                tripViewModel = tripViewModel,
+                onPickupMapClick = {
+                    navController.navigate(PickupMapScreenDestination.route)
+                }
             )
         }
         composable(SearchDropoffLocationScreenDestination.route) {

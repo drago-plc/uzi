@@ -11,7 +11,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.twotone.ArrowBack
-import androidx.compose.material.icons.twotone.LocationOn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -28,6 +27,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.isTraversalGroup
 import androidx.compose.ui.semantics.semantics
@@ -42,25 +42,27 @@ object SearchPickupLocationScreenDestination: Navigation {
     override val title = null
 }
 
-private data class place(
+private data class Place(
     val name: String
 )
-private val plcs = listOf<place>(
-    place("Vihiga"),
-    place("Ngong"),
-    place("Kakamega"),
-    place("Kona Baridi")
+private val plcs = listOf(
+    Place("Vihiga"),
+    Place("Ngong"),
+    Place("Kakamega"),
+    Place("Kona Baridi")
 )
 
 @Composable
 fun SearchPickup(
     modifier: Modifier = Modifier,
     onNavigateUp: () -> Unit = {},
-    tripViewModel: TripViewModel
+    tripViewModel: TripViewModel,
+    onPickupMapClick: () -> Unit
 ) {
     Scaffold(
         topBar = {
             TopBar(
+                onPickupMapClick = onPickupMapClick,
                 onNavigateUp = onNavigateUp,
                 tripViewModel = tripViewModel
             )
@@ -79,7 +81,8 @@ fun SearchPickup(
 private fun TopBar(
     modifier: Modifier = Modifier,
     onNavigateUp: () -> Unit = {},
-    tripViewModel: TripViewModel
+    tripViewModel: TripViewModel,
+    onPickupMapClick: () -> Unit
 ) {
     var active by rememberSaveable {
         mutableStateOf(false)
@@ -116,11 +119,16 @@ private fun TopBar(
             },
             trailingIcon = {
                 if (locationLoading) Loader()
-                else  Icon(
-                    Icons.TwoTone.LocationOn,
-                    modifier = Modifier.size(32.dp),
-                    contentDescription = null
-                )
+                else  IconButton(
+                    onClick = { onPickupMapClick() }
+                ) {
+                    Icon(
+                        painterResource(id = R.drawable.icons8_map_marker_100),
+                        modifier = Modifier
+                            .size(28.dp),
+                        contentDescription = null
+                    )
+                }
             },
             modifier = Modifier
                 .background(MaterialTheme.colorScheme.background)

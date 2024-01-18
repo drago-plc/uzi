@@ -31,6 +31,7 @@ fun UziNavHost(
     tripViewModel: TripViewModel = viewModel(factory = UziViewModelProvider.Factory)
 ) {
     val session by sessionViewModel.sessionUiState.collectAsState()
+    val deviceDetails by mainViewModel.deviceDetailsUiState.collectAsState()
 
     NavHost(
         modifier = modifier,
@@ -46,6 +47,7 @@ fun UziNavHost(
                     HomeScreen(
                         mainViewModel = mainViewModel,
                         session = session,
+                        deviceDetails = deviceDetails,
                         onGetStartedClick = { navController.navigate(UserGraphDestination.route) },
                         onNavigateToTrip = {
                             navController.navigate(it)
@@ -76,7 +78,8 @@ fun UziNavHost(
         )
         trip(
             navController = navController,
-            tripViewModel = tripViewModel
+            tripViewModel = tripViewModel,
+            mainViewModel = mainViewModel
         )
     }
 }

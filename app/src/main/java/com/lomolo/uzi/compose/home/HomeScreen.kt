@@ -16,7 +16,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -53,13 +52,12 @@ object HomeScreenDestination: Navigation {
 fun HomeScreen(
     modifier: Modifier = Modifier,
     mainViewModel: MainViewModel = viewModel(),
+    deviceDetails: DeviceDetails,
     onGetStartedClick: () -> Unit = {},
     onNavigateTo: (String) -> Unit = {},
     onNavigateToTrip: (String) -> Unit = {},
     session: Session
 ) {
-    val deviceDetails by mainViewModel.deviceDetailsUiState.collectAsState()
-
     Box(modifier.fillMaxSize()) {
         when(mainViewModel.deviceDetailsState) {
             is DeviceDetailsUiState.Loading -> Loader(
