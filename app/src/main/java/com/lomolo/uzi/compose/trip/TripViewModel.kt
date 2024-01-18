@@ -22,12 +22,6 @@ class TripViewModel: ViewModel() {
             it.copy(pickup = pickup)
         }
     }
-
-    fun setDropoff(dropoff: LatLng) {
-        _trip.update {
-            it.copy(dropoff = dropoff)
-        }
-    }
 }
 
 interface LocationPredicateState {
