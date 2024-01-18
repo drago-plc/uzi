@@ -3,18 +3,14 @@ package com.lomolo.uzi.compose.trip
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.twotone.ArrowBack
-import androidx.compose.material.icons.twotone.ArrowBack
 import androidx.compose.material.icons.twotone.LocationOn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -37,7 +33,6 @@ import androidx.compose.ui.semantics.isTraversalGroup
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.lomolo.uzi.R
 import com.lomolo.uzi.compose.loader.Loader
 import com.lomolo.uzi.compose.navigation.Navigation
@@ -102,51 +97,48 @@ private fun TopBar(
         .fillMaxSize()
         .semantics { isTraversalGroup = true }
     ) {
-        Row(
+        SearchBar(
+            query = "",
+            onQueryChange = {},
+            onSearch = {},
+            active = active,
+            onActiveChange = { active = it },
+            placeholder = {
+                Text(stringResource(R.string.enter_location))
+            },
+            leadingIcon = {
+                IconButton(onClick = onNavigateUp) {
+                    Icon(
+                        Icons.AutoMirrored.TwoTone.ArrowBack,
+                        contentDescription = null
+                    )
+                }
+            },
+            trailingIcon = {
+                if (locationLoading) Loader()
+                else  Icon(
+                    Icons.TwoTone.LocationOn,
+                    modifier = Modifier.size(32.dp),
+                    contentDescription = null
+                )
+            },
             modifier = Modifier
-                .align(Alignment.TopCenter),
-            verticalAlignment = Alignment.CenterVertically
+                .background(MaterialTheme.colorScheme.background)
+                .align(Alignment.TopCenter)
+                .semantics { traversalIndex = -1f }
         ) {
-            SearchBar(
-                query = "",
-                onQueryChange = {},
-                onSearch = {},
-                active = active,
-                onActiveChange = { active = it },
-                placeholder = {
-                    Text(stringResource(R.string.enter_location))
-                },
-                leadingIcon = {
-                    IconButton(onClick = onNavigateUp) {
-                        Icon(
-                            Icons.AutoMirrored.TwoTone.ArrowBack,
-                            contentDescription = null
-                        )
-                    }
-                },
-                trailingIcon = { if (locationLoading) Loader() },
-                modifier = Modifier
-                    .background(MaterialTheme.colorScheme.background)
-                    .semantics { traversalIndex = -1f }
-            ) {
-                LazyColumn {
-                    items(plcs) {
-                        ListItem(
-                            headlineContent = {
-                                Text(it.name)
-                            },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable {}
-                        )
-                    }
+            LazyColumn {
+                items(plcs) {
+                    ListItem(
+                        headlineContent = {
+                            Text(it.name)
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {}
+                    )
                 }
             }
-            Icon(
-                Icons.TwoTone.LocationOn,
-                modifier = Modifier.size(40.dp),
-                contentDescription = null
-            )
         }
     }
 }
