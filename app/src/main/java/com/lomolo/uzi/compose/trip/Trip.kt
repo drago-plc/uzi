@@ -57,7 +57,7 @@ fun StartTrip(
             placeholder = {
                 Text(
                     stringResource(R.string.pickup_location),
-                    style = MaterialTheme.typography.labelMedium
+                    style = MaterialTheme.typography.labelSmall
                 )
             },
             onValueChange = {},
@@ -89,7 +89,7 @@ fun StartTrip(
             placeholder = {
                 Text(
                     stringResource(R.string.drop_off_location),
-                    style = MaterialTheme.typography.labelMedium
+                    style = MaterialTheme.typography.labelSmall
                 )
             },
             onValueChange = {},
