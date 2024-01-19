@@ -36,6 +36,12 @@ input CourierUploadInput {
   uri: String!
 }
 
+type Geocode {
+  FormattedAddress: String!
+
+  Location: Gps!
+}
+
 type Gps {
   lat: Float!
 
@@ -55,11 +61,9 @@ type Mutation {
 type Place {
   id: String!
 
-  name: String!
+  mainText: String!
 
-  formattedAddress: String!
-
-  location: Gps!
+  secondaryText: String!
 }
 
 type Product {
@@ -83,7 +87,7 @@ type Query {
 
   searchPlace(textQuery: String!): [Place!]!
 
-  reverseGeocode(place: GpsInput!): Place
+  reverseGeocode(place: GpsInput!): Geocode
 }
 
 type Route {
