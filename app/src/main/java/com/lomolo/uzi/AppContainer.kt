@@ -6,6 +6,8 @@ import com.apollographql.apollo3.api.http.HttpRequest
 import com.apollographql.apollo3.api.http.HttpResponse
 import com.apollographql.apollo3.network.http.HttpInterceptor
 import com.apollographql.apollo3.network.http.HttpInterceptorChain
+import com.lomolo.uzi.network.UziGqlApiInterface
+import com.lomolo.uzi.network.UziGqlApiRepository
 import com.lomolo.uzi.network.UziRestApiServiceInterface
 import com.lomolo.uzi.repository.SessionInterface
 import com.lomolo.uzi.repository.SessionRepository
@@ -24,6 +26,7 @@ import java.util.concurrent.TimeUnit
 interface AppContainer {
     val uziRestApiService: UziRestApiServiceInterface
     val sessionRepository: SessionInterface
+    val uziGqlApiRepository: UziGqlApiInterface
     val apolloClient: ApolloClient
 }
 
@@ -102,4 +105,8 @@ class DefaultContainer(private val context: Context): AppContainer {
             )
         )
         .build()
+
+    override val uziGqlApiRepository: UziGqlApiInterface by lazy {
+        UziGqlApiRepository(apolloClient)
+    }
 }

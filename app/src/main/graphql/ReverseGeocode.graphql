@@ -1,0 +1,8 @@
+query ReverseGeocode($lat: Float! $lng: Float!) {
+    reverseGeocode(place: {
+        lat: $lat
+        lng: $lng
+    }) {
+        FormattedAddress
+    }
+}

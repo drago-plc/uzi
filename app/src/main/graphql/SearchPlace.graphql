@@ -1,0 +1,7 @@
+query SearchPlace($textQuery: String!) {
+    searchPlace(textQuery: $textQuery) {
+        id
+        mainText
+        secondaryText
+    }
+}
