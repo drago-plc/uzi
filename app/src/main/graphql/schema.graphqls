@@ -37,9 +37,11 @@ input CourierUploadInput {
 }
 
 type Geocode {
-  FormattedAddress: String!
+  placeId: String!
 
-  Location: Gps!
+  formattedAddress: String!
+
+  location: Gps!
 }
 
 type Gps {
