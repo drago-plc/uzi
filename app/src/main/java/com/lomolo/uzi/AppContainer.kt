@@ -28,7 +28,8 @@ interface AppContainer {
 }
 
 class AuthInterceptor(
-    private val sessionRepository: SessionDao
+    private val sessionDao: SessionDao,
+    private val sessionRepository: SessionInterface
 ): HttpInterceptor {
     private val mutex = Mutex()
 
@@ -36,20 +37,29 @@ class AuthInterceptor(
         request: HttpRequest,
         chain: HttpInterceptorChain
     ): HttpResponse {
-        val token = mutex.withLock {
-            sessionRepository
+        var session = mutex.withLock {
+            sessionDao
                 .getSession()
                 .firstOrNull()
         }
 
-        return if (token!!.isNotEmpty()) {
+        val response = chain.proceed(
+            request.newBuilder().addHeader("Authorization", "Bearer ${session!!.first().token}").build()
+        )
+
+        return if (response.statusCode == 401) {
+            session = mutex.withLock {
+                sessionRepository.refreshSession(session!!.first())
+                sessionDao
+                    .getSession()
+                    .firstOrNull()
+            }
+
             chain.proceed(
-                request.newBuilder().addHeader("Authorization", "Bearer ${token.first().token}").build()
+                request.newBuilder().addHeader("Authorization", "Bearer ${session!!.first().token}").build()
             )
         } else {
-            chain.proceed(
-                request.newBuilder().build()
-            )
+            return response
         }
     }
 }
@@ -87,7 +97,8 @@ class DefaultContainer(private val context: Context): AppContainer {
         .serverUrl("https://8480-102-217-127-1.ngrok-free.app/api")
         .addHttpInterceptor(
             AuthInterceptor(
-                UziStore.getStore(context).sessionDao()
+                UziStore.getStore(context).sessionDao(),
+                sessionRepository
             )
         )
         .build()
