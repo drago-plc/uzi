@@ -21,6 +21,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,6 +35,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
+import com.google.maps.android.compose.CameraMoveStartedReason
+import com.google.maps.android.compose.DragState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
@@ -73,8 +76,26 @@ fun PickupMap(
     }
     val scope = rememberCoroutineScope()
 
-    if (cameraPositionState.isMoving) {
-        tripViewModel.setPickup(cameraPositionState.position.target)
+    LaunchedEffect((cameraPositionState.isMoving && cameraPositionState.cameraMoveStartedReason == CameraMoveStartedReason.GESTURE)) {
+        if (cameraPositionState.isMoving && cameraPositionState.cameraMoveStartedReason == CameraMoveStartedReason.GESTURE) {
+            tripViewModel.startPickupMapDrag()
+        } else {
+            if (tripViewModel.pickupMapDragState == DragState.DRAG) {
+                tripViewModel.reverseGeocode(cameraPositionState.position.target) {
+                    tripViewModel.stopPickupMapDrag()
+                    tripViewModel.resetPickupMapDrag()
+                }
+                when (val s = tripViewModel.reverseGeocodeState) {
+                    is LocationGeocodeState.Success -> {
+                        tripViewModel.setPickup(s.geocode!!.placeId)
+                    }
+
+                    is LocationGeocodeState.Error -> {
+                        tripViewModel.setPickup("Unnamed location")
+                    }
+                }
+            }
+        }
     }
 
     Scaffold {

@@ -3,6 +3,7 @@ query ReverseGeocode($lat: Float! $lng: Float!) {
         lat: $lat
         lng: $lng
     }) {
-        FormattedAddress
+        placeId
+        formattedAddress
     }
 }
