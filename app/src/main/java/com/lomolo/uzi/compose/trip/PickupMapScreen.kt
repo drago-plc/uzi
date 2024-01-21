@@ -65,7 +65,6 @@ fun PickupMap(
     onNavigateBackToTrip: () -> Unit
 ) {
     val deviceDetails by mainViewModel.deviceDetailsUiState.collectAsState()
-    val tripUiState by tripViewModel.tripUiInput.collectAsState()
     val uiSettings by remember {
         mutableStateOf(MapUiSettings(zoomControlsEnabled = false))
     }
