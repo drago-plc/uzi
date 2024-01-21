@@ -11,7 +11,6 @@ import com.google.maps.android.compose.DragState
 import com.lomolo.uzi.ReverseGeocodeQuery
 import com.lomolo.uzi.SearchPlaceQuery
 import com.lomolo.uzi.network.UziGqlApiInterface
-import com.lomolo.uzi.type.Geocode
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
