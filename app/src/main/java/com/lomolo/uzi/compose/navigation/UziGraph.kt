@@ -46,6 +46,7 @@ fun UziNavHost(
                 ) {
                     HomeScreen(
                         mainViewModel = mainViewModel,
+                        tripViewModel = tripViewModel,
                         session = session,
                         deviceDetails = deviceDetails,
                         onGetStartedClick = { navController.navigate(UserGraphDestination.route) },

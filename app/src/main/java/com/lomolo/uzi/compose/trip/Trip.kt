@@ -27,8 +27,22 @@ import com.lomolo.uzi.R
 fun StartTrip(
     modifier: Modifier = Modifier,
     onEnterPickupClick: () -> Unit = {},
-    onEnterDropoffClick: () -> Unit = {}
+    onEnterDropoffClick: () -> Unit = {},
+    tripViewModel: TripViewModel
 ) {
+    val pickupValue = when(val s = tripViewModel.reverseGeocodeState) {
+        LocationGeocodeState.Loading -> {
+            "Loading..."
+        }
+        is LocationGeocodeState.Error -> {
+            "Unnamed street"
+        }
+        is LocationGeocodeState.Success -> {
+            s.geocode?.formattedAddress ?: stringResource(R.string.pickup_location)
+        }
+        else -> {stringResource(R.string.pickup_location)}
+    }
+
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -56,8 +70,9 @@ fun StartTrip(
             },
             placeholder = {
                 Text(
-                    stringResource(R.string.pickup_location),
-                    style = MaterialTheme.typography.labelSmall
+                    pickupValue,
+                    style = MaterialTheme.typography.labelSmall,
+                    maxLines = 1
                 )
             },
             onValueChange = {},
@@ -89,7 +104,8 @@ fun StartTrip(
             placeholder = {
                 Text(
                     stringResource(R.string.drop_off_location),
-                    style = MaterialTheme.typography.labelSmall
+                    style = MaterialTheme.typography.labelSmall,
+                    maxLines = 1
                 )
             },
             onValueChange = {},

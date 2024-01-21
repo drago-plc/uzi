@@ -41,6 +41,7 @@ import com.lomolo.uzi.compose.signin.UserNameDestination
 import com.lomolo.uzi.compose.trip.SearchDropoffLocationScreenDestination
 import com.lomolo.uzi.compose.trip.SearchPickupLocationScreenDestination
 import com.lomolo.uzi.compose.trip.StartTrip
+import com.lomolo.uzi.compose.trip.TripViewModel
 import com.lomolo.uzi.model.Session
 
 object HomeScreenDestination: Navigation {
@@ -52,6 +53,7 @@ object HomeScreenDestination: Navigation {
 fun HomeScreen(
     modifier: Modifier = Modifier,
     mainViewModel: MainViewModel = viewModel(),
+    tripViewModel: TripViewModel,
     deviceDetails: DeviceDetails,
     onGetStartedClick: () -> Unit = {},
     onNavigateTo: (String) -> Unit = {},
@@ -73,6 +75,7 @@ fun HomeScreen(
                 HomeSuccessScreen(
                     modifier = Modifier.matchParentSize(),
                     mainViewModel = mainViewModel,
+                    tripViewModel = tripViewModel,
                     deviceDetails = deviceDetails,
                     onGetStartedClick = onGetStartedClick,
                     onNavigateTo = onNavigateTo,
@@ -88,6 +91,7 @@ fun HomeScreen(
 private fun HomeSuccessScreen(
     modifier: Modifier = Modifier,
     mainViewModel: MainViewModel,
+    tripViewModel: TripViewModel,
     deviceDetails: DeviceDetails,
     onGetStartedClick: () -> Unit,
     onNavigateToTrip: (String) -> Unit,
@@ -105,6 +109,7 @@ private fun HomeSuccessScreen(
             DefaultHomeScreen(
                 modifier = modifier,
                 mainViewModel = mainViewModel,
+                tripViewModel = tripViewModel,
                 deviceDetails = deviceDetails,
                 onGetStartedClick = onGetStartedClick,
                 onEnterTripClick = onNavigateToTrip,
@@ -118,6 +123,7 @@ private fun HomeSuccessScreen(
 private fun DefaultHomeScreen(
     modifier: Modifier = Modifier,
     mainViewModel: MainViewModel,
+    tripViewModel: TripViewModel,
     deviceDetails: DeviceDetails,
     onGetStartedClick: () -> Unit,
     onEnterTripClick: (String) -> Unit,
@@ -166,7 +172,8 @@ private fun DefaultHomeScreen(
                 StartTrip(
                     Modifier.background(MaterialTheme.colorScheme.background),
                     onEnterPickupClick = { onEnterTripClick(SearchPickupLocationScreenDestination.route) },
-                    onEnterDropoffClick = { onEnterTripClick(SearchDropoffLocationScreenDestination.route) }
+                    onEnterDropoffClick = { onEnterTripClick(SearchDropoffLocationScreenDestination.route) },
+                    tripViewModel = tripViewModel
                 )
                 Button(
                     modifier = Modifier
