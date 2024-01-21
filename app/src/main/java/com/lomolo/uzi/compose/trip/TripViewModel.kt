@@ -11,6 +11,7 @@ import com.google.maps.android.compose.DragState
 import com.lomolo.uzi.ReverseGeocodeQuery
 import com.lomolo.uzi.SearchPlaceQuery
 import com.lomolo.uzi.network.UziGqlApiInterface
+import com.lomolo.uzi.type.Geocode
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -47,7 +48,7 @@ class TripViewModel(
         pickupMapDragState = DragState.START
     }
 
-    fun setPickup(pickup: String) {
+    fun setPickup(pickup: ReverseGeocodeQuery.ReverseGeocode) {
         _trip.update {
             it.copy(pickup = pickup)
         }
@@ -66,12 +67,12 @@ class TripViewModel(
         }
     }
 
-    fun reverseGeocode(cords: LatLng, cb: (String) -> Unit = {}) {
+    fun reverseGeocode(cords: LatLng, cb: (ReverseGeocodeQuery.ReverseGeocode) -> Unit = {}) {
         reverseGeocodeState = LocationGeocodeState.Loading
         viewModelScope.launch {
             reverseGeocodeState = try {
                 val res = uziGqlApiRepository.reverseGeocode(cords).dataOrThrow()
-                LocationGeocodeState.Success(res.reverseGeocode).also { cb(res.reverseGeocode!!.formattedAddress) }
+                LocationGeocodeState.Success(res.reverseGeocode).also { cb(res.reverseGeocode!!) }
             } catch(e: ApolloException) {
                 LocationGeocodeState.Error(e.message)
             }
@@ -92,6 +93,6 @@ interface LocationGeocodeState {
 }
 
 data class Trip(
-    val pickup: String = "",
-    val dropoff: String = ""
+    val pickup: ReverseGeocodeQuery.ReverseGeocode = ReverseGeocodeQuery.ReverseGeocode("", ""),
+    val dropoff: ReverseGeocodeQuery.ReverseGeocode = ReverseGeocodeQuery.ReverseGeocode("", "")
 )

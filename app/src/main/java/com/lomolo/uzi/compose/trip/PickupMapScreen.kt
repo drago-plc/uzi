@@ -104,7 +104,7 @@ fun PickupMap(
             "Unnamed street"
         }
         is LocationGeocodeState.Success -> {
-            s.geocode!!.formattedAddress
+            s.geocode?.formattedAddress
         }
         else -> {""}
     }
@@ -123,8 +123,8 @@ fun PickupMap(
             )
             if (isMapLoaded) {
                 LaunchedEffect(Unit) {
-                    tripViewModel.reverseGeocode(cameraPositionState.position.target) {
-                        tripViewModel.setPickup(it)
+                    tripViewModel.reverseGeocode(cameraPositionState.position.target) {res ->
+                        tripViewModel.setPickup(res)
                     }
                 }
 
@@ -160,7 +160,17 @@ fun PickupMap(
                                 ),
                             enabled = false,
                             singleLine = true,
-                            value = pickupValue,
+                            placeholder = {
+                                if (pickupValue != null) {
+                                    Text(
+                                        text = pickupValue,
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = MaterialTheme.colorScheme.primary,
+                                        maxLines = 1
+                                    )
+                                }
+                            },
+                            value = "",
                             onValueChange = {}
                         )
                     }
