@@ -87,7 +87,7 @@ type Query {
 
   getCourierDocuments: [Uploads!]!
 
-  searchPlace(textQuery: String!): [Place!]!
+  searchPlace(textQuery: String!): [Geocode!]!
 
   reverseGeocode(place: GpsInput!): Geocode
 }
