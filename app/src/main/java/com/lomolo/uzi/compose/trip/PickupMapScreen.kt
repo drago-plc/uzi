@@ -1,9 +1,13 @@
 package com.lomolo.uzi.compose.trip
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,6 +21,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -61,6 +66,7 @@ fun PickupMap(
     onNavigateBackToTrip: () -> Unit
 ) {
     val deviceDetails by mainViewModel.deviceDetailsUiState.collectAsState()
+    val tripUiState by tripViewModel.tripUiInput.collectAsState()
     val uiSettings by remember {
         mutableStateOf(MapUiSettings(zoomControlsEnabled = false))
     }
@@ -84,18 +90,23 @@ fun PickupMap(
                 tripViewModel.reverseGeocode(cameraPositionState.position.target) {
                     tripViewModel.stopPickupMapDrag()
                     tripViewModel.resetPickupMapDrag()
-                }
-                when (val s = tripViewModel.reverseGeocodeState) {
-                    is LocationGeocodeState.Success -> {
-                        tripViewModel.setPickup(s.geocode!!.placeId)
-                    }
-
-                    is LocationGeocodeState.Error -> {
-                        tripViewModel.setPickup("Unnamed location")
-                    }
+                    tripViewModel.setPickup(it)
                 }
             }
         }
+    }
+
+    val pickupValue = when(val s = tripViewModel.reverseGeocodeState) {
+        LocationGeocodeState.Loading -> {
+            "Loading..."
+        }
+        is LocationGeocodeState.Error -> {
+            "Unnamed street"
+        }
+        is LocationGeocodeState.Success -> {
+            s.geocode!!.formattedAddress
+        }
+        else -> {""}
     }
 
     Scaffold {
@@ -111,21 +122,46 @@ fun PickupMap(
                 cameraPositionState = cameraPositionState
             )
             if (isMapLoaded) {
+                LaunchedEffect(Unit) {
+                    tripViewModel.reverseGeocode(cameraPositionState.position.target) {
+                        tripViewModel.setPickup(it)
+                    }
+                }
+
                 Box(
                     Modifier.padding(8.dp)
                 ) {
-                    IconButton(
-                        onClick = { onNavigateUp() },
-                        modifier = Modifier
-                            .background(
-                                MaterialTheme.colorScheme.surfaceTint,
-                                CircleShape
-                            )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(
-                            Icons.AutoMirrored.TwoTone.ArrowBack,
-                            tint = MaterialTheme.colorScheme.background,
-                            contentDescription = null
+                        IconButton(
+                            onClick = { onNavigateUp() },
+                            modifier = Modifier
+                                .background(
+                                    MaterialTheme.colorScheme.surfaceTint,
+                                    CircleShape
+                                )
+                        ) {
+                            Icon(
+                                Icons.AutoMirrored.TwoTone.ArrowBack,
+                                tint = MaterialTheme.colorScheme.background,
+                                contentDescription = null
+                            )
+                        }
+                        Spacer(modifier = Modifier.size(16.dp))
+                        OutlinedTextField(
+                            shape = MaterialTheme.shapes.small,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(MaterialTheme.colorScheme.background)
+                                .border(
+                                    BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
+                                    MaterialTheme.shapes.small
+                                ),
+                            enabled = false,
+                            singleLine = true,
+                            value = pickupValue,
+                            onValueChange = {}
                         )
                     }
                     Image(

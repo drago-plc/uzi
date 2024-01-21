@@ -30,7 +30,7 @@ class TripViewModel(
         private set
 
     private var _trip = MutableStateFlow(Trip())
-    val trip: StateFlow<Trip> = _trip.asStateFlow()
+    val tripUiInput: StateFlow<Trip> = _trip.asStateFlow()
 
     var pickupMapDragState: DragState by mutableStateOf(DragState.START)
         private set
@@ -66,12 +66,12 @@ class TripViewModel(
         }
     }
 
-    fun reverseGeocode(cords: LatLng, cb: () -> Unit = {}) {
+    fun reverseGeocode(cords: LatLng, cb: (String) -> Unit = {}) {
         reverseGeocodeState = LocationGeocodeState.Loading
         viewModelScope.launch {
             reverseGeocodeState = try {
                 val res = uziGqlApiRepository.reverseGeocode(cords).dataOrThrow()
-                LocationGeocodeState.Success(res.reverseGeocode).also { cb() }
+                LocationGeocodeState.Success(res.reverseGeocode).also { cb(res.reverseGeocode!!.formattedAddress) }
             } catch(e: ApolloException) {
                 LocationGeocodeState.Error(e.message)
             }
