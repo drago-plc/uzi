@@ -22,6 +22,7 @@ import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -64,7 +65,9 @@ fun SearchPickup(
             modifier
                 .fillMaxSize()
                 .padding(it)
-        ) {}
+        ) {
+            LaunchedEffect(Unit) { tripViewModel.updateSearchQuery("")}
+        }
     }
 }
 

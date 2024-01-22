@@ -126,9 +126,7 @@ fun PickupMap(
             )
             if (isMapLoaded) {
                 LaunchedEffect(Unit) {
-                    tripViewModel.reverseGeocode(cameraPositionState.position.target) {res ->
-                        tripViewModel.setPickup(res)
-                    }
+                    tripViewModel.reverseGeocode(cameraPositionState.position.target)
                 }
 
                 Box(
