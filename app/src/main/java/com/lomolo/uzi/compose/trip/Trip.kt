@@ -14,6 +14,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -30,6 +32,7 @@ fun StartTrip(
     onEnterDropoffClick: () -> Unit = {},
     tripViewModel: TripViewModel
 ) {
+    val tripUiState by tripViewModel.tripUiInput.collectAsState()
     val pickupValue = when(val s = tripViewModel.reverseGeocodeState) {
         LocationGeocodeState.Loading -> {
             "Loading..."
@@ -69,11 +72,19 @@ fun StartTrip(
                 )
             },
             placeholder = {
-                Text(
-                    pickupValue,
-                    style = MaterialTheme.typography.labelSmall,
-                    maxLines = 1
-                )
+                if (tripUiState.pickup.formattedAddress.isEmpty()) {
+                    Text(
+                        pickupValue,
+                        style = MaterialTheme.typography.labelSmall,
+                        maxLines = 1
+                    )
+                } else {
+                    Text(
+                        tripUiState.pickup.formattedAddress,
+                        style = MaterialTheme.typography.labelSmall,
+                        maxLines = 1
+                    )
+                }
             },
             onValueChange = {},
             singleLine = true,

@@ -58,12 +58,10 @@ class TripViewModel(
 
     fun updateSearchQuery(query: String) {
         searchQuery = query
-        if (query.isNotBlank() && query.length > 2) searchPlace(query)
     }
 
-    private fun searchPlace(query: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            delay(2000L)
+    fun searchPlace(query: String) {
+        viewModelScope.launch {
             searchingLocationState = LocationPredicateState.Loading
             searchingLocationState = try {
                 val res = uziGqlApiRepository.searchPlace(query).dataOrThrow()

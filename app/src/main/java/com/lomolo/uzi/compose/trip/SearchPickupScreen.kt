@@ -35,6 +35,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.unit.dp
 import com.lomolo.uzi.R
+import com.lomolo.uzi.ReverseGeocodeQuery
 import com.lomolo.uzi.compose.loader.Loader
 import com.lomolo.uzi.compose.navigation.Navigation
 
@@ -101,7 +102,7 @@ private fun TopBar(
         SearchBar(
             query = tripViewModel.searchQuery,
             onQueryChange = { tripViewModel.updateSearchQuery(it) },
-            onSearch = {},
+            onSearch = { tripViewModel.searchPlace(tripViewModel.searchQuery) },
             active = true,
             onActiveChange = { active = it },
             placeholder = {
@@ -142,6 +143,11 @@ private fun TopBar(
                                 contentDescription = null
                             )
                         },
+                        supportingContent = {
+                            Text(
+                                it.secondaryText
+                            )
+                        },
                         headlineContent = {
                             Text(
                                 it.mainText
@@ -149,7 +155,16 @@ private fun TopBar(
                         },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable {}
+                            .clickable {
+                                tripViewModel.updateSearchQuery(it.mainText)
+                                tripViewModel.setPickup(
+                                    ReverseGeocodeQuery.ReverseGeocode(
+                                        it.id,
+                                        formattedAddress = it.mainText,
+                                        ReverseGeocodeQuery.Location(0.0, 0.0)
+                                    )
+                                )
+                            }
                     )
                 }
             }
