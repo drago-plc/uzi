@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.twotone.ArrowBack
 import androidx.compose.material.icons.twotone.LocationOn
+import androidx.compose.material.icons.twotone.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -87,12 +88,12 @@ internal fun SearchTopBar(
             trailingIcon = {
                 if (locationLoading) Loader()
                 else  IconButton(
-                    onClick = { onPickupMapClick() }
+                    onClick = { tripViewModel.searchPlace(tripViewModel.searchQuery) }
                 ) {
                     Icon(
-                        painterResource(id = R.drawable.icons8_map_marker_100),
+                        Icons.TwoTone.Search,
                         modifier = Modifier
-                            .size(28.dp),
+                            .size(24.dp),
                         contentDescription = null
                     )
                 }
@@ -125,12 +126,33 @@ internal fun SearchTopBar(
                             .fillMaxWidth()
                             .clickable {
                                 tripViewModel.updateSearchQuery(it.mainText)
-                                onConfirmLocation(ReverseGeocodeQuery.ReverseGeocode(
-                                    placeId = it.id,
-                                    formattedAddress = it.mainText,
-                                    location = ReverseGeocodeQuery.Location(0.0, 0.0)
-                                ))
+                                onConfirmLocation(
+                                    ReverseGeocodeQuery.ReverseGeocode(
+                                        placeId = it.id,
+                                        formattedAddress = it.mainText,
+                                        location = ReverseGeocodeQuery.Location(0.0, 0.0)
+                                    )
+                                )
                             }
+                    )
+                }
+                item {
+                    ListItem(
+                        headlineContent = {
+                            Text(
+                                "Search map"
+                            )
+                        },
+                        leadingContent = {
+                            Icon(
+                                painterResource(id = R.drawable.icons8_pin_100),
+                                modifier = Modifier
+                                    .size(20.dp),
+                                contentDescription = null
+                            )
+                        },
+                        modifier = Modifier
+                            .clickable { onPickupMapClick() }
                     )
                 }
             }

@@ -66,13 +66,15 @@ class TripViewModel(
     }
 
     fun searchPlace(query: String) {
-        searchingLocationState = LocationPredicateState.Loading
-        viewModelScope.launch {
-            searchingLocationState = try {
-                val res = uziGqlApiRepository.searchPlace(query).dataOrThrow()
-                LocationPredicateState.Success(res.searchPlace)
-            } catch(e: ApolloException) {
-                LocationPredicateState.Error(e.message)
+        if (query.isNotBlank()) {
+            searchingLocationState = LocationPredicateState.Loading
+            viewModelScope.launch {
+                searchingLocationState = try {
+                    val res = uziGqlApiRepository.searchPlace(query).dataOrThrow()
+                    LocationPredicateState.Success(res.searchPlace)
+                } catch (e: ApolloException) {
+                    LocationPredicateState.Error(e.message)
+                }
             }
         }
     }
