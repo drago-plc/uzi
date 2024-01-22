@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.twotone.ArrowBack
+import androidx.compose.material.icons.twotone.LocationOn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -41,16 +42,6 @@ object SearchPickupLocationScreenDestination: Navigation {
     override val route = "trip/search"
     override val title = null
 }
-
-private data class Place(
-    val name: String
-)
-private val plcs = listOf(
-    Place("Vihiga"),
-    Place("Ngong"),
-    Place("Kakamega"),
-    Place("Kona Baridi")
-)
 
 @Composable
 fun SearchPickup(
@@ -96,15 +87,22 @@ private fun TopBar(
         }
     }
 
+    val places = when(val s = tripViewModel.searchingLocationState) {
+        is LocationPredicateState.Success -> {
+            s.places
+        }
+        else -> {listOf()}
+    }
+
     Box(modifier = modifier
         .fillMaxSize()
         .semantics { isTraversalGroup = true }
     ) {
         SearchBar(
-            query = "",
-            onQueryChange = {},
+            query = tripViewModel.searchQuery,
+            onQueryChange = { tripViewModel.updateSearchQuery(it) },
             onSearch = {},
-            active = active,
+            active = true,
             onActiveChange = { active = it },
             placeholder = {
                 Text(stringResource(R.string.enter_location))
@@ -136,10 +134,18 @@ private fun TopBar(
                 .semantics { traversalIndex = -1f }
         ) {
             LazyColumn {
-                items(plcs) {
+                items(places) {
                     ListItem(
+                        leadingContent = {
+                            Icon(
+                                Icons.TwoTone.LocationOn,
+                                contentDescription = null
+                            )
+                        },
                         headlineContent = {
-                            Text(it.name)
+                            Text(
+                                it.mainText
+                            )
                         },
                         modifier = Modifier
                             .fillMaxWidth()

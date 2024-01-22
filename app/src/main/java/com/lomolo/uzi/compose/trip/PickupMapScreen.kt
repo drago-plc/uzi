@@ -1,5 +1,6 @@
 package com.lomolo.uzi.compose.trip
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -107,6 +108,10 @@ fun PickupMap(
         else -> {""}
     }
 
+    BackHandler {
+        onNavigateBackToTrip()
+    }
+
     Scaffold {
         Surface(
             modifier
@@ -133,7 +138,7 @@ fun PickupMap(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         IconButton(
-                            onClick = { onNavigateUp() },
+                            onClick = { onNavigateBackToTrip() },
                             modifier = Modifier
                                 .background(
                                     MaterialTheme.colorScheme.surfaceTint,

@@ -22,6 +22,9 @@ import kotlinx.coroutines.launch
 class TripViewModel(
     private val uziGqlApiRepository: UziGqlApiInterface
 ): ViewModel() {
+    var searchQuery by mutableStateOf("")
+        private set
+
     var searchingLocationState: LocationPredicateState by mutableStateOf(LocationPredicateState.Success(
         listOf()
     ))
@@ -53,10 +56,15 @@ class TripViewModel(
         }
     }
 
-    fun searchPlace(query: String) {
-        searchingLocationState = LocationPredicateState.Loading
+    fun updateSearchQuery(query: String) {
+        searchQuery = query
+        if (query.isNotBlank() && query.length > 2) searchPlace(query)
+    }
+
+    private fun searchPlace(query: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            delay(2_000L)
+            delay(2000L)
+            searchingLocationState = LocationPredicateState.Loading
             searchingLocationState = try {
                 val res = uziGqlApiRepository.searchPlace(query).dataOrThrow()
                 LocationPredicateState.Success(res.searchPlace)

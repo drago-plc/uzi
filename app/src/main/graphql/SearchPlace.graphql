@@ -1,10 +1,7 @@
 query SearchPlace($textQuery: String!) {
     searchPlace(textQuery: $textQuery) {
-        placeId
-        formattedAddress
-        location {
-            lat
-            lng
-        }
+        id
+        mainText
+        secondaryText
     }
 }
