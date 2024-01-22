@@ -33,17 +33,29 @@ fun StartTrip(
     tripViewModel: TripViewModel
 ) {
     val tripUiState by tripViewModel.tripUiInput.collectAsState()
-    val pickupValue = when(val s = tripViewModel.reverseGeocodeState) {
-        LocationGeocodeState.Loading -> {
+    val pickupValue = when(val s = tripViewModel.pickupGeocodeState) {
+        PickupGeocodeState.Loading -> {
             "Loading..."
         }
-        is LocationGeocodeState.Error -> {
+        is PickupGeocodeState.Error -> {
             "Unnamed street"
         }
-        is LocationGeocodeState.Success -> {
+        is PickupGeocodeState.Success -> {
             s.geocode?.formattedAddress ?: stringResource(R.string.pickup_location)
         }
         else -> {stringResource(R.string.pickup_location)}
+    }
+    val dropoffValue = when(val s = tripViewModel.dropoffGeocodeState) {
+        DropoffGeocodeState.Loading -> {
+            "Loading..."
+        }
+        is DropoffGeocodeState.Error -> {
+            "Unnamed street"
+        }
+        is DropoffGeocodeState.Success -> {
+            s.geocode?.formattedAddress ?: stringResource(R.string.drop_off_location)
+        }
+        else -> {stringResource(R.string.drop_off_location)}
     }
 
     Column(
@@ -113,11 +125,19 @@ fun StartTrip(
                 )
             },
             placeholder = {
-                Text(
-                    stringResource(R.string.drop_off_location),
-                    style = MaterialTheme.typography.labelSmall,
-                    maxLines = 1
-                )
+                if (tripUiState.dropoff.formattedAddress.isEmpty()) {
+                    Text(
+                        dropoffValue,
+                        style = MaterialTheme.typography.labelSmall,
+                        maxLines = 1
+                    )
+                } else {
+                    Text(
+                        tripUiState.dropoff.formattedAddress,
+                        style = MaterialTheme.typography.labelSmall,
+                        maxLines = 1
+                    )
+                }
             },
             onValueChange = {},
             singleLine = true,

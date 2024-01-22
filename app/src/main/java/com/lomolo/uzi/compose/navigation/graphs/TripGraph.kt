@@ -1,19 +1,10 @@
 package com.lomolo.uzi.compose.navigation.graphs
 
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
-import com.lomolo.uzi.DeviceDetails
 import com.lomolo.uzi.MainViewModel
-import com.lomolo.uzi.compose.TopBar
 import com.lomolo.uzi.compose.home.HomeScreenDestination
 import com.lomolo.uzi.compose.navigation.Navigation
 import com.lomolo.uzi.compose.trip.DropoffMap
@@ -31,7 +22,6 @@ object TripGraphDestination: Navigation {
     override val title = null
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 fun NavGraphBuilder.trip(
     navController: NavHostController,
     tripViewModel: TripViewModel,
@@ -52,31 +42,22 @@ fun NavGraphBuilder.trip(
                         }
                         launchSingleTop = true
                     }
-                },
-                onNavigateUp = {
-                    navController.popBackStack()
                 }
             )
         }
         composable(DropoffMapScreenDestination.route) {
-            Scaffold(
-                topBar = {
-                    TopBar(
-                        title = stringResource(DropoffMapScreenDestination.title),
-                        canNavigateBack = true,
-                        navigateBack = {
-                            navController.popBackStack()
+            DropoffMap(
+                mainViewModel = mainViewModel,
+                tripViewModel = tripViewModel,
+                onNavigateBackToTrip = {
+                    navController.navigate(HomeScreenDestination.route) {
+                        popUpTo(HomeScreenDestination.route) {
+                            saveState = true
                         }
-                    )
+                        launchSingleTop = true
+                    }
                 }
-            ) { innerPadding ->
-                Surface(
-                    Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding)) {
-                    DropoffMap()
-                }
-            }
+            )
         }
         composable(SearchPickupLocationScreenDestination.route) {
             SearchPickup(
@@ -90,7 +71,15 @@ fun NavGraphBuilder.trip(
             )
         }
         composable(SearchDropoffLocationScreenDestination.route) {
-            SearchDropoff()
+            SearchDropoff(
+                onNavigateUp = {
+                    navController.popBackStack()
+                },
+                tripViewModel = tripViewModel,
+                onPickupMapClick = {
+                    navController.navigate(DropoffMapScreenDestination.route)
+                }
+            )
         }
     }
 }

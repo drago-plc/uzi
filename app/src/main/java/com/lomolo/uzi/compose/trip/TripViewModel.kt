@@ -27,7 +27,11 @@ class TripViewModel(
         listOf()
     ))
         private set
-    var reverseGeocodeState: LocationGeocodeState by mutableStateOf(LocationGeocodeState.Success(null))
+
+    var pickupGeocodeState: PickupGeocodeState by mutableStateOf(PickupGeocodeState.Success(null))
+        private set
+
+    var dropoffGeocodeState: DropoffGeocodeState by mutableStateOf(DropoffGeocodeState.Success(null))
         private set
 
     private var _trip = MutableStateFlow(Trip())
@@ -35,15 +39,12 @@ class TripViewModel(
 
     var pickupMapDragState: DragState by mutableStateOf(DragState.START)
         private set
-
     fun startPickupMapDrag() {
         pickupMapDragState = DragState.DRAG
     }
-
     fun stopPickupMapDrag() {
         pickupMapDragState = DragState.END
     }
-
     fun resetPickupMapDrag() {
         pickupMapDragState = DragState.START
     }
@@ -54,13 +55,19 @@ class TripViewModel(
         }
     }
 
+    fun setDropoff(dropoff: ReverseGeocodeQuery.ReverseGeocode) {
+        _trip.update {
+            it.copy(dropoff = dropoff)
+        }
+    }
+
     fun updateSearchQuery(query: String) {
         searchQuery = query
     }
 
     fun searchPlace(query: String) {
+        searchingLocationState = LocationPredicateState.Loading
         viewModelScope.launch {
-            searchingLocationState = LocationPredicateState.Loading
             searchingLocationState = try {
                 val res = uziGqlApiRepository.searchPlace(query).dataOrThrow()
                 LocationPredicateState.Success(res.searchPlace)
@@ -70,14 +77,29 @@ class TripViewModel(
         }
     }
 
-    fun reverseGeocode(cords: LatLng, cb: (ReverseGeocodeQuery.ReverseGeocode) -> Unit = {}) {
-        reverseGeocodeState = LocationGeocodeState.Loading
+    suspend fun reverseGeocode(cords: LatLng) =
+        uziGqlApiRepository.reverseGeocode(cords).dataOrThrow()
+
+    fun pickupReverseGeocode(cords: LatLng, cb: (ReverseGeocodeQuery.ReverseGeocode) -> Unit = {}) {
+        pickupGeocodeState = PickupGeocodeState.Loading
         viewModelScope.launch {
-            reverseGeocodeState = try {
-                val res = uziGqlApiRepository.reverseGeocode(cords).dataOrThrow()
-                LocationGeocodeState.Success(res.reverseGeocode).also { cb(res.reverseGeocode!!) }
-            } catch(e: ApolloException) {
-                LocationGeocodeState.Error(e.message)
+            pickupGeocodeState = try {
+                val res = reverseGeocode(cords)
+                PickupGeocodeState.Success(res.reverseGeocode).also { cb(res.reverseGeocode!!) }
+            } catch (e: ApolloException) {
+                PickupGeocodeState.Error(e.message)
+            }
+        }
+    }
+
+    fun dropoffReverseGeocode(cords: LatLng, cb: (ReverseGeocodeQuery.ReverseGeocode) -> Unit = {}) {
+        dropoffGeocodeState = DropoffGeocodeState.Loading
+        viewModelScope.launch {
+            dropoffGeocodeState = try {
+                val res = reverseGeocode(cords)
+                DropoffGeocodeState.Success(res.reverseGeocode).also { cb(res.reverseGeocode!!) }
+            } catch (e: ApolloException) {
+                DropoffGeocodeState.Error(e.message)
             }
         }
     }
@@ -89,10 +111,16 @@ interface LocationPredicateState {
     data class Error(val message: String?): LocationPredicateState
 }
 
-interface LocationGeocodeState {
-    data class Success(val geocode: ReverseGeocodeQuery.ReverseGeocode?): LocationGeocodeState
-    data object Loading: LocationGeocodeState
-    data class Error(val message: String?): LocationGeocodeState
+interface DropoffGeocodeState {
+    data class Success(val geocode: ReverseGeocodeQuery.ReverseGeocode?): DropoffGeocodeState
+    data object Loading: DropoffGeocodeState
+    data class Error(val message: String?): DropoffGeocodeState
+}
+
+interface PickupGeocodeState {
+    data class Success(val geocode: ReverseGeocodeQuery.ReverseGeocode?): PickupGeocodeState
+    data object Loading: PickupGeocodeState
+    data class Error(val message: String?): PickupGeocodeState
 }
 
 data class Trip(
