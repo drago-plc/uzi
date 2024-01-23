@@ -41,6 +41,7 @@ import com.lomolo.uzi.compose.signin.UserNameDestination
 import com.lomolo.uzi.compose.trip.SearchDropoffLocationScreenDestination
 import com.lomolo.uzi.compose.trip.SearchPickupLocationScreenDestination
 import com.lomolo.uzi.compose.trip.StartTrip
+import com.lomolo.uzi.compose.trip.TripProductsScreenDestination
 import com.lomolo.uzi.compose.trip.TripViewModel
 import com.lomolo.uzi.model.Session
 
@@ -113,6 +114,7 @@ private fun HomeSuccessScreen(
                 deviceDetails = deviceDetails,
                 onGetStartedClick = onGetStartedClick,
                 onEnterTripClick = onNavigateToTrip,
+                onTripProceed = onNavigateTo,
                 isAuthed = isAuthed
             )
         }
@@ -127,6 +129,7 @@ private fun DefaultHomeScreen(
     deviceDetails: DeviceDetails,
     onGetStartedClick: () -> Unit,
     onEnterTripClick: (String) -> Unit,
+    onTripProceed: (String) -> Unit,
     isAuthed: Boolean
 ) {
     val uiSettings by remember {
@@ -182,7 +185,7 @@ private fun DefaultHomeScreen(
                         .height(56.dp)
                         .align(Alignment.BottomCenter),
                     shape = MaterialTheme.shapes.small,
-                    onClick = { /*TODO*/ }
+                    onClick = { onTripProceed(TripProductsScreenDestination.route) } // TODO proceed with valid trip input details
                 ) {
                    Text(
                        stringResource(id = R.string.proceed),

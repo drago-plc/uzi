@@ -15,6 +15,8 @@ import com.lomolo.uzi.compose.trip.SearchDropoff
 import com.lomolo.uzi.compose.trip.SearchDropoffLocationScreenDestination
 import com.lomolo.uzi.compose.trip.SearchPickup
 import com.lomolo.uzi.compose.trip.SearchPickupLocationScreenDestination
+import com.lomolo.uzi.compose.trip.TripProducts
+import com.lomolo.uzi.compose.trip.TripProductsScreenDestination
 import com.lomolo.uzi.compose.trip.TripViewModel
 
 object TripGraphDestination: Navigation {
@@ -79,6 +81,12 @@ fun NavGraphBuilder.trip(
                 onPickupMapClick = {
                     navController.navigate(DropoffMapScreenDestination.route)
                 }
+            )
+        }
+        composable(TripProductsScreenDestination.route) {
+            TripProducts(
+                tripViewModel = tripViewModel,
+                navigateBack = { navController.popBackStack() }
             )
         }
     }
