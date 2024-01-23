@@ -90,6 +90,8 @@ type Query {
   searchPlace(textQuery: String!): [Place!]!
 
   reverseGeocode(place: GpsInput!): Geocode
+
+  getRoute(input: TripRouteInput!): TripRoute!
 }
 
 type Route {
@@ -146,6 +148,26 @@ type Trip {
   created_at: Time
 
   updated_at: Time
+}
+
+input TripInput {
+  placeId: String!
+
+  formattedAddress: String!
+
+  location: GpsInput!
+}
+
+type TripRoute {
+  productId: UUID!
+
+  duration: Time!
+}
+
+input TripRouteInput {
+  pickup: TripInput!
+
+  dropoff: TripInput!
 }
 
 enum TripStatus {
