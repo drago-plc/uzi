@@ -58,6 +58,8 @@ input GpsInput {
 
 type Mutation {
   createCourierDocument(input: CourierUploadInput!): Boolean!
+
+  trackCourierGps(input: GpsInput!): Boolean!
 }
 
 type Place {
