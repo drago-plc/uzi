@@ -41,7 +41,6 @@ import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.maps.android.compose.CameraMoveStartedReason
 import com.google.maps.android.compose.DragState
 import com.google.maps.android.compose.GoogleMap
@@ -71,19 +70,7 @@ internal fun Map(
         mutableStateOf(false)
     }
     val mapProperties by remember {
-        mutableStateOf(
-            MapProperties(
-                mapType = MapType.TERRAIN,
-                mapStyleOptions = MapStyleOptions(
-                    "{\n" +
-                            "    \"featureType\": \"poi\",\n" +
-                            "    \"stylers\": [\n" +
-                            "      { \"visibility\": \"simplified\" }\n" +
-                            "    ]\n" +
-                            "  }"
-                )
-            )
-        )
+        mutableStateOf(MapProperties(mapType = MapType.TERRAIN))
     }
     val cP = CameraPosition(deviceDetails.gps, 17f, 0f, 0f)
     val cameraPositionState = rememberCameraPositionState {
