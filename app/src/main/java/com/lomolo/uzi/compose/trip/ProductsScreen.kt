@@ -34,12 +34,19 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.google.android.gms.maps.model.BitmapDescriptor
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.Cap
+import com.google.android.gms.maps.model.CustomCap
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.RoundCap
+import com.google.maps.android.PolyUtil
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
+import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.lomolo.uzi.R
 import com.lomolo.uzi.compose.navigation.Navigation
@@ -76,6 +83,14 @@ fun TripProducts(
     navigateBack: () -> Unit,
     tripViewModel: TripViewModel
 ) {
+    var polyline: List<LatLng> = listOf()
+    when(val s = tripViewModel.makeTripRouteState) {
+        is MakeTripRouteState.Success -> {
+            if (s.success?.polyline != null) {
+                polyline = PolyUtil.decode(s.success.polyline)
+            }
+        }
+    }
     val uiSettings by remember {
         mutableStateOf(MapUiSettings(zoomControlsEnabled = false))
     }
@@ -85,11 +100,12 @@ fun TripProducts(
     }
     val dummyCenter = LatLng(-1.3701104119769105, 36.67565133422613)
     val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(dummyCenter, 17f)
+        position = CameraPosition.fromLatLngZoom(polyline.first(), 15f)
     }
     var isMapLoaded by rememberSaveable {
         mutableStateOf(false)
     }
+
 
     Box(Modifier.fillMaxSize()) {
         GoogleMap(
@@ -98,7 +114,13 @@ fun TripProducts(
             modifier = Modifier.matchParentSize(),
             cameraPositionState = cameraPositionState,
             onMapLoaded = { isMapLoaded = true }
-        )
+        ) {
+            Polyline(
+                points = polyline,
+                geodesic = true,
+                startCap = CustomCap(BitmapDescriptorFactory.fromResource(R.drawable.icons8_pin_100), 10f)
+            )
+        }
         if (isMapLoaded) {
             Box(Modifier.padding(8.dp)) {
                 IconButton(
