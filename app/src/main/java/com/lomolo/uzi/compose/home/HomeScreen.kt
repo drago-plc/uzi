@@ -16,6 +16,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -38,6 +40,7 @@ import com.lomolo.uzi.compose.loader.Loader
 import com.lomolo.uzi.compose.navigation.Navigation
 import com.lomolo.uzi.compose.signin.GetStarted
 import com.lomolo.uzi.compose.signin.UserNameDestination
+import com.lomolo.uzi.compose.trip.MakeTripRouteState
 import com.lomolo.uzi.compose.trip.SearchDropoffLocationScreenDestination
 import com.lomolo.uzi.compose.trip.SearchPickupLocationScreenDestination
 import com.lomolo.uzi.compose.trip.StartTrip
@@ -144,6 +147,22 @@ private fun DefaultHomeScreen(
     val cameraPositionState = rememberCameraPositionState {
         position = cP
     }
+    var errorString: String? = null
+    var isMakingTrip = false
+    when(val s = tripViewModel.makeTripRouteState) {
+        MakeTripRouteState.Loading -> {isMakingTrip = true}
+        is MakeTripRouteState.Error -> {errorString = s.message}
+        else -> {
+            isMakingTrip = false
+            errorString = null
+        }
+    }
+    val trip by tripViewModel.tripUiInput.collectAsState()
+
+    LaunchedEffect(Unit) {
+        println(trip)
+        if (tripViewModel.callTripEndpoint() && deviceDetails.mapLoaded) tripViewModel.makeTripRoute()
+    }
 
     GoogleMap(
         modifier = modifier,
@@ -178,19 +197,32 @@ private fun DefaultHomeScreen(
                     onEnterDropoffClick = { onEnterTripClick(SearchDropoffLocationScreenDestination.route) },
                     tripViewModel = tripViewModel
                 )
-                Button(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
-                        .height(56.dp)
-                        .align(Alignment.BottomCenter),
-                    shape = MaterialTheme.shapes.small,
-                    onClick = { onTripProceed(TripProductsScreenDestination.route) } // TODO proceed with valid trip input details
-                ) {
-                   Text(
-                       stringResource(id = R.string.proceed),
-                       style = MaterialTheme.typography.labelMedium
-                   )
+                Box(Modifier.align(Alignment.BottomCenter)) {
+                    Column {
+                        if (errorString != null) {
+                            Text(
+                                text = errorString,
+                                style = MaterialTheme.typography.labelSmall
+                            )
+                        }
+                        Button(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
+                                .height(54.dp),
+                            shape = MaterialTheme.shapes.small,
+                            onClick = { if (tripViewModel.callTripEndpoint() && !isMakingTrip) onTripProceed(TripProductsScreenDestination.route) } // TODO proceed with valid trip input details
+                        ) {
+                            if (isMakingTrip) {
+                                Loader()
+                            } else {
+                                Text(
+                                    stringResource(id = R.string.proceed),
+                                    style = MaterialTheme.typography.labelMedium
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }

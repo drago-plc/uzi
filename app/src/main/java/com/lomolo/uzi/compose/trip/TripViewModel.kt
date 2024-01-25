@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.apollographql.apollo3.exception.ApolloException
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.DragState
+import com.lomolo.uzi.MakeTripRouteQuery
 import com.lomolo.uzi.ReverseGeocodeQuery
 import com.lomolo.uzi.SearchPlaceQuery
 import com.lomolo.uzi.network.UziGqlApiInterface
@@ -16,6 +17,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.io.IOException
 
 class TripViewModel(
     private val uziGqlApiRepository: UziGqlApiInterface
@@ -32,6 +34,9 @@ class TripViewModel(
         private set
 
     var dropoffGeocodeState: DropoffGeocodeState by mutableStateOf(DropoffGeocodeState.Success(null))
+        private set
+
+    var makeTripRouteState: MakeTripRouteState by mutableStateOf(MakeTripRouteState.Success(null))
         private set
 
     private var _trip = MutableStateFlow(Trip())
@@ -105,6 +110,27 @@ class TripViewModel(
             }
         }
     }
+
+    fun callTripEndpoint(): Boolean {
+        return _trip.value.pickup.placeId.isNotBlank() && _trip.value.dropoff.placeId.isNotBlank()
+    }
+
+    fun makeTripRoute() {
+        if (makeTripRouteState !is MakeTripRouteState.Loading) {
+            makeTripRouteState = MakeTripRouteState.Loading
+            viewModelScope.launch {
+                makeTripRouteState = try {
+                    val res = uziGqlApiRepository.makeTripRoute(
+                        pickup = _trip.value.pickup,
+                        dropoff = _trip.value.dropoff
+                    ).dataOrThrow()
+                    MakeTripRouteState.Success(res.makeTripRoute)
+                } catch(e: IOException) {
+                    MakeTripRouteState.Error(e.message)
+                }
+            }
+        }
+    }
 }
 
 interface LocationPredicateState {
@@ -129,3 +155,9 @@ data class Trip(
     val pickup: ReverseGeocodeQuery.ReverseGeocode = ReverseGeocodeQuery.ReverseGeocode("", "", ReverseGeocodeQuery.Location(0.0, 0.0)),
     val dropoff: ReverseGeocodeQuery.ReverseGeocode = ReverseGeocodeQuery.ReverseGeocode("", "", ReverseGeocodeQuery.Location(0.0, 0.0))
 )
+
+interface MakeTripRouteState {
+    data class Success(val success: MakeTripRouteQuery.MakeTripRoute?): MakeTripRouteState
+    data object Loading: MakeTripRouteState
+    data class Error(val message: String?): MakeTripRouteState
+}
