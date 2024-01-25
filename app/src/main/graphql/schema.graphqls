@@ -163,9 +163,7 @@ input TripInput {
 }
 
 type TripRoute {
-  productId: UUID!
-
-  duration: Time!
+  polyline: String!
 }
 
 input TripRouteInput {
