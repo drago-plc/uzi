@@ -1,0 +1,10 @@
+query MakeTripRoute($pickup: TripInput! $dropoff: TripInput!) {
+    makeTripRoute(
+        input: {
+            pickup: $pickup
+            dropoff: $dropoff
+        }
+    ) {
+        polyline
+    }
+}
