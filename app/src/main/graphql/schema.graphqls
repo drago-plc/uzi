@@ -95,7 +95,7 @@ type Query {
 
   reverseGeocode(place: GpsInput!): Geocode
 
-  getRoute(input: TripRouteInput!): TripRoute!
+  makeTripRoute(input: TripRouteInput!): TripRoute!
 }
 
 type Route {
