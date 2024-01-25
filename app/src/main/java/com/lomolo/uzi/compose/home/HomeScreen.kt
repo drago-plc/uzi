@@ -160,7 +160,6 @@ private fun DefaultHomeScreen(
     val trip by tripViewModel.tripUiInput.collectAsState()
 
     LaunchedEffect(Unit) {
-        println(trip)
         if (tripViewModel.callTripEndpoint() && deviceDetails.mapLoaded) tripViewModel.makeTripRoute()
     }
 
