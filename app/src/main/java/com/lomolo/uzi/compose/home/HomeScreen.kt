@@ -26,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
@@ -164,6 +165,10 @@ private fun DefaultHomeScreen(
     }
 
     GoogleMap(
+        googleMapOptionsFactory = {
+            GoogleMapOptions()
+                .mapId("3b5fc3cffbb25fc4")
+        },
         modifier = modifier,
         properties = mapProperties,
         onMapLoaded = { mainViewModel.setMapLoaded(true) },

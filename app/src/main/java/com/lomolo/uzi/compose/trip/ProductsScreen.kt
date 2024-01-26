@@ -34,6 +34,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.CustomCap
@@ -43,6 +44,8 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.lomolo.uzi.R
@@ -95,7 +98,6 @@ fun TripProducts(
     val mapProperties by remember {
         mutableStateOf(MapProperties(mapType = MapType.TERRAIN))
     }
-    val dummyCenter = LatLng(-1.3701104119769105, 36.67565133422613)
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(polyline.first(), 15f)
     }
@@ -104,19 +106,36 @@ fun TripProducts(
     }
 
 
-    Box(Modifier.fillMaxSize()) {
+    Box(modifier.fillMaxSize()) {
         GoogleMap(
+            googleMapOptionsFactory = {
+                GoogleMapOptions()
+                    .mapId("3b5fc3cffbb25fc4")
+            },
             properties = mapProperties,
             uiSettings = uiSettings,
             modifier = Modifier.matchParentSize(),
             cameraPositionState = cameraPositionState,
             onMapLoaded = { isMapLoaded = true }
         ) {
+            if (polyline.isNotEmpty()) {
+                Marker(
+                    state = MarkerState(polyline[0]),
+                    icon = BitmapDescriptorFactory.fromResource(R.drawable.icons8_location_pin_96)
+                )
+            }
             Polyline(
                 points = polyline,
                 geodesic = true,
-                startCap = CustomCap(BitmapDescriptorFactory.fromResource(R.drawable.icons8_pin_100), 10f)
+                startCap = CustomCap(BitmapDescriptorFactory.fromResource(R.drawable.icons8_filled_circle_30)),
+                endCap = CustomCap(BitmapDescriptorFactory.fromResource(R.drawable.icons8_filled_circle_30))
             )
+            if (polyline.isNotEmpty()) {
+                Marker(
+                    state = MarkerState(polyline[polyline.size-1]),
+                    icon = BitmapDescriptorFactory.fromResource(R.drawable.icons8_location_pin_96)
+                )
+            }
         }
         if (isMapLoaded) {
             Box(Modifier.padding(8.dp)) {
