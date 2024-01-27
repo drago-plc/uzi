@@ -30,7 +30,7 @@ interface AppContainer {
     val apolloClient: ApolloClient
 }
 
-private const val baseApi = "https://795c-102-217-124-1.ngrok-free.app"
+private const val baseApi = "https://16c1-102-217-124-1.ngrok-free.app"
 
 class AuthInterceptor(
     private val sessionDao: SessionDao,
