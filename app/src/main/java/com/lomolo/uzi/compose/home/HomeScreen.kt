@@ -159,10 +159,6 @@ private fun DefaultHomeScreen(
     }
     val trip by tripViewModel.tripUiInput.collectAsState()
 
-    LaunchedEffect(Unit) {
-        if (tripViewModel.callTripEndpoint() && deviceDetails.mapLoaded) tripViewModel.makeTripRoute()
-    }
-
     GoogleMap(
         modifier = modifier,
         properties = mapProperties,
@@ -197,6 +193,10 @@ private fun DefaultHomeScreen(
                     tripViewModel = tripViewModel
                 )
                 Box(Modifier.align(Alignment.BottomCenter)) {
+                    LaunchedEffect(Unit) {
+                        if (tripViewModel.callTripEndpoint() && deviceDetails.mapLoaded) tripViewModel.makeTripRoute()
+                    }
+
                     Column {
                         if (errorString != null) {
                             Text(
