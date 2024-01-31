@@ -108,10 +108,6 @@ fun TripProducts(
 
     Box(modifier.fillMaxSize()) {
         GoogleMap(
-            googleMapOptionsFactory = {
-                GoogleMapOptions()
-                    .mapId("3b5fc3cffbb25fc4")
-            },
             properties = mapProperties,
             uiSettings = uiSettings,
             modifier = Modifier.matchParentSize(),
