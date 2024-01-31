@@ -9,6 +9,8 @@ type Courier {
 
   rating: Float!
 
+  location: Gps!
+
   trip_id: UUID
 
   completedTrips: Int!
@@ -79,6 +81,8 @@ type Product {
 
   description: String!
 
+  icon_url: String!
+
   price: Int!
 
   created_at: Time
@@ -96,6 +100,8 @@ type Query {
   reverseGeocode(place: GpsInput!): Geocode
 
   makeTripRoute(input: TripRouteInput!): TripRoute!
+
+  getCourierNearPickupPoint(point: GpsInput!): [Courier!]!
 }
 
 type Route {
@@ -164,6 +170,10 @@ input TripInput {
 
 type TripRoute {
   polyline: String!
+
+  distance: Int!
+
+  availableProducts: [Product!]!
 }
 
 input TripRouteInput {
