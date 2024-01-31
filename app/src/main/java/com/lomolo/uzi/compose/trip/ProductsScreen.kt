@@ -117,7 +117,7 @@ fun TripProducts(
             if (polyline.isNotEmpty()) {
                 Marker(
                     state = MarkerState(polyline[0]),
-                    icon = BitmapDescriptorFactory.fromResource(R.drawable.icons8_location_pin_96)
+                    icon = BitmapDescriptorFactory.fromResource(R.drawable.icons8_pin_100)
                 )
             }
             Polyline(
@@ -129,7 +129,7 @@ fun TripProducts(
             if (polyline.isNotEmpty()) {
                 Marker(
                     state = MarkerState(polyline[polyline.size-1]),
-                    icon = BitmapDescriptorFactory.fromResource(R.drawable.icons8_location_pin_96)
+                    icon = BitmapDescriptorFactory.fromResource(R.drawable.icons8_pin_100)
                 )
             }
         }
@@ -141,7 +141,10 @@ fun TripProducts(
                             MaterialTheme.colorScheme.surfaceTint,
                             CircleShape
                         ),
-                    onClick = { navigateBack() }
+                    onClick = {
+                        navigateBack()
+                        tripViewModel.resetTrip()
+                    }
                 ) {
                    Icon(
                        Icons.AutoMirrored.TwoTone.ArrowBack,

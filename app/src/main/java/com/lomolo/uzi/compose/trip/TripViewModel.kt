@@ -131,6 +131,10 @@ class TripViewModel(
             }
         }
     }
+
+    fun resetTrip() {
+        _trip.value = Trip()
+    }
 }
 
 interface LocationPredicateState {

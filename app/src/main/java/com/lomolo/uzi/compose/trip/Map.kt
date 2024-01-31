@@ -195,7 +195,10 @@ internal fun Map(
                         }
                         Spacer(modifier = Modifier.size(28.dp))
                         Button(
-                            onClick = { onNavigateBackToTrip() },
+                            onClick = {
+                                onLocationConfirmation(cameraPositionState.position.target)
+                                onNavigateBackToTrip()
+                            },
                             shape = MaterialTheme.shapes.small,
                             modifier = Modifier
                                 .fillMaxWidth()

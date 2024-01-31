@@ -41,7 +41,7 @@ fun StartTrip(
             "Unnamed street"
         }
         is PickupGeocodeState.Success -> {
-            s.geocode?.formattedAddress ?: stringResource(R.string.pickup_location)
+            stringResource(R.string.pickup_location)
         }
         else -> {stringResource(R.string.pickup_location)}
     }
@@ -53,7 +53,7 @@ fun StartTrip(
             "Unnamed street"
         }
         is DropoffGeocodeState.Success -> {
-            s.geocode?.formattedAddress ?: stringResource(R.string.drop_off_location)
+            stringResource(R.string.drop_off_location)
         }
         else -> {stringResource(R.string.drop_off_location)}
     }
