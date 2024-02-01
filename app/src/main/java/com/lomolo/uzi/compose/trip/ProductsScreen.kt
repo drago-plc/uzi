@@ -108,12 +108,8 @@ fun TripProducts(
             if (polyline.isNotEmpty()) {
                 Marker(
                     state = MarkerState(polyline[0]),
-                    icon = BitmapDescriptorFactory.fromResource(R.drawable.icons8_navigation_100),
-                        zIndex = 1.0f,
-                        flat = true,
-                        anchor = Offset(0.5f, 0.5f),
-                        rotation = SphericalUtil.computeHeading(polyline[0], polyline[0+1])
-                            .toFloat()-45f
+                    icon = BitmapDescriptorFactory.fromResource(R.drawable.icons8_pin_100),
+                    zIndex = 1.0f
                 )
             }
             Polyline(
