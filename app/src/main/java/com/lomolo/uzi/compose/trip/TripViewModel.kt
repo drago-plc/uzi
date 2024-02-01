@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.apollographql.apollo3.exception.ApolloException
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.DragState
+import com.lomolo.uzi.GetCourierNearPickupPointQuery
 import com.lomolo.uzi.MakeTripRouteQuery
 import com.lomolo.uzi.ReverseGeocodeQuery
 import com.lomolo.uzi.SearchPlaceQuery
@@ -37,6 +38,9 @@ class TripViewModel(
         private set
 
     var makeTripRouteState: MakeTripRouteState by mutableStateOf(MakeTripRouteState.Success(null))
+        private set
+
+    var getCourierNearPickupState: GetCourierNearPickupState by mutableStateOf(GetCourierNearPickupState.Success(listOf()))
         private set
 
     private var _trip = MutableStateFlow(Trip())
@@ -132,6 +136,18 @@ class TripViewModel(
         }
     }
 
+    fun getCourierNearPickup(pickup: LatLng) {
+        getCourierNearPickupState = GetCourierNearPickupState.Loading
+        viewModelScope.launch {
+            getCourierNearPickupState = try {
+                val res = uziGqlApiRepository.getCourierNearPickupPoint(pickup).dataOrThrow()
+                GetCourierNearPickupState.Success(res.getCourierNearPickupPoint)
+            } catch(e: ApolloException) {
+                GetCourierNearPickupState.Error(e.message)
+            }
+        }
+    }
+
     fun resetTrip() {
         _trip.value = Trip()
     }
@@ -164,4 +180,10 @@ interface MakeTripRouteState {
     data class Success(val success: MakeTripRouteQuery.MakeTripRoute?): MakeTripRouteState
     data object Loading: MakeTripRouteState
     data class Error(val message: String?): MakeTripRouteState
+}
+
+interface GetCourierNearPickupState {
+    data class Success(val success: List<GetCourierNearPickupPointQuery.GetCourierNearPickupPoint>): GetCourierNearPickupState
+    data object Loading: GetCourierNearPickupState
+    data class Error(val message: String?): GetCourierNearPickupState
 }

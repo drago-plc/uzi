@@ -6,5 +6,12 @@ query MakeTripRoute($pickup: TripInput! $dropoff: TripInput!) {
         }
     ) {
         polyline
+        availableProducts {
+            id
+            name
+            description
+            icon_url
+            price
+        }
     }
 }
