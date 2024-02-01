@@ -149,7 +149,7 @@ class TripViewModel(
     }
 
     fun resetTrip() {
-        _trip.value = Trip()
+        //_trip.value = Trip()
     }
 }
 

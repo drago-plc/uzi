@@ -1,5 +1,6 @@
 package com.lomolo.uzi.compose.trip
 
+import android.graphics.BitmapFactory
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -125,7 +126,8 @@ fun TripProducts(
             if (nearbyCouriers.isNotEmpty()) {
                 nearbyCouriers.forEach {
                     Marker(
-                        state = MarkerState(LatLng(it.location.lat, it.location.lng))
+                        state = MarkerState(LatLng(it.location.lat, it.location.lng)),
+                        icon = BitmapDescriptorFactory.defaultMarker()
                     )
                 }
             }
