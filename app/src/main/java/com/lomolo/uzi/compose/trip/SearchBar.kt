@@ -145,7 +145,7 @@ internal fun SearchTopBar(
                         },
                         leadingContent = {
                             Icon(
-                                painterResource(id = R.drawable.icons8_pin_100),
+                                painterResource(id = R.drawable.icons8_location_pin_90___),
                                 modifier = Modifier
                                     .size(20.dp),
                                 contentDescription = null

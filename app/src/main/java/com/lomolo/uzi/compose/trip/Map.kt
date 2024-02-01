@@ -61,6 +61,7 @@ internal fun Map(
     onReverseGeocode: (LatLng) -> Unit,
     onNavigateBackToTrip: () -> Unit,
     onLocationConfirmation: (LatLng) -> Unit,
+    onConfirmationClick: (LatLng) -> Unit
 ) {
     val deviceDetails by mainViewModel.deviceDetailsUiState.collectAsState()
     val uiSettings by remember {
@@ -156,7 +157,7 @@ internal fun Map(
                         )
                     }
                     Image(
-                        painterResource(R.drawable.icons8_pin_100),
+                        painterResource(R.drawable.icons8_location_pin_90___),
                         modifier = Modifier
                             .align(Alignment.Center),
                         contentDescription = null
@@ -196,8 +197,7 @@ internal fun Map(
                         Spacer(modifier = Modifier.size(28.dp))
                         Button(
                             onClick = {
-                                onLocationConfirmation(cameraPositionState.position.target)
-                                onNavigateBackToTrip()
+                                onConfirmationClick(cameraPositionState.position.target)
                             },
                             shape = MaterialTheme.shapes.small,
                             modifier = Modifier

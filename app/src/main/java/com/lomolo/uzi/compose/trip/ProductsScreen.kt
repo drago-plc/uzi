@@ -108,7 +108,7 @@ fun TripProducts(
             if (polyline.isNotEmpty()) {
                 Marker(
                     state = MarkerState(polyline[0]),
-                    icon = BitmapDescriptorFactory.fromResource(R.drawable.icons8_pin_100),
+                    icon = BitmapDescriptorFactory.fromResource(R.drawable.icons8_location_pin_90___),
                     zIndex = 1.0f
                 )
             }
@@ -122,7 +122,7 @@ fun TripProducts(
             if (polyline.isNotEmpty()) {
                 Marker(
                     state = MarkerState(polyline[polyline.size-1]),
-                    icon = BitmapDescriptorFactory.fromResource(R.drawable.icons8_pin_100),
+                    icon = BitmapDescriptorFactory.fromResource(R.drawable.icons8_location_pin_90___),
                     zIndex = 1.0f
                 )
             }
@@ -131,12 +131,11 @@ fun TripProducts(
                     if (polyline.isNotEmpty()) {
                         Marker(
                             state = MarkerState(LatLng(it.location.lat, it.location.lng)),
-                            icon = BitmapDescriptorFactory.fromResource(R.drawable.icons8_navigation_100),
+                            icon = BitmapDescriptorFactory.fromResource(R.drawable.icons8_my_location_90___),
                             zIndex = 1.0f,
                             flat = true,
-                            anchor = Offset(0.5f, 0.5f),
                             rotation = SphericalUtil.computeHeading(polyline[0], polyline[0+1])
-                                .toFloat()-45f
+                                .toFloat()
                         )
                     }
                 }
@@ -175,10 +174,13 @@ fun TripProducts(
                if (nearbyProducts.isNotEmpty()) {
                    NearbyProducts(products = nearbyProducts)
                } else {
-                   Text(
-                       "Can't find couriers. We are still onboarding your area.",
-                       style = MaterialTheme.typography.labelSmall
-                   )
+                   if (polyline.isNotEmpty()) {
+                       Text(
+                           "Can't find couriers. We are still onboarding your area.",
+                           style = MaterialTheme.typography.labelSmall,
+                           modifier = Modifier.padding(8.dp)
+                       )
+                   }
                }
             }
         }

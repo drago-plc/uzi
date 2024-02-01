@@ -77,8 +77,8 @@ fun StartTrip(
             value = "",
             leadingIcon = {
                 Icon(
-                    painterResource(id = R.drawable.ic_launcher_foreground),
-                    modifier = Modifier.size(36.dp),
+                    painterResource(id = R.drawable.icons8_next_location_96___),
+                    modifier = Modifier.size(24.dp),
                     contentDescription = "pickup icon",
                     tint = MaterialTheme.colorScheme.surfaceTint
                 )
@@ -118,7 +118,7 @@ fun StartTrip(
             value = "",
             leadingIcon = {
                 Icon(
-                    painterResource(id = R.drawable.next_location),
+                    painterResource(id = R.drawable.icons8_next_location_96___),
                     modifier = Modifier.size(24.dp),
                     contentDescription = "pickup icon",
                     tint = MaterialTheme.colorScheme.surfaceTint

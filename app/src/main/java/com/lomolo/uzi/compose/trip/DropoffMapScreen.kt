@@ -44,7 +44,12 @@ fun DropoffMap(
             tripViewModel.dropoffReverseGeocode(it) {
                 tripViewModel.stopPickupMapDrag()
                 tripViewModel.resetPickupMapDrag()
-                tripViewModel.setDropoff(it)
+            }
+        },
+        onConfirmationClick = { param ->
+            tripViewModel.dropoffReverseGeocode(param) { res ->
+                tripViewModel.setDropoff(res)
+                onNavigateBackToTrip()
             }
         }
     )
