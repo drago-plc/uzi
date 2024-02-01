@@ -1,5 +1,7 @@
 package com.lomolo.uzi.compose.trip
 
+import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -30,17 +32,21 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.CustomCap
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.PolyUtil
+import com.google.maps.android.SphericalUtil
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
@@ -107,7 +113,12 @@ fun TripProducts(
             if (polyline.isNotEmpty()) {
                 Marker(
                     state = MarkerState(polyline[0]),
-                    icon = BitmapDescriptorFactory.fromResource(R.drawable.icons8_pin_100)
+                    icon = BitmapDescriptorFactory.fromResource(R.drawable.icons8_navigation_100),
+                        zIndex = 1.0f,
+                        flat = true,
+                        anchor = Offset(0.5f, 0.5f),
+                        rotation = SphericalUtil.computeHeading(polyline[0], polyline[0+1])
+                            .toFloat()-45f
                 )
             }
             Polyline(
@@ -120,15 +131,23 @@ fun TripProducts(
             if (polyline.isNotEmpty()) {
                 Marker(
                     state = MarkerState(polyline[polyline.size-1]),
-                    icon = BitmapDescriptorFactory.fromResource(R.drawable.icons8_pin_100)
+                    icon = BitmapDescriptorFactory.fromResource(R.drawable.icons8_pin_100),
+                    zIndex = 1.0f
                 )
             }
             if (nearbyCouriers.isNotEmpty()) {
                 nearbyCouriers.forEach {
-                    Marker(
-                        state = MarkerState(LatLng(it.location.lat, it.location.lng)),
-                        icon = BitmapDescriptorFactory.defaultMarker()
-                    )
+                    if (polyline.isNotEmpty()) {
+                        Marker(
+                            state = MarkerState(LatLng(it.location.lat, it.location.lng)),
+                            icon = BitmapDescriptorFactory.fromResource(R.drawable.icons8_navigation_100),
+                            zIndex = 1.0f,
+                            flat = true,
+                            anchor = Offset(0.5f, 0.5f),
+                            rotation = SphericalUtil.computeHeading(polyline[0], polyline[0+1])
+                                .toFloat()-45f
+                        )
+                    }
                 }
             }
         }
@@ -236,4 +255,23 @@ private fun NearbyProducts(
             }
         }
     }
+}
+
+fun bitmapDescriptorFromVector(
+    context: Context,
+    vectorResId: Int
+): BitmapDescriptor? {
+    val drawable = ContextCompat.getDrawable(context, vectorResId) ?: return null
+    drawable.setBounds(0, 0, drawable.intrinsicWidth, drawable.intrinsicHeight)
+
+    val bm = Bitmap.createBitmap(
+        drawable.intrinsicWidth,
+        drawable.intrinsicHeight,
+        Bitmap.Config.ALPHA_8
+    )
+
+    val canvas = android.graphics.Canvas(bm)
+    drawable.draw(canvas)
+
+    return BitmapDescriptorFactory.fromBitmap(bm)
 }
