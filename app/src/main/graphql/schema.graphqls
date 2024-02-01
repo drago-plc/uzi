@@ -13,6 +13,10 @@ type Courier {
 
   trip_id: UUID
 
+  product_id: UUID!
+
+  product: Product
+
   completedTrips: Int!
 
   points: Int!

@@ -1,6 +1,11 @@
 query GetCourierNearPickupPoint($point: GpsInput!) {
     getCourierNearPickupPoint(point: $point) {
         id
+        product {
+            id
+            name
+            icon_url
+        }
         location {
             lat
             lng
