@@ -134,7 +134,7 @@ fun TripProducts(
                             icon = BitmapDescriptorFactory.fromResource(R.drawable.icons8_my_location_90___),
                             zIndex = 1.0f,
                             flat = true,
-                            rotation = SphericalUtil.computeHeading(polyline[0], polyline[0+1])
+                            rotation = SphericalUtil.computeHeading(LatLng(it.location.lat, it.location.lng), polyline[0])
                                 .toFloat()
                         )
                     }
