@@ -61,7 +61,7 @@ internal fun Map(
     onReverseGeocode: (LatLng) -> Unit,
     onNavigateBackToTrip: () -> Unit,
     onLocationConfirmation: (LatLng) -> Unit,
-    onConfirmationClick: (LatLng) -> Unit
+    onConfirmationClick: () -> Unit
 ) {
     val deviceDetails by mainViewModel.deviceDetailsUiState.collectAsState()
     val uiSettings by remember {
@@ -197,7 +197,7 @@ internal fun Map(
                         Spacer(modifier = Modifier.size(28.dp))
                         Button(
                             onClick = {
-                                onConfirmationClick(cameraPositionState.position.target)
+                                onConfirmationClick()
                             },
                             shape = MaterialTheme.shapes.small,
                             modifier = Modifier

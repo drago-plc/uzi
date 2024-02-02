@@ -46,9 +46,16 @@ fun DropoffMap(
                 tripViewModel.resetPickupMapDrag()
             }
         },
-        onConfirmationClick = { param ->
-            tripViewModel.dropoffReverseGeocode(param) { res ->
-                tripViewModel.setDropoff(res)
+        onConfirmationClick = {
+            val geocode = when(val s = tripViewModel.dropoffGeocodeState) {
+                is DropoffGeocodeState.Success -> {
+                    s.geocode
+                }
+                else -> {null}
+            }
+
+            if (geocode != null) {
+                tripViewModel.setDropoff(geocode)
                 onNavigateBackToTrip()
             }
         }

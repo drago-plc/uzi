@@ -46,9 +46,16 @@ fun PickupMap(
                 tripViewModel.resetPickupMapDrag()
             }
         },
-        onConfirmationClick = { param ->
-            tripViewModel.pickupReverseGeocode(param) { res ->
-                tripViewModel.setPickup(res)
+        onConfirmationClick = {
+            val geocode = when(val s = tripViewModel.pickupGeocodeState) {
+                is PickupGeocodeState.Success -> {
+                    s.geocode
+                }
+                else -> {null}
+            }
+
+            if (geocode != null) {
+                tripViewModel.setPickup(geocode)
                 onNavigateBackToTrip()
             }
         }
