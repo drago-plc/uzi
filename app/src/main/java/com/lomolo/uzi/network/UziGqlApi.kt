@@ -54,10 +54,10 @@ class UziGqlApiRepository(
         ).execute()
     }
 
-    override suspend fun getCourierNearPickupPoint(point: LatLng): ApolloResponse<GetCourierNearPickupPointQuery.Data> {
+    override suspend fun getCourierNearPickupPoint(pickup: LatLng): ApolloResponse<GetCourierNearPickupPointQuery.Data> {
         return apolloClient.query(
             GetCourierNearPickupPointQuery(
-                GpsInput(point.latitude, point.longitude)
+                GpsInput(pickup.latitude, pickup.longitude)
             )
         ).execute()
     }
