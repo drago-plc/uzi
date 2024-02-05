@@ -1,5 +1,5 @@
-query MakeTripRoute($pickup: TripInput! $dropoff: TripInput!) {
-    makeTripRoute(
+query ComputeTripRoute($pickup: TripInput! $dropoff: TripInput!) {
+    computeTripRoute(
         input: {
             pickup: $pickup
             dropoff: $dropoff

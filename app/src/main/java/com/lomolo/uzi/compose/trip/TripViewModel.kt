@@ -9,7 +9,7 @@ import com.apollographql.apollo3.exception.ApolloException
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.DragState
 import com.lomolo.uzi.GetCourierNearPickupPointQuery
-import com.lomolo.uzi.MakeTripRouteQuery
+import com.lomolo.uzi.ComputeTripRouteQuery
 import com.lomolo.uzi.ReverseGeocodeQuery
 import com.lomolo.uzi.SearchPlaceQuery
 import com.lomolo.uzi.network.UziGqlApiInterface
@@ -37,7 +37,7 @@ class TripViewModel(
     var dropoffGeocodeState: DropoffGeocodeState by mutableStateOf(DropoffGeocodeState.Success(null))
         private set
 
-    var makeTripRouteState: MakeTripRouteState by mutableStateOf(MakeTripRouteState.Success(null))
+    var makeTripRouteState: ComputeTripRouteState by mutableStateOf(ComputeTripRouteState.Success(null))
         private set
 
     var getCourierNearPickupState: GetCourierNearPickupState by mutableStateOf(GetCourierNearPickupState.Success(listOf()))
@@ -120,17 +120,17 @@ class TripViewModel(
     }
 
     fun makeTripRoute() {
-        if (makeTripRouteState !is MakeTripRouteState.Loading) {
-            makeTripRouteState = MakeTripRouteState.Loading
+        if (makeTripRouteState !is ComputeTripRouteState.Loading) {
+            makeTripRouteState = ComputeTripRouteState.Loading
             viewModelScope.launch {
                 makeTripRouteState = try {
                     val res = uziGqlApiRepository.makeTripRoute(
                         pickup = _trip.value.pickup,
                         dropoff = _trip.value.dropoff
                     ).dataOrThrow()
-                    MakeTripRouteState.Success(res.makeTripRoute)
+                    ComputeTripRouteState.Success(res.computeTripRoute)
                 } catch(e: IOException) {
-                    MakeTripRouteState.Error(e.message)
+                    ComputeTripRouteState.Error(e.message)
                 }
             }
         }
@@ -176,10 +176,10 @@ data class Trip(
     val dropoff: ReverseGeocodeQuery.ReverseGeocode = ReverseGeocodeQuery.ReverseGeocode("", "", ReverseGeocodeQuery.Location(0.0, 0.0))
 )
 
-interface MakeTripRouteState {
-    data class Success(val success: MakeTripRouteQuery.MakeTripRoute?): MakeTripRouteState
-    data object Loading: MakeTripRouteState
-    data class Error(val message: String?): MakeTripRouteState
+interface ComputeTripRouteState {
+    data class Success(val success: ComputeTripRouteQuery.ComputeTripRoute?): ComputeTripRouteState
+    data object Loading: ComputeTripRouteState
+    data class Error(val message: String?): ComputeTripRouteState
 }
 
 interface GetCourierNearPickupState {

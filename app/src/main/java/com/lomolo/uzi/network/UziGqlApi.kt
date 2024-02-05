@@ -4,7 +4,7 @@ import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.ApolloResponse
 import com.google.android.gms.maps.model.LatLng
 import com.lomolo.uzi.GetCourierNearPickupPointQuery
-import com.lomolo.uzi.MakeTripRouteQuery
+import com.lomolo.uzi.ComputeTripRouteQuery
 import com.lomolo.uzi.ReverseGeocodeQuery
 import com.lomolo.uzi.SearchPlaceQuery
 import com.lomolo.uzi.type.GpsInput
@@ -13,7 +13,7 @@ import com.lomolo.uzi.type.TripInput
 interface UziGqlApiInterface {
     suspend fun searchPlace(place: String): ApolloResponse<SearchPlaceQuery.Data>
     suspend fun reverseGeocode(place: LatLng): ApolloResponse<ReverseGeocodeQuery.Data>
-    suspend fun makeTripRoute(pickup: ReverseGeocodeQuery.ReverseGeocode, dropoff: ReverseGeocodeQuery.ReverseGeocode): ApolloResponse<MakeTripRouteQuery.Data>
+    suspend fun makeTripRoute(pickup: ReverseGeocodeQuery.ReverseGeocode, dropoff: ReverseGeocodeQuery.ReverseGeocode): ApolloResponse<ComputeTripRouteQuery.Data>
     suspend fun getCourierNearPickupPoint(pickup: LatLng): ApolloResponse<GetCourierNearPickupPointQuery.Data>
 }
 
@@ -31,9 +31,9 @@ class UziGqlApiRepository(
     override suspend fun makeTripRoute(
         pickup: ReverseGeocodeQuery.ReverseGeocode,
         dropoff: ReverseGeocodeQuery.ReverseGeocode
-    ): ApolloResponse<MakeTripRouteQuery.Data> {
+    ): ApolloResponse<ComputeTripRouteQuery.Data> {
         return apolloClient.query(
-            MakeTripRouteQuery(
+            ComputeTripRouteQuery(
                 pickup = TripInput(
                     placeId = pickup.placeId,
                     formattedAddress = pickup.formattedAddress,

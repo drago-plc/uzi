@@ -40,7 +40,7 @@ import com.lomolo.uzi.compose.loader.Loader
 import com.lomolo.uzi.compose.navigation.Navigation
 import com.lomolo.uzi.compose.signin.GetStarted
 import com.lomolo.uzi.compose.signin.UserNameDestination
-import com.lomolo.uzi.compose.trip.MakeTripRouteState
+import com.lomolo.uzi.compose.trip.ComputeTripRouteState
 import com.lomolo.uzi.compose.trip.SearchDropoffLocationScreenDestination
 import com.lomolo.uzi.compose.trip.SearchPickupLocationScreenDestination
 import com.lomolo.uzi.compose.trip.StartTrip
@@ -150,8 +150,8 @@ private fun DefaultHomeScreen(
     var errorString: String? = null
     var isMakingTrip = false
     when(val s = tripViewModel.makeTripRouteState) {
-        MakeTripRouteState.Loading -> {isMakingTrip = true}
-        is MakeTripRouteState.Error -> {errorString = s.message}
+        ComputeTripRouteState.Loading -> {isMakingTrip = true}
+        is ComputeTripRouteState.Error -> {errorString = s.message}
         else -> {
             isMakingTrip = false
             errorString = null

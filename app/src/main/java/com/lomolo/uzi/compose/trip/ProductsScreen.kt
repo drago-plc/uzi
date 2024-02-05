@@ -29,7 +29,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -51,7 +50,7 @@ import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.lomolo.uzi.GetCourierNearPickupPointQuery
-import com.lomolo.uzi.MakeTripRouteQuery
+import com.lomolo.uzi.ComputeTripRouteQuery
 import com.lomolo.uzi.R
 import com.lomolo.uzi.compose.navigation.Navigation
 
@@ -67,9 +66,9 @@ fun TripProducts(
     tripViewModel: TripViewModel
 ) {
     var polyline: List<LatLng> = listOf()
-    var nearbyProducts: List<MakeTripRouteQuery.AvailableProduct> = listOf()
+    var nearbyProducts: List<ComputeTripRouteQuery.AvailableProduct> = listOf()
     when(val s = tripViewModel.makeTripRouteState) {
-        is MakeTripRouteState.Success -> {
+        is ComputeTripRouteState.Success -> {
             if (s.success?.polyline != null) {
                 polyline = PolyUtil.decode(s.success.polyline)
                 nearbyProducts = s.success.availableProducts
@@ -190,7 +189,7 @@ fun TripProducts(
 @Composable
 private fun NearbyProducts(
     modifier: Modifier = Modifier,
-    products: List<MakeTripRouteQuery.AvailableProduct>
+    products: List<ComputeTripRouteQuery.AvailableProduct>
 ) {
     LazyColumn(
         modifier = modifier
