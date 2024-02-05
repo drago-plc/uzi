@@ -42,6 +42,12 @@ input CourierUploadInput {
   uri: String!
 }
 
+input CreateTripInput {
+  tripInput: TripInput!
+
+  tripProduct: String!
+}
+
 type Geocode {
   placeId: String!
 
@@ -68,6 +74,8 @@ type Mutation {
   trackCourierGps(input: GpsInput!): Boolean!
 
   setCourierStatus(status: String!): Boolean!
+
+  createTrip(input: CreateTripInput!): Trip!
 }
 
 type Place {
@@ -103,7 +111,7 @@ type Query {
 
   reverseGeocode(place: GpsInput!): Geocode
 
-  makeTripRoute(input: TripRouteInput!): TripRoute!
+  computeTripRoute(input: TripRouteInput!): TripRoute!
 
   getCourierNearPickupPoint(point: GpsInput!): [Courier!]!
 }
@@ -136,6 +144,12 @@ type Session {
   phone: String!
 
   courierStatus: CourierStatus
+}
+
+type Subscription {
+  currentTime: UnixTime!
+
+  tripUpdates(tripId: UUID!): TripUpdates!
 }
 
 scalar Time
@@ -194,7 +208,17 @@ enum TripStatus {
   COMPLETE
 }
 
+type TripUpdates {
+  status: TripStatus!
+}
+
 scalar UUID
+
+type UnixTime {
+  unixTime: Int!
+
+  timeStamp: String!
+}
 
 enum UploadFile {
   DP
@@ -448,4 +472,5 @@ directive @specifiedBy (url: String!) on SCALAR
 schema {
   query: Query
   mutation: Mutation
+  subscription: Subscription
 }
