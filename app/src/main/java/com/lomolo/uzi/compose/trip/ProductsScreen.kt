@@ -41,7 +41,6 @@ import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.CustomCap
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.PolyUtil
-import com.google.maps.android.SphericalUtil
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
@@ -132,10 +131,7 @@ fun TripProducts(
                         Marker(
                             state = MarkerState(LatLng(it.location.lat, it.location.lng)),
                             icon = BitmapDescriptorFactory.fromResource(R.drawable.icons8_my_location_90___),
-                            zIndex = 1.0f,
-                            flat = true,
-                            rotation = SphericalUtil.computeHeading(LatLng(it.location.lat, it.location.lng), polyline[0])
-                                .toFloat()
+                            zIndex = 1.0f
                         )
                     }
                 }
