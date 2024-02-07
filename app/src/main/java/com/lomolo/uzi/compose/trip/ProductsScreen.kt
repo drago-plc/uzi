@@ -207,7 +207,7 @@ private fun NearbyProducts(
                     )
                 },
                 modifier = Modifier
-                    .padding(8.dp)
+                    .padding(top = 16.dp, bottom = 16.dp)
                     .border(
                         BorderStroke(
                             2.dp,
@@ -226,18 +226,19 @@ private fun NearbyProducts(
             )
         }
         item {
-            Button(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp)
-                    .padding(8.dp),
-                shape = MaterialTheme.shapes.small,
-                onClick = { onConfirmTrip() }
-            ) {
-                Text(
-                    "Confirm",
-                    style = MaterialTheme.typography.labelMedium
-                )
+            Box(Modifier.padding(top= 8.dp, bottom = 8.dp)) {
+                Button(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
+                    shape = MaterialTheme.shapes.small,
+                    onClick = { onConfirmTrip() }
+                ) {
+                    Text(
+                        "Confirm",
+                        style = MaterialTheme.typography.labelMedium
+                    )
+                }
             }
         }
     }
