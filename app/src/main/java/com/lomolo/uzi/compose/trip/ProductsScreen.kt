@@ -49,7 +49,6 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
-import com.lomolo.uzi.GetCourierNearPickupPointQuery
 import com.lomolo.uzi.ComputeTripRouteQuery
 import com.lomolo.uzi.R
 import com.lomolo.uzi.compose.navigation.Navigation
@@ -63,7 +62,8 @@ object TripProductsScreenDestination: Navigation {
 fun TripProducts(
     modifier: Modifier = Modifier,
     navigateBack: () -> Unit,
-    tripViewModel: TripViewModel
+    tripViewModel: TripViewModel,
+    onConfirmTrip: (String) -> Unit
 ) {
     var polyline: List<LatLng> = listOf()
     var nearbyProducts: List<ComputeTripRouteQuery.AvailableProduct> = listOf()
@@ -73,12 +73,6 @@ fun TripProducts(
                 polyline = PolyUtil.decode(s.success.polyline)
                 nearbyProducts = s.success.availableProducts
             }
-        }
-    }
-    var nearbyCouriers: List<GetCourierNearPickupPointQuery.GetCourierNearPickupPoint> = listOf()
-    when(val s = tripViewModel.getCourierNearPickupState) {
-        is GetCourierNearPickupState.Success -> {
-            nearbyCouriers = s.success
         }
     }
     val uiSettings by remember {
@@ -125,17 +119,6 @@ fun TripProducts(
                     zIndex = 1.0f
                 )
             }
-            if (nearbyCouriers.isNotEmpty()) {
-                nearbyCouriers.forEach {
-                    if (polyline.isNotEmpty()) {
-                        Marker(
-                            state = MarkerState(LatLng(it.location.lat, it.location.lng)),
-                            icon = BitmapDescriptorFactory.fromResource(R.drawable.icons8_my_location_90___),
-                            zIndex = 1.0f
-                        )
-                    }
-                }
-            }
         }
         if (isMapLoaded) {
             Box(Modifier.padding(8.dp)) {
@@ -168,7 +151,10 @@ fun TripProducts(
                 }
 
                if (nearbyProducts.isNotEmpty()) {
-                   NearbyProducts(products = nearbyProducts)
+                   NearbyProducts(
+                       products = nearbyProducts,
+                       onConfirmTrip = { onConfirmTrip(ConfirmTripDetailsDestination.route) }
+                   )
                } else {
                    if (polyline.isNotEmpty()) {
                        Text(
@@ -186,7 +172,8 @@ fun TripProducts(
 @Composable
 private fun NearbyProducts(
     modifier: Modifier = Modifier,
-    products: List<ComputeTripRouteQuery.AvailableProduct>
+    products: List<ComputeTripRouteQuery.AvailableProduct>,
+    onConfirmTrip: () -> Unit
 ) {
     LazyColumn(
         modifier = modifier
@@ -235,7 +222,7 @@ private fun NearbyProducts(
                     .height(56.dp)
                     .padding(8.dp),
                 shape = MaterialTheme.shapes.small,
-                onClick = { /*TODO*/ }
+                onClick = { onConfirmTrip() }
             ) {
                 Text(
                     "Confirm",

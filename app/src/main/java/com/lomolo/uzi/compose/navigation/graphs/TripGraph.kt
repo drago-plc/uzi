@@ -7,6 +7,7 @@ import androidx.navigation.navigation
 import com.lomolo.uzi.MainViewModel
 import com.lomolo.uzi.compose.home.HomeScreenDestination
 import com.lomolo.uzi.compose.navigation.Navigation
+import com.lomolo.uzi.compose.trip.ConfirmTripDetailsDestination
 import com.lomolo.uzi.compose.trip.DropoffMap
 import com.lomolo.uzi.compose.trip.DropoffMapScreenDestination
 import com.lomolo.uzi.compose.trip.PickupMap
@@ -15,6 +16,7 @@ import com.lomolo.uzi.compose.trip.SearchDropoff
 import com.lomolo.uzi.compose.trip.SearchDropoffLocationScreenDestination
 import com.lomolo.uzi.compose.trip.SearchPickup
 import com.lomolo.uzi.compose.trip.SearchPickupLocationScreenDestination
+import com.lomolo.uzi.compose.trip.ConfirmTripDetails
 import com.lomolo.uzi.compose.trip.TripProducts
 import com.lomolo.uzi.compose.trip.TripProductsScreenDestination
 import com.lomolo.uzi.compose.trip.TripViewModel
@@ -86,7 +88,18 @@ fun NavGraphBuilder.trip(
         composable(TripProductsScreenDestination.route) {
             TripProducts(
                 tripViewModel = tripViewModel,
-                navigateBack = { navController.popBackStack() }
+                navigateBack = { navController.popBackStack() },
+                onConfirmTrip = {
+                    navController.navigate(it)
+                }
+            )
+        }
+        composable(ConfirmTripDetailsDestination.route) {
+            ConfirmTripDetails(
+                onNavigateUp = {
+                    navController.popBackStack()
+                },
+                tripViewModel = tripViewModel
             )
         }
     }
