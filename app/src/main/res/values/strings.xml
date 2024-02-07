@@ -20,4 +20,5 @@
     <string name="enter_your_details">Enter your details</string>
     <string name="enter_your_phone">Enter your phone</string>
     <string name="enter_location">Enter location</string>
+    <string name="still_onboarding_your_area">No registered courier in your area. We are still onboarding more products.</string>
 </resources>

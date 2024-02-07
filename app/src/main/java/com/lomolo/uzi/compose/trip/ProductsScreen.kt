@@ -32,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
@@ -175,9 +176,9 @@ fun TripProducts(
                } else {
                    if (polyline.isNotEmpty()) {
                        Text(
-                           "Can't find couriers. We are still onboarding your area.",
-                           style = MaterialTheme.typography.labelSmall,
-                           modifier = Modifier.padding(8.dp)
+                           stringResource(R.string.still_onboarding_your_area),
+                           style = MaterialTheme.typography.labelMedium,
+                           modifier = Modifier.padding(16.dp)
                        )
                    }
                }
