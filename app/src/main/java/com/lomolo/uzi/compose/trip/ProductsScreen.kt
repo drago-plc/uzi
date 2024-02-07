@@ -3,6 +3,7 @@ package com.lomolo.uzi.compose.trip
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -153,7 +154,8 @@ fun TripProducts(
                if (nearbyProducts.isNotEmpty()) {
                    NearbyProducts(
                        products = nearbyProducts,
-                       onConfirmTrip = { onConfirmTrip(ConfirmTripDetailsDestination.route) }
+                       onConfirmTrip = { onConfirmTrip(ConfirmTripDetailsDestination.route) },
+                       tripViewModel = tripViewModel
                    )
                } else {
                    if (polyline.isNotEmpty()) {
@@ -173,8 +175,13 @@ fun TripProducts(
 private fun NearbyProducts(
     modifier: Modifier = Modifier,
     products: List<ComputeTripRouteQuery.AvailableProduct>,
-    onConfirmTrip: () -> Unit
+    onConfirmTrip: () -> Unit,
+    tripViewModel: TripViewModel
 ) {
+    LaunchedEffect(Unit) {
+        if (tripViewModel.tripProductId.isBlank()) tripViewModel.setTripProduct(products[0].id.toString())
+    }
+
     LazyColumn(
         modifier = modifier
     ) {
@@ -204,9 +211,12 @@ private fun NearbyProducts(
                     .border(
                         BorderStroke(
                             2.dp,
-                            MaterialTheme.colorScheme.onSurfaceVariant
+                            if (tripViewModel.tripProductId == it.id.toString()) MaterialTheme.colorScheme.onSurfaceVariant
+                            else
+                            MaterialTheme.colorScheme.background
                         )
-                    ),
+                    )
+                    .clickable { tripViewModel.setTripProduct(it.id.toString()) },
                 trailingContent = {
                     Text(
                         "KES ${it.price}",

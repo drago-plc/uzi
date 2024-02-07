@@ -26,6 +26,9 @@ class TripViewModel(
     var searchQuery by mutableStateOf("")
         private set
 
+    var tripProductId by mutableStateOf("")
+        private set
+
     var searchingLocationState: LocationPredicateState by mutableStateOf(LocationPredicateState.Success(
         listOf()
     ))
@@ -72,6 +75,10 @@ class TripViewModel(
 
     fun updateSearchQuery(query: String) {
         searchQuery = query
+    }
+
+    fun setTripProduct(id: String) {
+        tripProductId = id
     }
 
     fun searchPlace(query: String) {
