@@ -43,7 +43,6 @@ import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import com.lomolo.uzi.MainViewModel
 import com.lomolo.uzi.compose.navigation.Navigation
-import com.lomolo.uzi.compose.signin.SessionViewModel
 import com.lomolo.uzi.model.Session
 
 object ConfirmTripDetailsDestination: Navigation {
