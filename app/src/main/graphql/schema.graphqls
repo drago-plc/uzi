@@ -43,9 +43,13 @@ input CourierUploadInput {
 }
 
 input CreateTripInput {
-  tripInput: TripInput!
+  tripInput: TripRouteInput!
 
-  tripProduct: String!
+  tripProductId: String!
+
+  recipient: TripRecipientInput!
+
+  confirmedPickup: TripInput!
 }
 
 type Geocode {
@@ -116,6 +120,26 @@ type Query {
   getCourierNearPickupPoint(point: GpsInput!): [Courier!]!
 }
 
+type Recipient {
+  id: UUID!
+
+  name: String!
+
+  building_name: String
+
+  unit_name: String
+
+  phone: String!
+
+  trip_id: UUID!
+
+  trip: Trip!
+
+  created_at: Time
+
+  updated_at: Time
+}
+
 type Route {
   id: UUID!
 
@@ -147,9 +171,7 @@ type Session {
 }
 
 type Subscription {
-  currentTime: UnixTime!
-
-  tripUpdates(tripId: UUID!): TripUpdates!
+  tripUpdates(tripId: UUID!): TripUpdate!
 }
 
 scalar Time
@@ -157,13 +179,13 @@ scalar Time
 type Trip {
   id: UUID!
 
-  courier_id: UUID!
+  courier_id: UUID
 
   user_id: UUID!
 
-  start_location: Gps!
+  start_location: Gps
 
-  end_location: Gps!
+  end_location: Gps
 
   status: TripStatus!
 
@@ -172,6 +194,8 @@ type Trip {
   route_id: UUID
 
   route: Route
+
+  recipient: Recipient!
 
   created_at: Time
 
@@ -184,6 +208,16 @@ input TripInput {
   formattedAddress: String!
 
   location: GpsInput!
+}
+
+input TripRecipientInput {
+  name: String!
+
+  building_name: String
+
+  unit_name: String
+
+  phone: String!
 }
 
 type TripRoute {
@@ -206,19 +240,21 @@ enum TripStatus {
   EN_ROUTE
 
   COMPLETE
+
+  COURIER_ARRIVING
+
+  COURIER_FOUND
+
+  COURIER_NOT_FOUND
 }
 
-type TripUpdates {
+type TripUpdate {
+  id: UUID!
+
   status: TripStatus!
 }
 
 scalar UUID
-
-type UnixTime {
-  unixTime: Int!
-
-  timeStamp: String!
-}
 
 enum UploadFile {
   DP
