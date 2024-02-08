@@ -4,7 +4,6 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
-import com.lomolo.uzi.DeviceDetails
 import com.lomolo.uzi.MainViewModel
 import com.lomolo.uzi.compose.home.HomeScreenDestination
 import com.lomolo.uzi.compose.navigation.Navigation
@@ -23,6 +22,7 @@ import com.lomolo.uzi.compose.trip.ConfirmTripPickupDestination
 import com.lomolo.uzi.compose.trip.TripProducts
 import com.lomolo.uzi.compose.trip.TripProductsScreenDestination
 import com.lomolo.uzi.compose.trip.TripViewModel
+import com.lomolo.uzi.model.Session
 
 object TripGraphDestination: Navigation {
     override val route = "trip/graph"
@@ -33,7 +33,7 @@ fun NavGraphBuilder.trip(
     navController: NavHostController,
     tripViewModel: TripViewModel,
     mainViewModel: MainViewModel,
-    deviceDetails: DeviceDetails
+    session: Session
 ) {
     navigation(
         startDestination = PickupMapScreenDestination.route,
@@ -104,10 +104,11 @@ fun NavGraphBuilder.trip(
                     navController.popBackStack()
                 },
                 tripViewModel = tripViewModel,
-                deviceDetails = deviceDetails,
                 onConfirm = {
                     navController.navigate(ConfirmTripPickupDestination.route)
-                }
+                },
+                mainViewModel = mainViewModel,
+                session = session
             )
         }
         composable(ConfirmTripPickupDestination.route) {

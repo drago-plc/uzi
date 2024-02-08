@@ -34,6 +34,8 @@ class SessionViewModel(
                 Session(
                     token = it[0].token,
                     id = it[0].id,
+                    firstname = it[0].firstname,
+                    lastname = it[0].lastname,
                     courierStatus = it[0].courierStatus,
                     phone = it[0].phone,
                     isCourier = it[0].isCourier,
@@ -83,6 +85,7 @@ class SessionViewModel(
             isPhoneNumberValid(phone)
         }
     }
+
     private fun isPhoneNumberValid(number: String): Boolean {
         return try {
             if (number.isEmpty()) return false

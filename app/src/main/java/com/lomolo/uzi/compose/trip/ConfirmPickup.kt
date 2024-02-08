@@ -102,8 +102,7 @@ fun ConfirmTripPickup(
                 Spacer(modifier = Modifier.size(16.dp))
                 Box(
                     Modifier
-                        .fillMaxWidth(),
-                    contentAlignment = Alignment.Center
+                        .fillMaxWidth()
                 ) {
                     Text(
                         text = "Confirm pickup location",

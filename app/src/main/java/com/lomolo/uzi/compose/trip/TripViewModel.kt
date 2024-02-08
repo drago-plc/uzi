@@ -7,11 +7,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.apollographql.apollo3.exception.ApolloException
 import com.google.android.gms.maps.model.LatLng
+import com.google.i18n.phonenumbers.PhoneNumberUtil
+import com.google.i18n.phonenumbers.Phonenumber
 import com.google.maps.android.compose.DragState
 import com.lomolo.uzi.GetCourierNearPickupPointQuery
 import com.lomolo.uzi.ComputeTripRouteQuery
+import com.lomolo.uzi.MainViewModel
 import com.lomolo.uzi.ReverseGeocodeQuery
 import com.lomolo.uzi.SearchPlaceQuery
+import com.lomolo.uzi.model.SignIn
 import com.lomolo.uzi.network.UziGqlApiInterface
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,9 +23,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.io.IOException
+import java.lang.Exception
 
 class TripViewModel(
-    private val uziGqlApiRepository: UziGqlApiInterface
+    private val uziGqlApiRepository: UziGqlApiInterface,
+    private val mainViewModel: MainViewModel
 ): ViewModel() {
     var searchQuery by mutableStateOf("")
         private set
@@ -59,6 +65,28 @@ class TripViewModel(
     }
     fun resetPickupMapDrag() {
         pickupMapDragState = DragState.START
+    }
+
+    val phoneUtil = PhoneNumberUtil.getInstance()
+    private fun isPhoneNumberValid(number: String): Boolean {
+        return try {
+            if (number.isEmpty()) return false
+            val p = Phonenumber.PhoneNumber()
+            p.countryCode = mainViewModel.deviceDetailsUiState.value.countryPhoneCode.toInt()
+            p.nationalNumber = number.toLong()
+            return phoneUtil.isValidNumber(p)
+        } catch(e: Exception) {
+            false
+        }
+    }
+    private fun parsePhoneNumber(number: String): String {
+        val p = phoneUtil.parse(number, mainViewModel.deviceDetailsUiState.value.country)
+        return p.countryCode.toString()+p.nationalNumber.toString()
+    }
+    fun isPhoneValid(uiState: TripDetails): Boolean {
+        return with(uiState) {
+            isPhoneNumberValid(phone)
+        }
     }
 
     fun setPickup(pickup: ReverseGeocodeQuery.ReverseGeocode) {
@@ -155,6 +183,44 @@ class TripViewModel(
         }
     }
 
+    fun tripDetailsValid(uiState: TripDetails): Boolean {
+        return with(uiState) {
+            name.isNotBlank() && isPhoneValid(uiState)
+        }
+    }
+
+    fun isNameValid(name: String): Boolean {
+        return name.trim().isNotBlank() && name.trim().matches(Regex("^[a-zA-Z ]*$"))
+    }
+
+    fun setTripDetailsName(name: String) {
+        _trip.update {
+            val tripDetails = it.details.copy(name = name)
+            it.copy(details = tripDetails)
+        }
+    }
+
+    fun setTripDetailsBuilding(building: String) {
+        _trip.update {
+            val tripDetails = it.details.copy(buildName = building)
+            it.copy(details = tripDetails)
+        }
+    }
+
+    fun setTripDetailsUnit(name: String) {
+        _trip.update {
+            val tripDetails = it.details.copy(flatOrOffice = name)
+            it.copy(details = tripDetails)
+        }
+    }
+
+    fun setTripDetailsPhone(phone: String) {
+        _trip.update {
+            val tripDetails = it.details.copy(phone = phone)
+            it.copy(details = tripDetails)
+        }
+    }
+
     fun resetTrip() {
         //_trip.value = Trip() TODO just for testing(revert once ready)
     }
@@ -180,8 +246,15 @@ interface PickupGeocodeState {
 
 data class Trip(
     val pickup: ReverseGeocodeQuery.ReverseGeocode = ReverseGeocodeQuery.ReverseGeocode("", "", ReverseGeocodeQuery.Location(0.0, 0.0)),
+    val details: TripDetails = TripDetails(),
     val dropoff: ReverseGeocodeQuery.ReverseGeocode = ReverseGeocodeQuery.ReverseGeocode("", "", ReverseGeocodeQuery.Location(0.0, 0.0))
 )
+ data class TripDetails(
+     val name: String = "",
+     var buildName: String = "",
+     val flatOrOffice: String = "",
+     val phone: String = ""
+ )
 
 interface ComputeTripRouteState {
     data class Success(val success: ComputeTripRouteQuery.ComputeTripRoute?): ComputeTripRouteState

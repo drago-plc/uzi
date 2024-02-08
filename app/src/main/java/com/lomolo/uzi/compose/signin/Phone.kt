@@ -77,7 +77,7 @@ fun Phone(
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .size(32.dp),
-                    contentDescription = "country flag"
+                    contentDescription = null
                 )
             },
             prefix = {
