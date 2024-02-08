@@ -43,6 +43,7 @@ import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import com.lomolo.uzi.MainViewModel
 import com.lomolo.uzi.compose.navigation.Navigation
+import com.lomolo.uzi.compose.signin.SessionViewModel
 import com.lomolo.uzi.model.Session
 
 object ConfirmTripDetailsDestination: Navigation {
@@ -55,7 +56,7 @@ fun ConfirmTripDetails(
     modifier: Modifier = Modifier,
     tripViewModel: TripViewModel,
     mainViewModel: MainViewModel,
-    session: Session,
+    sessionViewModel: SessionViewModel,
     onConfirm: () -> Unit,
     onNavigateUp: () -> Unit
 ) {
@@ -68,6 +69,7 @@ fun ConfirmTripDetails(
     val tripDetailsValid = tripViewModel.tripDetailsValid(tripDetailsUi.details)
     val isNameValid = tripViewModel.isNameValid(tripDetailsUi.details.name)
     val keyboardController = LocalSoftwareKeyboardController.current
+    val session by sessionViewModel.sessionUiState.collectAsState()
 
     Box(
         modifier
@@ -117,7 +119,7 @@ fun ConfirmTripDetails(
                                 chipSelected = it
                                 if (it == 1) {
                                     tripViewModel.setTripDetailsName("${session.firstname} ${session.lastname}")
-                                    tripViewModel.setTripDetailsPhone(session.phone)
+                                    tripViewModel.setTripDetailsPhone(session.phone.slice(3..session.phone.length-1))
                                 } else {
                                     tripViewModel.setTripDetailsName("")
                                     tripViewModel.setTripDetailsPhone("")

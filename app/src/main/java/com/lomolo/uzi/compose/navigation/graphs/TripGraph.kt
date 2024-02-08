@@ -7,6 +7,7 @@ import androidx.navigation.navigation
 import com.lomolo.uzi.MainViewModel
 import com.lomolo.uzi.compose.home.HomeScreenDestination
 import com.lomolo.uzi.compose.navigation.Navigation
+import com.lomolo.uzi.compose.signin.SessionViewModel
 import com.lomolo.uzi.compose.trip.ConfirmTripDetailsDestination
 import com.lomolo.uzi.compose.trip.DropoffMap
 import com.lomolo.uzi.compose.trip.DropoffMapScreenDestination
@@ -33,7 +34,7 @@ fun NavGraphBuilder.trip(
     navController: NavHostController,
     tripViewModel: TripViewModel,
     mainViewModel: MainViewModel,
-    session: Session
+    sessionViewModel: SessionViewModel
 ) {
     navigation(
         startDestination = PickupMapScreenDestination.route,
@@ -108,7 +109,7 @@ fun NavGraphBuilder.trip(
                     navController.navigate(ConfirmTripPickupDestination.route)
                 },
                 mainViewModel = mainViewModel,
-                session = session
+                sessionViewModel = sessionViewModel
             )
         }
         composable(ConfirmTripPickupDestination.route) {

@@ -81,7 +81,7 @@ fun UziNavHost(
             navController = navController,
             tripViewModel = tripViewModel,
             mainViewModel = mainViewModel,
-            session = session
+            sessionViewModel = sessionViewModel
         )
     }
 }
