@@ -221,6 +221,12 @@ class TripViewModel(
         }
     }
 
+    fun setConfirmedPickup(confirmed: ReverseGeocodeQuery.ReverseGeocode) {
+        _trip.update {
+            it.copy(confirmedPickup = confirmed)
+        }
+    }
+
     fun resetTrip() {
         //_trip.value = Trip() TODO just for testing(revert once ready)
     }
@@ -247,7 +253,8 @@ interface PickupGeocodeState {
 data class Trip(
     val pickup: ReverseGeocodeQuery.ReverseGeocode = ReverseGeocodeQuery.ReverseGeocode("", "", ReverseGeocodeQuery.Location(0.0, 0.0)),
     val details: TripDetails = TripDetails(),
-    val dropoff: ReverseGeocodeQuery.ReverseGeocode = ReverseGeocodeQuery.ReverseGeocode("", "", ReverseGeocodeQuery.Location(0.0, 0.0))
+    val dropoff: ReverseGeocodeQuery.ReverseGeocode = ReverseGeocodeQuery.ReverseGeocode("", "", ReverseGeocodeQuery.Location(0.0, 0.0)),
+    val confirmedPickup: ReverseGeocodeQuery.ReverseGeocode = ReverseGeocodeQuery.ReverseGeocode("", "", ReverseGeocodeQuery.Location(0.0, 0.0))
 )
  data class TripDetails(
      val name: String = "",
