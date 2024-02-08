@@ -53,6 +53,7 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import com.lomolo.uzi.ComputeTripRouteQuery
 import com.lomolo.uzi.R
 import com.lomolo.uzi.compose.navigation.Navigation
+import java.text.NumberFormat
 
 object TripProductsScreenDestination: Navigation {
     override val route = "trip/products"
@@ -219,7 +220,7 @@ private fun NearbyProducts(
                     .clickable { tripViewModel.setTripProduct(it.id.toString()) },
                 trailingContent = {
                     Text(
-                        "KES ${it.price}",
+                        "KES ${NumberFormat.getNumberInstance().format(it.price)}",
                         style = MaterialTheme.typography.labelSmall
                     )
                 }
@@ -230,7 +231,7 @@ private fun NearbyProducts(
                 Button(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(56.dp),
+                        .height(54.dp),
                     shape = MaterialTheme.shapes.small,
                     onClick = { onConfirmTrip() }
                 ) {

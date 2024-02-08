@@ -4,6 +4,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import com.lomolo.uzi.DeviceDetails
 import com.lomolo.uzi.MainViewModel
 import com.lomolo.uzi.compose.home.HomeScreenDestination
 import com.lomolo.uzi.compose.navigation.Navigation
@@ -17,6 +18,8 @@ import com.lomolo.uzi.compose.trip.SearchDropoffLocationScreenDestination
 import com.lomolo.uzi.compose.trip.SearchPickup
 import com.lomolo.uzi.compose.trip.SearchPickupLocationScreenDestination
 import com.lomolo.uzi.compose.trip.ConfirmTripDetails
+import com.lomolo.uzi.compose.trip.ConfirmTripPickup
+import com.lomolo.uzi.compose.trip.ConfirmTripPickupDestination
 import com.lomolo.uzi.compose.trip.TripProducts
 import com.lomolo.uzi.compose.trip.TripProductsScreenDestination
 import com.lomolo.uzi.compose.trip.TripViewModel
@@ -30,6 +33,7 @@ fun NavGraphBuilder.trip(
     navController: NavHostController,
     tripViewModel: TripViewModel,
     mainViewModel: MainViewModel,
+    deviceDetails: DeviceDetails
 ) {
     navigation(
         startDestination = PickupMapScreenDestination.route,
@@ -99,7 +103,19 @@ fun NavGraphBuilder.trip(
                 onNavigateUp = {
                     navController.popBackStack()
                 },
-                tripViewModel = tripViewModel
+                tripViewModel = tripViewModel,
+                deviceDetails = deviceDetails,
+                onConfirm = {
+                    navController.navigate(ConfirmTripPickupDestination.route)
+                }
+            )
+        }
+        composable(ConfirmTripPickupDestination.route) {
+            ConfirmTripPickup(
+                tripViewModel = tripViewModel,
+                onNavigateUp = {
+                    navController.popBackStack()
+                }
             )
         }
     }
