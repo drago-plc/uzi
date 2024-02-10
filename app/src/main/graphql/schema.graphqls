@@ -252,6 +252,8 @@ type TripUpdate {
   id: UUID!
 
   status: TripStatus!
+
+  location: Gps
 }
 
 scalar UUID

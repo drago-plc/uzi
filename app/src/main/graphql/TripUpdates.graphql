@@ -1,0 +1,6 @@
+subscription TripUpdates($tripId: String!) {
+    tripUpdates(tripId: $tripId) {
+        id
+        status
+    }
+}
