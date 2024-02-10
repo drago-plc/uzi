@@ -54,6 +54,7 @@ class DefaultContainer(private val context: Context): AppContainer {
 
     override val apolloClient = ApolloClient.Builder()
         .serverUrl("${baseApi}/api")
+        .webSocketServerUrl("${baseApi}/api")
         .addHttpInterceptor(
             AuthInterceptor(
                 UziStore.getStore(context).sessionDao(),
