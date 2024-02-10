@@ -117,6 +117,14 @@ fun NavGraphBuilder.trip(
                 tripViewModel = tripViewModel,
                 onNavigateUp = {
                     navController.popBackStack()
+                },
+                onNavigateTo = {
+                    navController.navigate(it) {
+                        popUpTo(it) {
+                            inclusive = true
+                        }
+                        launchSingleTop = true
+                    }
                 }
             )
         }

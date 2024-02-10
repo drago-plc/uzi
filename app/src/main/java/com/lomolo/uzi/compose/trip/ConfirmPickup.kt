@@ -40,6 +40,8 @@ import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.lomolo.uzi.R
+import com.lomolo.uzi.compose.home.HomeScreenDestination
+import com.lomolo.uzi.compose.loader.Loader
 import com.lomolo.uzi.compose.navigation.Navigation
 
 object ConfirmTripPickupDestination: Navigation {
@@ -52,11 +54,11 @@ fun ConfirmTripPickup(
     modifier: Modifier = Modifier,
     onNavigateUp: () -> Unit = {},
     tripViewModel: TripViewModel,
+    onNavigateTo: (String) -> Unit = {},
 ) {
     val uiSettings by remember {
         mutableStateOf(MapUiSettings(zoomControlsEnabled = false))
     }
-
     val mapProperties by remember {
         mutableStateOf(MapProperties(mapType = MapType.TERRAIN))
     }
@@ -142,12 +144,20 @@ fun ConfirmTripPickup(
                     .fillMaxWidth()
                     .height(54.dp),
                 shape = MaterialTheme.shapes.small,
-                onClick = { /*TODO*/ }
+                onClick = {
+                    tripViewModel.createTrip {
+                        onNavigateTo(HomeScreenDestination.route)
+                    }
+                }
             ) {
-               Text(
-                   text = "Confirm",
-                   style = MaterialTheme.typography.labelMedium
-               )
+               if (tripViewModel.createTripState is CreateTripState.Loading) {
+                  Loader()
+               } else {
+                   Text(
+                       text = "Confirm",
+                       style = MaterialTheme.typography.labelMedium
+                   )
+               }
             }
         }
     }

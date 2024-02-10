@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.apollographql.apollo3.api.Optional
 import com.apollographql.apollo3.exception.ApolloException
 import com.google.android.gms.maps.model.LatLng
 import com.google.i18n.phonenumbers.PhoneNumberUtil
@@ -12,11 +13,17 @@ import com.google.i18n.phonenumbers.Phonenumber
 import com.google.maps.android.compose.DragState
 import com.lomolo.uzi.GetCourierNearPickupPointQuery
 import com.lomolo.uzi.ComputeTripRouteQuery
+import com.lomolo.uzi.CreateTripMutation
 import com.lomolo.uzi.MainViewModel
 import com.lomolo.uzi.ReverseGeocodeQuery
 import com.lomolo.uzi.SearchPlaceQuery
 import com.lomolo.uzi.model.SignIn
 import com.lomolo.uzi.network.UziGqlApiInterface
+import com.lomolo.uzi.type.CreateTripInput
+import com.lomolo.uzi.type.GpsInput
+import com.lomolo.uzi.type.TripInput
+import com.lomolo.uzi.type.TripRecipientInput
+import com.lomolo.uzi.type.TripRouteInput
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -53,6 +60,9 @@ class TripViewModel(
         private set
 
     var confirmedPickup: ReverseGeocodeConfirmedPickup by mutableStateOf(ReverseGeocodeConfirmedPickup.Success(null))
+        private set
+
+    var createTripState: CreateTripState by mutableStateOf(CreateTripState.Success(null))
         private set
 
     private var _trip = MutableStateFlow(Trip())
@@ -242,6 +252,54 @@ class TripViewModel(
         }
     }
 
+    private fun createTripInput(): CreateTripInput {
+        val _confirmedPickup: TripInput = when(val s = confirmedPickup) {
+            is ReverseGeocodeConfirmedPickup.Success -> {
+                val place = s.success!!
+                TripInput(place.placeId, place.formattedAddress, GpsInput(place.location.lat, place.location.lng))
+            }
+            else -> {
+                TripInput("", "", GpsInput(0.0, 0.0))
+            }
+        }
+
+        return CreateTripInput(
+            tripInput = TripRouteInput(
+                pickup = TripInput(
+                    placeId = _trip.value.pickup.placeId,
+                    formattedAddress = _trip.value.pickup.formattedAddress,
+                    location = GpsInput(_trip.value.pickup.location.lat, _trip.value.pickup.location.lng)
+                ),
+                dropoff = TripInput(
+                    placeId = _trip.value.dropoff.placeId,
+                    formattedAddress = _trip.value.dropoff.formattedAddress,
+                    location = GpsInput(_trip.value.dropoff.location.lat, _trip.value.dropoff.location.lng)
+                )
+            ),
+            confirmedPickup = _confirmedPickup,
+            recipient = TripRecipientInput(
+                name = _trip.value.details.name,
+                building_name = Optional.presentIfNotNull(_trip.value.details.buildName),
+                unit_name = Optional.presentIfNotNull(_trip.value.details.flatOrOffice),
+                phone = _trip.value.details.phone
+            ),
+            tripProductId = tripProductId
+        )
+    }
+    fun createTrip(cb: () -> Unit = {}) {
+        if (createTripState !is CreateTripState.Loading) {
+            createTripState = CreateTripState.Loading
+            viewModelScope.launch {
+                createTripState = try {
+                    val res = uziGqlApiRepository.createTrip(createTripInput()).dataOrThrow()
+                    CreateTripState.Success(res.createTrip).also { cb() }
+                } catch (e: ApolloException) {
+                    CreateTripState.Error(e.message)
+                }
+            }
+        }
+    }
+
     fun resetTrip() {
         //_trip.value = Trip() TODO just for testing(revert once ready)
     }
@@ -294,4 +352,10 @@ interface ReverseGeocodeConfirmedPickup {
     data class Success(val success: ReverseGeocodeQuery.ReverseGeocode?): ReverseGeocodeConfirmedPickup
     data object Loading: ReverseGeocodeConfirmedPickup
     data class Error(val message: String?): ReverseGeocodeConfirmedPickup
+}
+
+interface CreateTripState {
+    data class Success(val success: CreateTripMutation.CreateTrip?): CreateTripState
+    data object Loading: CreateTripState
+    data class Error(val message: String?): CreateTripState
 }
