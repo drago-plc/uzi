@@ -52,19 +52,22 @@ class TripViewModel(
     var getCourierNearPickupState: GetCourierNearPickupState by mutableStateOf(GetCourierNearPickupState.Success(listOf()))
         private set
 
+    var confirmedPickup: ReverseGeocodeConfirmedPickup by mutableStateOf(ReverseGeocodeConfirmedPickup.Success(null))
+        private set
+
     private var _trip = MutableStateFlow(Trip())
     val tripUiInput: StateFlow<Trip> = _trip.asStateFlow()
 
-    var pickupMapDragState: DragState by mutableStateOf(DragState.START)
+    var mapDragState: DragState by mutableStateOf(DragState.START)
         private set
-    fun startPickupMapDrag() {
-        pickupMapDragState = DragState.DRAG
+    fun startMapDrag() {
+        mapDragState = DragState.DRAG
     }
-    fun stopPickupMapDrag() {
-        pickupMapDragState = DragState.END
+    fun stopMapDrag() {
+        mapDragState = DragState.END
     }
-    fun resetPickupMapDrag() {
-        pickupMapDragState = DragState.START
+    fun resetMapDrag() {
+        mapDragState = DragState.START
     }
 
     val phoneUtil = PhoneNumberUtil.getInstance()
@@ -227,6 +230,18 @@ class TripViewModel(
         }
     }
 
+    fun reverseGeocodeConfirmedPickup(cords: LatLng, cb: (ReverseGeocodeQuery.ReverseGeocode) -> Unit = {}) {
+        confirmedPickup = ReverseGeocodeConfirmedPickup.Loading
+        viewModelScope.launch {
+            confirmedPickup = try {
+                val res = reverseGeocode(cords)
+                ReverseGeocodeConfirmedPickup.Success(res.reverseGeocode).also { cb(res.reverseGeocode!!) }
+            } catch (e: ApolloException) {
+                ReverseGeocodeConfirmedPickup.Error(e.message)
+            }
+        }
+    }
+
     fun resetTrip() {
         //_trip.value = Trip() TODO just for testing(revert once ready)
     }
@@ -273,4 +288,10 @@ interface GetCourierNearPickupState {
     data class Success(val success: List<GetCourierNearPickupPointQuery.GetCourierNearPickupPoint>): GetCourierNearPickupState
     data object Loading: GetCourierNearPickupState
     data class Error(val message: String?): GetCourierNearPickupState
+}
+
+interface ReverseGeocodeConfirmedPickup {
+    data class Success(val success: ReverseGeocodeQuery.ReverseGeocode?): ReverseGeocodeConfirmedPickup
+    data object Loading: ReverseGeocodeConfirmedPickup
+    data class Error(val message: String?): ReverseGeocodeConfirmedPickup
 }

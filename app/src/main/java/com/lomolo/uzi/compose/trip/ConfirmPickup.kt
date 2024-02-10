@@ -19,6 +19,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,6 +32,8 @@ import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.PolyUtil
+import com.google.maps.android.compose.CameraMoveStartedReason
+import com.google.maps.android.compose.DragState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
@@ -71,6 +74,18 @@ fun ConfirmTripPickup(
     }
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(pickupPoint ?: LatLng(0.0, 0.0), 18f)
+    }
+
+    LaunchedEffect((cameraPositionState.isMoving && cameraPositionState.cameraMoveStartedReason == CameraMoveStartedReason.GESTURE)) {
+        if (cameraPositionState.isMoving && cameraPositionState.cameraMoveStartedReason == CameraMoveStartedReason.GESTURE) {
+            tripViewModel.startMapDrag()
+        } else {
+            if (tripViewModel.mapDragState == DragState.DRAG) {
+                tripViewModel.reverseGeocodeConfirmedPickup(cameraPositionState.position.target) {
+                    tripViewModel.setConfirmedPickup(it)
+                }
+            }
+        }
     }
 
     Box(modifier.fillMaxSize()) {

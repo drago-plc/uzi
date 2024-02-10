@@ -42,8 +42,8 @@ fun PickupMap(
         },
         onLocationConfirmation = {
             tripViewModel.pickupReverseGeocode(it) {
-                tripViewModel.stopPickupMapDrag()
-                tripViewModel.resetPickupMapDrag()
+                tripViewModel.stopMapDrag()
+                tripViewModel.resetMapDrag()
             }
         },
         onConfirmationClick = {

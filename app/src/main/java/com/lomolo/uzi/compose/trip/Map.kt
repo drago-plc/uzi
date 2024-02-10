@@ -81,9 +81,9 @@ internal fun Map(
 
     LaunchedEffect((cameraPositionState.isMoving && cameraPositionState.cameraMoveStartedReason == CameraMoveStartedReason.GESTURE)) {
         if (cameraPositionState.isMoving && cameraPositionState.cameraMoveStartedReason == CameraMoveStartedReason.GESTURE) {
-            tripViewModel.startPickupMapDrag()
+            tripViewModel.startMapDrag()
         } else {
-            if (tripViewModel.pickupMapDragState == DragState.DRAG) {
+            if (tripViewModel.mapDragState == DragState.DRAG) {
                 onLocationConfirmation(cameraPositionState.position.target)
             }
         }

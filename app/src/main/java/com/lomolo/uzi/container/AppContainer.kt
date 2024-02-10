@@ -1,23 +1,16 @@
-package com.lomolo.uzi
+package com.lomolo.uzi.container
 
 import android.content.Context
 import com.apollographql.apollo3.ApolloClient
-import com.apollographql.apollo3.api.http.HttpRequest
-import com.apollographql.apollo3.api.http.HttpResponse
-import com.apollographql.apollo3.network.http.HttpInterceptor
-import com.apollographql.apollo3.network.http.HttpInterceptorChain
+import com.lomolo.uzi.apollo.interceptors.AuthInterceptor
 import com.lomolo.uzi.network.UziGqlApiInterface
-import com.lomolo.uzi.network.UziGqlApiRepository
 import com.lomolo.uzi.network.UziRestApiServiceInterface
 import com.lomolo.uzi.repository.SessionInterface
+import com.lomolo.uzi.network.UziGqlApiRepository
 import com.lomolo.uzi.repository.SessionRepository
 import com.lomolo.uzi.sql.UziStore
-import com.lomolo.uzi.sql.dao.SessionDao
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
@@ -28,45 +21,6 @@ interface AppContainer {
     val sessionRepository: SessionInterface
     val uziGqlApiRepository: UziGqlApiInterface
     val apolloClient: ApolloClient
-}
-
-private const val baseApi = "https://7862-102-217-124-1.ngrok-free.app"
-
-class AuthInterceptor(
-    private val sessionDao: SessionDao,
-    private val sessionRepository: SessionInterface
-): HttpInterceptor {
-    private val mutex = Mutex()
-
-    override suspend fun intercept(
-        request: HttpRequest,
-        chain: HttpInterceptorChain
-    ): HttpResponse {
-        var session = mutex.withLock {
-            sessionDao
-                .getSession()
-                .firstOrNull()
-        }
-
-        val response = chain.proceed(
-            request.newBuilder().addHeader("Authorization", "Bearer ${session!!.first().token}").build()
-        )
-
-        return if (response.statusCode == 401) {
-            session = mutex.withLock {
-                sessionRepository.refreshSession(session!!.first())
-                sessionDao
-                    .getSession()
-                    .firstOrNull()
-            }
-
-            chain.proceed(
-                request.newBuilder().addHeader("Authorization", "Bearer ${session!!.first().token}").build()
-            )
-        } else {
-            return response
-        }
-    }
 }
 
 class DefaultContainer(private val context: Context): AppContainer {
