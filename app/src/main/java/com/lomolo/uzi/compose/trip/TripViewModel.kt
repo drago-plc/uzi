@@ -17,16 +17,22 @@ import com.lomolo.uzi.CreateTripMutation
 import com.lomolo.uzi.MainViewModel
 import com.lomolo.uzi.ReverseGeocodeQuery
 import com.lomolo.uzi.SearchPlaceQuery
-import com.lomolo.uzi.model.SignIn
+import com.lomolo.uzi.model.TripStatus
 import com.lomolo.uzi.network.UziGqlApiInterface
+import com.lomolo.uzi.repository.TripInterface
 import com.lomolo.uzi.type.CreateTripInput
 import com.lomolo.uzi.type.GpsInput
 import com.lomolo.uzi.type.TripInput
 import com.lomolo.uzi.type.TripRecipientInput
 import com.lomolo.uzi.type.TripRouteInput
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.io.IOException
@@ -34,8 +40,21 @@ import java.lang.Exception
 
 class TripViewModel(
     private val uziGqlApiRepository: UziGqlApiInterface,
-    private val mainViewModel: MainViewModel
+    private val mainViewModel: MainViewModel,
+    private val tripRepository: TripInterface
 ): ViewModel() {
+    val tripUpdatesUiState: StateFlow<com.lomolo.uzi.model.Trip> = tripRepository
+        .getTrip()
+        .filterNotNull()
+        .stateIn(
+            scope = viewModelScope,
+            initialValue = com.lomolo.uzi.model.Trip(),
+            started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS)
+        )
+
+    companion object {
+        private const val TIMEOUT_MILLIS = 2_000L
+    }
     var searchQuery by mutableStateOf("")
         private set
 
@@ -292,6 +311,14 @@ class TripViewModel(
             viewModelScope.launch {
                 createTripState = try {
                     val res = uziGqlApiRepository.createTrip(createTripInput()).dataOrThrow()
+                    tripRepository.createTrip(
+                        com.lomolo.uzi.model.Trip(
+                            res.createTrip.id.toString(),
+                            TripStatus.CREATE.toString(),
+                            com.lomolo.uzi.model.Trip().lat,
+                            com.lomolo.uzi.model.Trip().lng
+                        )
+                    )
                     CreateTripState.Success(res.createTrip).also { cb() }
                 } catch (e: ApolloException) {
                     CreateTripState.Error(e.message)
@@ -302,6 +329,22 @@ class TripViewModel(
 
     fun resetTrip() {
         //_trip.value = Trip() TODO just for testing(revert once ready)
+    }
+
+    init {
+        viewModelScope.launch {
+            tripRepository
+                .getTripUpdates(tripUpdatesUiState.value.id)
+                .onEach { tripRepository.updateTrip(
+                    com.lomolo.uzi.model.Trip(
+                        id = it.data?.tripUpdates?.id.toString(),
+                        status = it.data?.tripUpdates?.status.toString(),
+                        lat = it.data?.tripUpdates?.location?.lat ?: 0.0,
+                        lng = it.data?.tripUpdates?.location?.lng ?: 0.0
+                    ))
+                }
+                .collect()
+        }
     }
 }
 

@@ -27,7 +27,8 @@ object UziViewModelProvider {
         initializer {
             TripViewModel(
                 uziApplication().container.uziGqlApiRepository,
-                mainViewModel = mainViewModel
+                mainViewModel = mainViewModel,
+                uziApplication().container.tripRepository
             )
         }
     }

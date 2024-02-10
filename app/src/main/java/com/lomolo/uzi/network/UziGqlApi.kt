@@ -8,9 +8,11 @@ import com.lomolo.uzi.ComputeTripRouteQuery
 import com.lomolo.uzi.CreateTripMutation
 import com.lomolo.uzi.ReverseGeocodeQuery
 import com.lomolo.uzi.SearchPlaceQuery
+import com.lomolo.uzi.TripUpdatesSubscription
 import com.lomolo.uzi.type.CreateTripInput
 import com.lomolo.uzi.type.GpsInput
 import com.lomolo.uzi.type.TripInput
+import kotlinx.coroutines.flow.Flow
 
 interface UziGqlApiInterface {
     suspend fun searchPlace(place: String): ApolloResponse<SearchPlaceQuery.Data>
@@ -18,6 +20,7 @@ interface UziGqlApiInterface {
     suspend fun makeTripRoute(pickup: ReverseGeocodeQuery.ReverseGeocode, dropoff: ReverseGeocodeQuery.ReverseGeocode): ApolloResponse<ComputeTripRouteQuery.Data>
     suspend fun getCourierNearPickupPoint(pickup: LatLng): ApolloResponse<GetCourierNearPickupPointQuery.Data>
     suspend fun createTrip(input: CreateTripInput): ApolloResponse<CreateTripMutation.Data>
+    fun getTripUpdates(id: String): Flow<ApolloResponse<TripUpdatesSubscription.Data>>
 }
 
 class UziGqlApiRepository(
@@ -69,5 +72,9 @@ class UziGqlApiRepository(
         return apolloClient.mutation(
             CreateTripMutation(input)
         ).execute()
+    }
+
+    override fun getTripUpdates(id: String): Flow<ApolloResponse<TripUpdatesSubscription.Data>> {
+        return apolloClient.subscription(TripUpdatesSubscription(id)).toFlow()
     }
 }

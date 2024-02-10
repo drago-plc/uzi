@@ -8,6 +8,8 @@ import com.lomolo.uzi.network.UziRestApiServiceInterface
 import com.lomolo.uzi.repository.SessionInterface
 import com.lomolo.uzi.network.UziGqlApiRepository
 import com.lomolo.uzi.repository.SessionRepository
+import com.lomolo.uzi.repository.TripInterface
+import com.lomolo.uzi.repository.TripRepository
 import com.lomolo.uzi.sql.UziStore
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -21,6 +23,7 @@ interface AppContainer {
     val sessionRepository: SessionInterface
     val uziGqlApiRepository: UziGqlApiInterface
     val apolloClient: ApolloClient
+    val tripRepository: TripInterface
 }
 
 class DefaultContainer(private val context: Context): AppContainer {
@@ -65,5 +68,12 @@ class DefaultContainer(private val context: Context): AppContainer {
 
     override val uziGqlApiRepository: UziGqlApiInterface by lazy {
         UziGqlApiRepository(apolloClient)
+    }
+
+    override val tripRepository: TripInterface by lazy {
+        TripRepository(
+            UziStore.getStore(context).tripDao(),
+            uziGqlApiRepository
+        )
     }
 }
