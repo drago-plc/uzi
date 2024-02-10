@@ -1,6 +1,10 @@
-subscription TripUpdates($tripId: String!) {
+subscription TripUpdates($tripId: UUID!) {
     tripUpdates(tripId: $tripId) {
         id
         status
+        location {
+            lat
+            lng
+        }
     }
 }
