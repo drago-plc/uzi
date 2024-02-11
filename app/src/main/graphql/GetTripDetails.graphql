@@ -1,0 +1,13 @@
+query GetTripDetails($id: UUID!) {
+    getTripDetails(tripId: $id) {
+        id
+        status
+        courier {
+            id
+            user {
+                first_name
+                last_name
+            }
+        }
+    }
+}

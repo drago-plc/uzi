@@ -7,12 +7,20 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.twotone.Call
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,10 +30,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
@@ -41,6 +57,7 @@ import com.lomolo.uzi.compose.navigation.Navigation
 import com.lomolo.uzi.compose.signin.GetStarted
 import com.lomolo.uzi.compose.signin.UserNameDestination
 import com.lomolo.uzi.compose.trip.ComputeTripRouteState
+import com.lomolo.uzi.compose.trip.GetTripDetailsState
 import com.lomolo.uzi.compose.trip.SearchDropoffLocationScreenDestination
 import com.lomolo.uzi.compose.trip.SearchPickupLocationScreenDestination
 import com.lomolo.uzi.compose.trip.StartTrip
@@ -110,6 +127,10 @@ private fun HomeSuccessScreen(
             onNavigateTo(UserNameDestination.route)
         }
         else -> {
+            TripScreen(
+                tripViewModel = tripViewModel
+            )
+            /*
             DefaultHomeScreen(
                 modifier = modifier,
                 mainViewModel = mainViewModel,
@@ -120,6 +141,7 @@ private fun HomeSuccessScreen(
                 onTripProceed = onNavigateTo,
                 isAuthed = isAuthed
             )
+             */
         }
     }
 }
@@ -167,8 +189,8 @@ private fun DefaultHomeScreen(
         cameraPositionState = cameraPositionState
     )
     AnimatedVisibility(
-        visible = deviceDetails.mapLoaded,
         modifier = modifier,
+        visible = deviceDetails.mapLoaded,
         exit = fadeOut(),
         enter = EnterTransition.None
     ) {
@@ -229,7 +251,137 @@ private fun DefaultHomeScreen(
 }
 
 @Composable
-fun HomeErrorScreen(
+private fun TripScreen(
+    modifier: Modifier = Modifier,
+    tripViewModel: TripViewModel
+) {
+    var mapLoaded by rememberSaveable {
+        mutableStateOf(false)
+    }
+    val uiSettings by remember {
+        mutableStateOf(MapUiSettings(zoomControlsEnabled = false))
+    }
+    val mapProperties by remember {
+        mutableStateOf(MapProperties(mapType = MapType.TERRAIN))
+    }
+
+    GoogleMap(
+        uiSettings = uiSettings,
+        properties = mapProperties,
+        modifier = modifier,
+        onMapLoaded = {
+            mapLoaded = true
+        }
+    )
+    AnimatedVisibility(
+        visible = mapLoaded,
+        enter = EnterTransition.None,
+        exit = fadeOut()
+    ) {
+       Box(Modifier.fillMaxSize()) {
+           Box(Modifier.align(Alignment.BottomCenter)) {
+               Column(
+                   modifier = Modifier
+                       .fillMaxWidth()
+                       .background(MaterialTheme.colorScheme.background)
+                       .padding(16.dp)
+               ) {
+                   Row(
+                       verticalAlignment = Alignment.CenterVertically
+                   ) {
+                       Text(
+                           modifier = Modifier
+                               .padding(start = 8.dp),
+                           text = "Matching courier",
+                           style = MaterialTheme.typography.labelMedium
+                       )
+                       Spacer(modifier = Modifier.size(16.dp))
+                       Loader()
+                   }
+                   Courier(
+                       tripViewModel = tripViewModel
+                   )
+               }
+           }
+       }
+    }
+}
+
+@Composable
+private fun Courier(
+    modifier: Modifier = Modifier,
+    tripViewModel: TripViewModel
+) {
+    val courier = when(val s = tripViewModel.getTripDetailsUiState) {
+        is GetTripDetailsState.Success -> {
+            s.success
+        }
+        else -> {null}
+    }
+
+    LaunchedEffect(Unit) {
+        tripViewModel.getTripDetails()
+    }
+
+    Row(
+        modifier = modifier
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current)
+                .data("https://uzi-images.s3.eu-west-2.amazonaws.com/FEEdsVaWQAQ76vr.jpeg")
+                .crossfade(true)
+                .build(),
+            placeholder = painterResource(id = R.drawable.loading_img),
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .padding(8.dp)
+                .size(68.dp)
+                .clip(MaterialTheme.shapes.small),
+            contentDescription = null
+        )
+        Column(
+            modifier = Modifier
+                .padding(start=8.dp)
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    "John Doe",
+                    style = MaterialTheme.typography.labelMedium
+                )
+                IconButton(
+                    onClick = { /*TODO*/ }
+                ) {
+                    Icon(Icons.TwoTone.Call, contentDescription = null)
+                }
+            }
+            // TODO show based on product courier product(bike/boda)
+            Text(
+                "KDJ 425T",
+                style = MaterialTheme.typography.bodyLarge,
+            )
+        }
+
+        Spacer(modifier = Modifier.weight(1f))
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current)
+                .data("https://uzi-images.s3.eu-west-2.amazonaws.com/icons8-bike-50.png")
+                .crossfade(true)
+                .build(),
+            placeholder = painterResource(id = R.drawable.loading_img),
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .padding(8.dp)
+                .size(42.dp)
+                .clip(MaterialTheme.shapes.small),
+            contentDescription = null
+        )
+    }
+}
+
+@Composable
+private fun HomeErrorScreen(
     modifier: Modifier = Modifier,
     mainViewModel: MainViewModel
 ) {

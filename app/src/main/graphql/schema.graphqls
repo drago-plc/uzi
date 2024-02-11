@@ -3,6 +3,8 @@ type Courier {
 
   user_id: UUID!
 
+  user: User!
+
   verified: Boolean!
 
   status: CourierStatus!
@@ -13,9 +15,11 @@ type Courier {
 
   trip_id: UUID
 
+  trip: Trip
+
   product_id: UUID!
 
-  product: Product
+  product: Product!
 
   completedTrips: Int!
 
@@ -118,6 +122,8 @@ type Query {
   computeTripRoute(input: TripRouteInput!): TripRoute!
 
   getCourierNearPickupPoint(point: GpsInput!): [Courier!]!
+
+  getTripDetails(tripId: UUID!): Trip!
 }
 
 type Recipient {
@@ -155,6 +161,10 @@ type Route {
 type Session {
   id: UUID!
 
+  first_name: String
+
+  last_name: String
+
   ip: String!
 
   userAgent: String!
@@ -180,6 +190,8 @@ type Trip {
   id: UUID!
 
   courier_id: UUID
+
+  courier: Courier
 
   user_id: UUID!
 

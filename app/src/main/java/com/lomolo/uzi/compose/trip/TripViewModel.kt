@@ -14,6 +14,7 @@ import com.google.maps.android.compose.DragState
 import com.lomolo.uzi.GetCourierNearPickupPointQuery
 import com.lomolo.uzi.ComputeTripRouteQuery
 import com.lomolo.uzi.CreateTripMutation
+import com.lomolo.uzi.GetTripDetailsQuery
 import com.lomolo.uzi.MainViewModel
 import com.lomolo.uzi.ReverseGeocodeQuery
 import com.lomolo.uzi.SearchPlaceQuery
@@ -25,6 +26,7 @@ import com.lomolo.uzi.type.GpsInput
 import com.lomolo.uzi.type.TripInput
 import com.lomolo.uzi.type.TripRecipientInput
 import com.lomolo.uzi.type.TripRouteInput
+import com.lomolo.uzi.type.UUID
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -82,6 +84,9 @@ class TripViewModel(
         private set
 
     var createTripState: CreateTripState by mutableStateOf(CreateTripState.Success(null))
+        private set
+
+    var getTripDetailsUiState: GetTripDetailsState by mutableStateOf(GetTripDetailsState.Success(null))
         private set
 
     private var _trip = MutableStateFlow(Trip())
@@ -327,24 +332,41 @@ class TripViewModel(
         }
     }
 
+    fun getTripDetails() {
+        if (tripUpdatesUiState.value.id.isNotBlank()) {
+            getTripDetailsUiState = GetTripDetailsState.Loading
+            viewModelScope.launch {
+                getTripDetailsUiState = try {
+                    val res = uziGqlApiRepository.getTripDetails(tripUpdatesUiState.value.id)
+                        .dataOrThrow()
+                    GetTripDetailsState.Success(res.getTripDetails)
+                } catch (e: ApolloException) {
+                    GetTripDetailsState.Error(e.message)
+                }
+            }
+        }
+    }
+
     fun resetTrip() {
         //_trip.value = Trip() TODO just for testing(revert once ready)
     }
 
     init {
-        viewModelScope.launch {
-            tripRepository
-                .getTripUpdates(tripUpdatesUiState.value.id)
-                .onEach { tripRepository.updateTrip(
-                    com.lomolo.uzi.model.Trip(
-                        id = it.data?.tripUpdates?.id.toString(),
-                        status = it.data?.tripUpdates?.status.toString(),
-                        lat = it.data?.tripUpdates?.location?.lat ?: 0.0,
-                        lng = it.data?.tripUpdates?.location?.lng ?: 0.0
-                    ))
+        if (tripUpdatesUiState.value.id.isNotBlank()) {
+            viewModelScope.launch {
+                    tripRepository
+                        .getTripUpdates(tripUpdatesUiState.value.id)
+                        .onEach { tripRepository.updateTrip(
+                            com.lomolo.uzi.model.Trip(
+                                id = it.data?.tripUpdates?.id.toString(),
+                                status = it.data?.tripUpdates?.status.toString(),
+                                lat = it.data?.tripUpdates?.location?.lat ?: 0.0,
+                                lng = it.data?.tripUpdates?.location?.lng ?: 0.0
+                            ))
+                        }
+                        .collect()
                 }
-                .collect()
-        }
+            }
     }
 }
 
@@ -401,4 +423,10 @@ interface CreateTripState {
     data class Success(val success: CreateTripMutation.CreateTrip?): CreateTripState
     data object Loading: CreateTripState
     data class Error(val message: String?): CreateTripState
+}
+
+interface GetTripDetailsState {
+    data class Success(val success: GetTripDetailsQuery.GetTripDetails?): GetTripDetailsState
+    data object Loading: GetTripDetailsState
+    data class Error(val message: String?): GetTripDetailsState
 }

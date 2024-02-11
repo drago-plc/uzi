@@ -6,6 +6,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.lomolo.uzi.GetCourierNearPickupPointQuery
 import com.lomolo.uzi.ComputeTripRouteQuery
 import com.lomolo.uzi.CreateTripMutation
+import com.lomolo.uzi.GetTripDetailsQuery
 import com.lomolo.uzi.ReverseGeocodeQuery
 import com.lomolo.uzi.SearchPlaceQuery
 import com.lomolo.uzi.TripUpdatesSubscription
@@ -21,24 +22,20 @@ interface UziGqlApiInterface {
     suspend fun getCourierNearPickupPoint(pickup: LatLng): ApolloResponse<GetCourierNearPickupPointQuery.Data>
     suspend fun createTrip(input: CreateTripInput): ApolloResponse<CreateTripMutation.Data>
     fun getTripUpdates(id: String): Flow<ApolloResponse<TripUpdatesSubscription.Data>>
+    suspend fun getTripDetails(tripId: String): ApolloResponse<GetTripDetailsQuery.Data>
 }
 
 class UziGqlApiRepository(
     private val apolloClient: ApolloClient
 ): UziGqlApiInterface {
-    override suspend fun searchPlace(place: String): ApolloResponse<SearchPlaceQuery.Data> {
-        return apolloClient.query(SearchPlaceQuery(place)).execute()
-    }
+    override suspend fun searchPlace(place: String) = apolloClient.query(SearchPlaceQuery(place)).execute()
 
-    override suspend fun reverseGeocode(place: LatLng): ApolloResponse<ReverseGeocodeQuery.Data> {
-        return apolloClient.query(ReverseGeocodeQuery(place.latitude, place.longitude)).execute()
-    }
+    override suspend fun reverseGeocode(place: LatLng) = apolloClient.query(ReverseGeocodeQuery(place.latitude, place.longitude)).execute()
 
     override suspend fun makeTripRoute(
         pickup: ReverseGeocodeQuery.ReverseGeocode,
         dropoff: ReverseGeocodeQuery.ReverseGeocode
-    ): ApolloResponse<ComputeTripRouteQuery.Data> {
-        return apolloClient.query(
+    ) = apolloClient.query(
             ComputeTripRouteQuery(
                 pickup = TripInput(
                     placeId = pickup.placeId,
@@ -58,23 +55,12 @@ class UziGqlApiRepository(
                 )
             )
         ).execute()
-    }
 
-    override suspend fun getCourierNearPickupPoint(pickup: LatLng): ApolloResponse<GetCourierNearPickupPointQuery.Data> {
-        return apolloClient.query(
-            GetCourierNearPickupPointQuery(
-                GpsInput(pickup.latitude, pickup.longitude)
-            )
-        ).execute()
-    }
+    override suspend fun getCourierNearPickupPoint(pickup: LatLng) = apolloClient.query(GetCourierNearPickupPointQuery(GpsInput(pickup.latitude, pickup.longitude))).execute()
 
-    override suspend fun createTrip(input: CreateTripInput): ApolloResponse<CreateTripMutation.Data> {
-        return apolloClient.mutation(
-            CreateTripMutation(input)
-        ).execute()
-    }
+    override suspend fun createTrip(input: CreateTripInput) = apolloClient.mutation(CreateTripMutation(input)).execute()
 
-    override fun getTripUpdates(id: String): Flow<ApolloResponse<TripUpdatesSubscription.Data>> {
-        return apolloClient.subscription(TripUpdatesSubscription(id)).toFlow()
-    }
+    override fun getTripUpdates(id: String) = apolloClient.subscription(TripUpdatesSubscription(id)).toFlow()
+
+    override suspend fun getTripDetails(tripId: String) = apolloClient.query(GetTripDetailsQuery(tripId)).execute()
 }
