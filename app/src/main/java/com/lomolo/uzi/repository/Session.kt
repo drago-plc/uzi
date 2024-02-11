@@ -21,6 +21,8 @@ class SessionRepository(
     override suspend fun signIn(input: SignIn) {
         val res = uziRestApiService.signIn(input)
         val newSession = Session(
+            firstname = res.firstname,
+            lastname = res.lastname,
             token = res.token,
             courierStatus = res.courierStatus,
             phone = res.phone,
@@ -34,8 +36,8 @@ class SessionRepository(
         val res = uziRestApiService.signIn(SignIn(phone = session.phone))
         val newSession = Session(
             id = session.id,
-            firstname = session.firstname,
-            lastname = session.lastname,
+            firstname = res.firstname,
+            lastname = res.lastname,
             token = res.token,
             courierStatus = res.courierStatus,
             phone = res.phone,
@@ -49,8 +51,8 @@ class SessionRepository(
         val res = uziRestApiService.onboardUser(input)
         val newSession = Session(
             id = sessionId,
-            firstname = input.firstName,
-            lastname = input.lastName,
+            firstname = res.firstname,
+            lastname = res.lastname,
             token = res.token,
             phone = res.phone,
             courierStatus = res.courierStatus,

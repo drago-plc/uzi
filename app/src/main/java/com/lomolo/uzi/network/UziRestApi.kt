@@ -15,6 +15,6 @@ interface UziRestApiServiceInterface {
     @POST("signin")
     suspend fun signIn(@Body input: SignIn): Session
     @Headers("Content-Type: application/json")
-    @POST("courier/onboard")
+    @POST("user/onboard")
     suspend fun onboardUser(@Body input: SignIn): Session
 }
