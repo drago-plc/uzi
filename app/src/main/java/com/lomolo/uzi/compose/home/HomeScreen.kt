@@ -193,7 +193,7 @@ private fun DefaultHomeScreen(
                     tripViewModel = tripViewModel
                 )
                 Box(Modifier.align(Alignment.BottomCenter)) {
-                    LaunchedEffect(Unit) {
+                    LaunchedEffect(key1 = trip.pickup, key2 = trip.dropoff) {
                         if (tripViewModel.callTripEndpoint() && deviceDetails.mapLoaded) tripViewModel.makeTripRoute()
                     }
 
