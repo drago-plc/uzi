@@ -1,5 +1,7 @@
 package com.lomolo.uzi.compose.home
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.fadeOut
@@ -312,6 +314,7 @@ private fun Courier(
     modifier: Modifier = Modifier,
     tripViewModel: TripViewModel
 ) {
+    val context = LocalContext.current
     val courier = when(val s = tripViewModel.getTripDetailsUiState) {
         is GetTripDetailsState.Success -> {
             s.success
@@ -351,7 +354,11 @@ private fun Courier(
                     style = MaterialTheme.typography.labelMedium
                 )
                 IconButton(
-                    onClick = { /*TODO*/ }
+                    onClick = {
+                        Intent(Intent.ACTION_DIAL).apply {
+                            data = Uri.parse("tel:0849828440")
+                        }.also { context.startActivity(it) }
+                    }
                 ) {
                     Icon(Icons.TwoTone.Call, contentDescription = null)
                 }
