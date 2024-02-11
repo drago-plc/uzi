@@ -112,11 +112,12 @@ fun Name(
                             if (isFirstnameValid && isLastnameValid)
                                 sessionViewModel.onboardUser {
                                     onNavigateTo(HomeScreenDestination.route)
+                                    sessionViewModel.resetSignIn()
                                 }
                         },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(60.dp),
+                            .height(54.dp),
                     ) {
                         Text(
                             text = stringResource(R.string.proceed),

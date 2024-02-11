@@ -143,6 +143,10 @@ class SessionViewModel(
     companion object {
         private const val TIMEOUT_MILLIS = 2_000L
     }
+
+    fun resetSignIn() {
+        _signInInput.value = SignIn()
+    }
 }
 
 interface SignInUiState {
