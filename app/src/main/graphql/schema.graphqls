@@ -5,7 +5,7 @@ type Courier {
 
   user: User!
 
-  avatar: String!
+  avatar: Uploads
 
   verified: Boolean!
 
