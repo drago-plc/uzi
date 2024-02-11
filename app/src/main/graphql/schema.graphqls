@@ -5,6 +5,8 @@ type Courier {
 
   user: User!
 
+  avatar: String!
+
   verified: Boolean!
 
   status: CourierStatus!
