@@ -8,6 +8,9 @@ query GetTripDetails($id: UUID!) {
                 first_name
                 last_name
             }
+            avatar {
+                uri
+            }
         }
     }
 }
