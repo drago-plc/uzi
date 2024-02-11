@@ -234,7 +234,10 @@ private fun DefaultHomeScreen(
                                 .padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
                                 .height(48.dp),
                             shape = MaterialTheme.shapes.small,
-                            onClick = { if (tripViewModel.callTripEndpoint() && !isMakingTrip) onTripProceed(TripProductsScreenDestination.route) } // TODO proceed with valid trip input details
+                            onClick = {
+                                if (tripViewModel.callTripEndpoint() && !isMakingTrip)
+                                    onTripProceed(TripProductsScreenDestination.route)
+                            } // TODO proceed with valid trip input details
                         ) {
                             if (isMakingTrip) {
                                 Loader()
