@@ -256,6 +256,32 @@ private fun DefaultHomeScreen(
 }
 
 @Composable
+private fun HomeErrorScreen(
+    modifier: Modifier = Modifier,
+    mainViewModel: MainViewModel
+) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = stringResource(R.string.not_your_fault_err),
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.error,
+        )
+        Button(
+            onClick = { mainViewModel.getIpinfo() },
+        ) {
+            Text(
+                text = stringResource(R.string.retry),
+                style = MaterialTheme.typography.labelMedium
+            )
+        }
+    }
+}
+
+@Composable
 private fun TripScreen(
     modifier: Modifier = Modifier,
     tripViewModel: TripViewModel
@@ -387,31 +413,5 @@ private fun Courier(
                 .clip(MaterialTheme.shapes.small),
             contentDescription = null
         )
-    }
-}
-
-@Composable
-private fun HomeErrorScreen(
-    modifier: Modifier = Modifier,
-    mainViewModel: MainViewModel
-) {
-    Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text(
-            text = stringResource(R.string.not_your_fault_err),
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.error,
-        )
-        Button(
-            onClick = { mainViewModel.getIpinfo() },
-        ) {
-            Text(
-                text = stringResource(R.string.retry),
-                style = MaterialTheme.typography.labelMedium
-            )
-        }
     }
 }
