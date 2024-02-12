@@ -344,7 +344,7 @@ private fun Courier(
     tripViewModel: TripViewModel
 ) {
     val context = LocalContext.current
-    val courier = when(val s = tripViewModel.getTripDetailsUiState) {
+    val trip = when(val s = tripViewModel.getTripDetailsUiState) {
         is GetTripDetailsState.Success -> {
             s.success
         }
