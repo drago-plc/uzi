@@ -8,6 +8,7 @@ import com.lomolo.uzi.network.UziGqlApiInterface
 import com.lomolo.uzi.sql.dao.TripDao
 import com.lomolo.uzi.type.UUID
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.onEach
 
 interface TripInterface {
     suspend fun createTrip(trip: Trip)
@@ -24,7 +25,16 @@ class TripRepository(
     override suspend fun createTrip(trip: Trip) = tripDao.createTrip(trip)
 
     override fun getTrip() = tripDao.getTrip()
-    override fun getTripUpdates(id: String) = uziGqlApi.getTripUpdates(id)
+    override fun getTripUpdates(id: String) = uziGqlApi.getTripUpdates(id).onEach {
+        tripDao.updateTrip(
+            Trip(
+                id = it.data?.tripUpdates?.id.toString(),
+                status = it.data?.tripUpdates?.status.toString(),
+                lat = it.data?.tripUpdates?.location?.lat ?: 0.0,
+                lng = it.data?.tripUpdates?.location?.lng ?: 0.0
+            )
+        )
+    }
 
     override suspend fun updateTrip(trip: Trip) = tripDao.updateTrip(trip)
 

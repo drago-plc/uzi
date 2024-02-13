@@ -83,7 +83,8 @@ fun HomeScreen(
     onGetStartedClick: () -> Unit = {},
     onNavigateTo: (String) -> Unit = {},
     onNavigateToTrip: (String) -> Unit = {},
-    session: Session
+    session: Session,
+    tripUpdates: Trip
 ) {
     Box(modifier.fillMaxSize()) {
         when(mainViewModel.deviceDetailsState) {
@@ -105,7 +106,8 @@ fun HomeScreen(
                     onGetStartedClick = onGetStartedClick,
                     onNavigateTo = onNavigateTo,
                     onNavigateToTrip = onNavigateToTrip,
-                    session = session
+                    session = session,
+                    tripUpdates = tripUpdates
                 )
             }
         }
@@ -122,10 +124,10 @@ private fun HomeSuccessScreen(
     onNavigateToTrip: (String) -> Unit,
     session: Session,
     onNavigateTo: (String) -> Unit = {},
+    tripUpdates: Trip
 ) {
     val isAuthed = session.token.isNotBlank()
     val isOnboarding = session.onboarding
-    val tripUpdates by tripViewModel.tripUpdatesUiState.collectAsState()
 
     when {
         isAuthed && isOnboarding -> {
@@ -292,9 +294,8 @@ private fun TripScreen(
     tripViewModel: TripViewModel,
     tripUpdates: Trip
 ) {
-    val u = tripViewModel.getTripUpdates(tripUpdates.id).collectAsState(initial = null)
-    LaunchedEffect(key1 = u) {
-        println(u.value)
+    val u by tripViewModel.getTripUpdates(tripUpdates.id).collectAsState(initial = null)
+    LaunchedEffect(u) {
     }
     var mapLoaded by rememberSaveable {
         mutableStateOf(false)

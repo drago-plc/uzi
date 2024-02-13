@@ -355,24 +355,6 @@ class TripViewModel(
     }
 
     fun getTripUpdates(tripId: String) = tripRepository.getTripUpdates(tripId)
-
-    init {
-        if (tripUpdatesUiState.value.id.isNotBlank()) {
-            viewModelScope.launch {
-                    tripRepository
-                        .getTripUpdates(tripUpdatesUiState.value.id)
-                        .onEach { tripRepository.updateTrip(
-                            com.lomolo.uzi.model.Trip(
-                                id = it.data?.tripUpdates?.id.toString(),
-                                status = it.data?.tripUpdates?.status.toString(),
-                                lat = it.data?.tripUpdates?.location?.lat ?: 0.0,
-                                lng = it.data?.tripUpdates?.location?.lng ?: 0.0
-                            ))
-                        }
-                        .collect()
-                }
-            }
-    }
 }
 
 interface LocationPredicateState {

@@ -32,6 +32,7 @@ fun UziNavHost(
 ) {
     val session by sessionViewModel.sessionUiState.collectAsState()
     val deviceDetails by mainViewModel.deviceDetailsUiState.collectAsState()
+    val tripUpdates by tripViewModel.tripUpdatesUiState.collectAsState()
 
     NavHost(
         modifier = modifier,
@@ -53,6 +54,7 @@ fun UziNavHost(
                         onNavigateToTrip = {
                             navController.navigate(it)
                         },
+                        tripUpdates = tripUpdates,
                         onNavigateTo = {
                             navController.navigate(it) {
                                 // Pop up to the start destination of the graph to
