@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.Call
 import androidx.compose.material3.Button
@@ -54,6 +53,7 @@ import com.lomolo.uzi.DeviceDetails
 import com.lomolo.uzi.DeviceDetailsUiState
 import com.lomolo.uzi.MainViewModel
 import com.lomolo.uzi.R
+import com.lomolo.uzi.TripUpdatesSubscription
 import com.lomolo.uzi.compose.loader.Loader
 import com.lomolo.uzi.compose.navigation.Navigation
 import com.lomolo.uzi.compose.signin.GetStarted
@@ -66,6 +66,8 @@ import com.lomolo.uzi.compose.trip.StartTrip
 import com.lomolo.uzi.compose.trip.TripProductsScreenDestination
 import com.lomolo.uzi.compose.trip.TripViewModel
 import com.lomolo.uzi.model.Session
+import com.lomolo.uzi.model.Trip
+import com.lomolo.uzi.model.TripStatus
 
 object HomeScreenDestination: Navigation {
     override val route = "home"
@@ -123,27 +125,30 @@ private fun HomeSuccessScreen(
 ) {
     val isAuthed = session.token.isNotBlank()
     val isOnboarding = session.onboarding
+    val tripUpdates by tripViewModel.tripUpdatesUiState.collectAsState()
 
     when {
         isAuthed && isOnboarding -> {
             onNavigateTo(UserNameDestination.route)
         }
         else -> {
-            TripScreen(
-                tripViewModel = tripViewModel
-            )
-            /*
-            DefaultHomeScreen(
-                modifier = modifier,
-                mainViewModel = mainViewModel,
-                tripViewModel = tripViewModel,
-                deviceDetails = deviceDetails,
-                onGetStartedClick = onGetStartedClick,
-                onEnterTripClick = onNavigateToTrip,
-                onTripProceed = onNavigateTo,
-                isAuthed = isAuthed
-            )
-             */
+            if (tripUpdates.id.isNotBlank()) {
+                TripScreen(
+                    tripViewModel = tripViewModel,
+                    tripUpdates = tripUpdates
+                )
+            } else {
+                DefaultHomeScreen(
+                    modifier = modifier,
+                    mainViewModel = mainViewModel,
+                    tripViewModel = tripViewModel,
+                    deviceDetails = deviceDetails,
+                    onGetStartedClick = onGetStartedClick,
+                    onEnterTripClick = onNavigateToTrip,
+                    onTripProceed = onNavigateTo,
+                    isAuthed = isAuthed
+                )
+            }
         }
     }
 }
@@ -284,8 +289,13 @@ private fun HomeErrorScreen(
 @Composable
 private fun TripScreen(
     modifier: Modifier = Modifier,
-    tripViewModel: TripViewModel
+    tripViewModel: TripViewModel,
+    tripUpdates: Trip
 ) {
+    val u = tripViewModel.getTripUpdates(tripUpdates.id).collectAsState(initial = null)
+    LaunchedEffect(key1 = u) {
+        println(u.value)
+    }
     var mapLoaded by rememberSaveable {
         mutableStateOf(false)
     }
@@ -317,21 +327,52 @@ private fun TripScreen(
                        .background(MaterialTheme.colorScheme.background)
                        .padding(16.dp)
                ) {
-                   Row(
-                       verticalAlignment = Alignment.CenterVertically
-                   ) {
-                       Text(
-                           modifier = Modifier
-                               .padding(start = 8.dp),
-                           text = "Matching courier",
-                           style = MaterialTheme.typography.labelMedium
-                       )
-                       Spacer(modifier = Modifier.size(16.dp))
-                       Loader()
+                   when (tripUpdates.status) {
+                       TripStatus.CREATE.toString() -> {
+                           Row(
+                               modifier = Modifier.fillMaxWidth(),
+                               verticalAlignment = Alignment.CenterVertically
+                           ) {
+                               Text(
+                                   modifier = Modifier
+                                       .padding(start = 8.dp),
+                                   text = "Matching courier",
+                                   style = MaterialTheme.typography.labelMedium
+                               )
+                               Spacer(modifier = Modifier.weight(1f))
+                               Loader()
+                           }
+                       }
+                       TripStatus.COURIER_ARRIVING.toString() -> {
+                           val s = tripViewModel.getTripDetailsUiState
+                           if (s is GetTripDetailsState.Success) {
+                               Courier(
+                                   tripViewModel = tripViewModel
+                               )
+                           } else if (s is GetTripDetailsState.Loading) {
+                               Row(
+                                   modifier = Modifier.fillMaxWidth(),
+                                   verticalAlignment = Alignment.CenterVertically
+                               ) {
+                                   Loader()
+                               }
+                           }
+                       }
+                       TripStatus.COURIER_FOUND.toString() -> {
+                           Row(
+                               modifier = Modifier.fillMaxWidth(),
+                               verticalAlignment = Alignment.CenterVertically,
+                               horizontalArrangement = Arrangement.Center
+                           ) {
+                               Text(
+                                   modifier = Modifier
+                                       .padding(start = 8.dp),
+                                   text = "Taking too long to find courier in your area.",
+                                   style = MaterialTheme.typography.labelMedium
+                               )
+                           }
+                       }
                    }
-                   Courier(
-                       tripViewModel = tripViewModel
-                   )
                }
            }
        }
@@ -344,12 +385,6 @@ private fun Courier(
     tripViewModel: TripViewModel
 ) {
     val context = LocalContext.current
-    val trip = when(val s = tripViewModel.getTripDetailsUiState) {
-        is GetTripDetailsState.Success -> {
-            s.success
-        }
-        else -> {null}
-    }
 
     LaunchedEffect(Unit) {
         tripViewModel.getTripDetails()

@@ -95,7 +95,9 @@ fun ConfirmTripPickup(
             modifier = Modifier.matchParentSize(),
             uiSettings = uiSettings,
             properties = mapProperties,
-            onMapLoaded = { isMapLoaded = true },
+            onMapLoaded = {
+                isMapLoaded = true
+            },
             cameraPositionState = cameraPositionState
         )
         Box(Modifier.padding(8.dp)) {
@@ -139,6 +141,14 @@ fun ConfirmTripPickup(
                 .align(Alignment.BottomCenter)
                 .padding(8.dp)
         ) {
+            if (isMapLoaded) {
+                LaunchedEffect(Unit) {
+                    tripViewModel.reverseGeocodeConfirmedPickup(cameraPositionState.position.target) {
+                        tripViewModel.setConfirmedPickup(it)
+                    }
+                }
+            }
+
             Button(
                 modifier = Modifier
                     .fillMaxWidth()

@@ -278,8 +278,12 @@ class TripViewModel(
     private fun createTripInput(): CreateTripInput {
         val _confirmedPickup: TripInput = when(val s = confirmedPickup) {
             is ReverseGeocodeConfirmedPickup.Success -> {
-                val place = s.success!!
-                TripInput(place.placeId, place.formattedAddress, GpsInput(place.location.lat, place.location.lng))
+                val place = s.success
+                if (place != null) {
+                    TripInput(place.placeId, place.formattedAddress, GpsInput(place.location.lat, place.location.lng))
+                } else {
+                    TripInput("", "", GpsInput(0.0, 0.0))
+                }
             }
             else -> {
                 TripInput("", "", GpsInput(0.0, 0.0))
@@ -349,6 +353,8 @@ class TripViewModel(
     fun resetTrip() {
         //_trip.value = Trip() TODO just for testing(revert once ready)
     }
+
+    fun getTripUpdates(tripId: String) = tripRepository.getTripUpdates(tripId)
 
     init {
         if (tripUpdatesUiState.value.id.isNotBlank()) {
