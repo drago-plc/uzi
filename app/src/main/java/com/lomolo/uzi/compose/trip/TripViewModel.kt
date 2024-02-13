@@ -26,7 +26,6 @@ import com.lomolo.uzi.type.GpsInput
 import com.lomolo.uzi.type.TripInput
 import com.lomolo.uzi.type.TripRecipientInput
 import com.lomolo.uzi.type.TripRouteInput
-import com.lomolo.uzi.type.UUID
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
