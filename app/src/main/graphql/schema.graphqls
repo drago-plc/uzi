@@ -86,6 +86,10 @@ type Mutation {
   setCourierStatus(status: String!): Boolean!
 
   createTrip(input: CreateTripInput!): Trip!
+
+  courierArriving(tripId: UUID!): Boolean!
+
+  courierEnroute(tripId: UUID!): Boolean!
 }
 
 type Place {
@@ -184,6 +188,8 @@ type Session {
 
 type Subscription {
   tripUpdates(tripId: UUID!): TripUpdate!
+
+  assignTrip(userId: UUID!): TripUpdate!
 }
 
 scalar Time
@@ -255,6 +261,8 @@ enum TripStatus {
 
   COMPLETE
 
+  ASSIGNED
+
   COURIER_ARRIVING
 
   COURIER_FOUND
@@ -266,6 +274,8 @@ type TripUpdate {
   id: UUID!
 
   status: TripStatus!
+
+  courierId: UUID
 
   location: Gps
 }
