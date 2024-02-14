@@ -293,6 +293,7 @@ private fun TripScreen(
     tripViewModel: TripViewModel,
     tripUpdates: Trip
 ) {
+    val updates by tripViewModel.tripUpdatesUiState.collectAsState()
     val u by tripViewModel.getTripUpdates(tripUpdates.id).collectAsState(initial = null)
     LaunchedEffect(u) {
     }
@@ -327,7 +328,7 @@ private fun TripScreen(
                        .background(MaterialTheme.colorScheme.background)
                        .padding(16.dp)
                ) {
-                   when (tripUpdates.status) {
+                   when (updates.status) {
                        TripStatus.CREATE.toString() -> {
                            Row(
                                modifier = Modifier.fillMaxWidth(),

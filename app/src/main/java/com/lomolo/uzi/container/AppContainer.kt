@@ -13,6 +13,7 @@ import com.lomolo.uzi.repository.TripRepository
 import com.lomolo.uzi.sql.UziStore
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import kotlinx.coroutines.delay
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
@@ -58,6 +59,10 @@ class DefaultContainer(private val context: Context): AppContainer {
     override val apolloClient = ApolloClient.Builder()
         .serverUrl("${baseApi}/api")
         .webSocketServerUrl("${baseApi}/subscription") //TODO add auth token header
+        .webSocketReopenWhen { _, attempt ->
+            delay(attempt * 1000)
+            true
+        }
         .addHttpInterceptor(
             AuthInterceptor(
                 UziStore.getStore(context).sessionDao(),
