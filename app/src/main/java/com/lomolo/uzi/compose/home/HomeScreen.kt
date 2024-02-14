@@ -133,24 +133,23 @@ private fun HomeSuccessScreen(
         isAuthed && isOnboarding -> {
             onNavigateTo(UserNameDestination.route)
         }
+        tripUpdates.id.isNotBlank() -> {
+            TripScreen(
+                tripViewModel = tripViewModel,
+                tripUpdates = tripUpdates
+            )
+        }
         else -> {
-            if (tripUpdates.id.isNotBlank()) {
-                TripScreen(
-                    tripViewModel = tripViewModel,
-                    tripUpdates = tripUpdates
-                )
-            } else {
-                DefaultHomeScreen(
-                    modifier = modifier,
-                    mainViewModel = mainViewModel,
-                    tripViewModel = tripViewModel,
-                    deviceDetails = deviceDetails,
-                    onGetStartedClick = onGetStartedClick,
-                    onEnterTripClick = onNavigateToTrip,
-                    onTripProceed = onNavigateTo,
-                    isAuthed = isAuthed
-                )
-            }
+            DefaultHomeScreen(
+                modifier = modifier,
+                mainViewModel = mainViewModel,
+                tripViewModel = tripViewModel,
+                deviceDetails = deviceDetails,
+                onGetStartedClick = onGetStartedClick,
+                onEnterTripClick = onNavigateToTrip,
+                onTripProceed = onNavigateTo,
+                isAuthed = isAuthed
+            )
         }
     }
 }
@@ -359,7 +358,7 @@ private fun TripScreen(
                                }
                            }
                        }
-                       TripStatus.COURIER_FOUND.toString() -> {
+                       TripStatus.COURIER_NOT_FOUND.toString() -> {
                            Row(
                                modifier = Modifier.fillMaxWidth(),
                                verticalAlignment = Alignment.CenterVertically,
@@ -371,6 +370,21 @@ private fun TripScreen(
                                    text = "Taking too long to find courier in your area.",
                                    style = MaterialTheme.typography.labelMedium
                                )
+                           }
+                       }
+                       TripStatus.COURIER_FOUND.toString() -> {
+                           Row(
+                               modifier = Modifier.fillMaxWidth(),
+                               verticalAlignment = Alignment.CenterVertically
+                           ) {
+                               Text(
+                                   modifier = Modifier
+                                       .padding(start = 8.dp),
+                                   text = "Getting courier details",
+                                   style = MaterialTheme.typography.labelMedium
+                               )
+                               Spacer(modifier = Modifier.weight(1f))
+                               Loader()
                            }
                        }
                    }
