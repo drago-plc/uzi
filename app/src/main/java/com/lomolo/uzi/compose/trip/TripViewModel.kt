@@ -26,12 +26,14 @@ import com.lomolo.uzi.type.GpsInput
 import com.lomolo.uzi.type.TripInput
 import com.lomolo.uzi.type.TripRecipientInput
 import com.lomolo.uzi.type.TripRouteInput
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -47,6 +49,14 @@ class TripViewModel(
     val tripUpdatesUiState: StateFlow<com.lomolo.uzi.model.Trip> = tripRepository
         .getTrip()
         .filterNotNull()
+        .map {
+            com.lomolo.uzi.model.Trip(
+                id = it.id,
+                status = it.status,
+                lat = it.lat,
+                lng = it.lng
+            )
+        }
         .stateIn(
             scope = viewModelScope,
             initialValue = com.lomolo.uzi.model.Trip(),
@@ -329,6 +339,7 @@ class TripViewModel(
                     )
                     CreateTripState.Success(res.createTrip).also { cb() }
                 } catch (e: ApolloException) {
+                    e.printStackTrace()
                     CreateTripState.Error(e.message)
                 }
             }
@@ -350,11 +361,19 @@ class TripViewModel(
         }
     }
 
+    fun clearTrips() = viewModelScope.launch {
+        try {
+            tripRepository.clearTrips()
+        } catch(e: Throwable) {
+            e.printStackTrace()
+        }
+    }
+
     fun resetTrip() {
         //_trip.value = Trip() TODO just for testing(revert once ready)
     }
 
-    fun getTripUpdates(tripId: String) = tripRepository.getTripUpdates(tripId)
+    fun getTripUpdates() = tripRepository.getTripUpdates(tripUpdatesUiState.value.id)
 }
 
 interface LocationPredicateState {

@@ -2,6 +2,8 @@ package com.lomolo.uzi.container
 
 import android.content.Context
 import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo3.network.okHttpClient
+import com.apollographql.apollo3.network.ws.SubscriptionWsProtocol
 import com.lomolo.uzi.apollo.interceptors.AuthInterceptor
 import com.lomolo.uzi.network.UziGqlApiInterface
 import com.lomolo.uzi.network.UziRestApiServiceInterface
@@ -57,8 +59,24 @@ class DefaultContainer(private val context: Context): AppContainer {
     }
 
     override val apolloClient = ApolloClient.Builder()
-        .serverUrl("${baseApi}/api")
-        .webSocketServerUrl("${baseApi}/subscription") //TODO add auth token header
+        .okHttpClient(okhttpClient)
+        .httpServerUrl("${baseApi}/api")
+        .webSocketServerUrl("${wss}/subscription") //TODO add auth token header
+        /*
+        .wsProtocol(
+            SubscriptionWsProtocol.Factory(
+                connectionPayload = {
+                    mapOf(
+                        "type" to "connection_init",
+                        "payload" to mapOf(
+                            "headers" to mapOf(
+                                "Authorization" to "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwaG9uZSI6IjI1NDc5MjkyMTQ0MCIsImlwIjoiMTAyLjIxNy4xMjQuMSIsImlzcyI6IlV6aSIsImV4cCI6MTcwODExMzQ1OSwiaWF0IjoxNzA4MDI3MDU5LCJqdGkiOiJkNTc0NzhlYy0zZTM1LTQ4YmUtYmY5NC05MWJlODEyZGU1MzcifQ.6goia_c_HAmmTD9tu7XaFMHNES2z_35wfC1tAhGtw_4")
+                            )
+                        )
+                }
+            )
+        )
+         */
         .webSocketReopenWhen { _, attempt ->
             delay(attempt * 1000)
             true

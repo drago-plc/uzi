@@ -68,6 +68,7 @@ import com.lomolo.uzi.compose.trip.TripViewModel
 import com.lomolo.uzi.model.Session
 import com.lomolo.uzi.model.Trip
 import com.lomolo.uzi.model.TripStatus
+import kotlinx.coroutines.flow.collect
 
 object HomeScreenDestination: Navigation {
     override val route = "home"
@@ -126,6 +127,8 @@ private fun HomeSuccessScreen(
     onNavigateTo: (String) -> Unit = {},
     tripUpdates: Trip
 ) {
+
+    println(tripUpdates)
     val isAuthed = session.token.isNotBlank()
     val isOnboarding = session.onboarding
 
@@ -133,23 +136,24 @@ private fun HomeSuccessScreen(
         isAuthed && isOnboarding -> {
             onNavigateTo(UserNameDestination.route)
         }
-        tripUpdates.id.isNotBlank() -> {
-            TripScreen(
-                tripViewModel = tripViewModel,
-                tripUpdates = tripUpdates
-            )
-        }
         else -> {
-            DefaultHomeScreen(
-                modifier = modifier,
-                mainViewModel = mainViewModel,
-                tripViewModel = tripViewModel,
-                deviceDetails = deviceDetails,
-                onGetStartedClick = onGetStartedClick,
-                onEnterTripClick = onNavigateToTrip,
-                onTripProceed = onNavigateTo,
-                isAuthed = isAuthed
-            )
+            if (tripUpdates.id.isNotBlank()) {
+                TripScreen(
+                    tripViewModel = tripViewModel,
+                    tripUpdates = tripUpdates
+                )
+            } else {
+                DefaultHomeScreen(
+                    modifier = modifier,
+                    mainViewModel = mainViewModel,
+                    tripViewModel = tripViewModel,
+                    deviceDetails = deviceDetails,
+                    onGetStartedClick = onGetStartedClick,
+                    onEnterTripClick = onNavigateToTrip,
+                    onTripProceed = onNavigateTo,
+                    isAuthed = isAuthed
+                )
+            }
         }
     }
 }
@@ -293,9 +297,9 @@ private fun TripScreen(
     tripViewModel: TripViewModel,
     tripUpdates: Trip
 ) {
-    val updates by tripViewModel.tripUpdatesUiState.collectAsState()
-    val u by tripViewModel.getTripUpdates(tripUpdates.id).collectAsState(initial = null)
-    LaunchedEffect(u) {
+    val u = tripViewModel.getTripUpdates().collectAsState(initial = null)
+    LaunchedEffect(key1 = u) {
+        println(u.value)
     }
     var mapLoaded by rememberSaveable {
         mutableStateOf(false)
@@ -328,7 +332,7 @@ private fun TripScreen(
                        .background(MaterialTheme.colorScheme.background)
                        .padding(16.dp)
                ) {
-                   when (updates.status) {
+                   when (tripUpdates.status) {
                        TripStatus.CREATE.toString() -> {
                            Row(
                                modifier = Modifier.fillMaxWidth(),
@@ -368,7 +372,7 @@ private fun TripScreen(
                                Text(
                                    modifier = Modifier
                                        .padding(start = 8.dp),
-                                   text = "Taking too long to find courier in your area.",
+                                   text = "Taking too long. It's not your fault. We are still onboarding more couriers.",
                                    style = MaterialTheme.typography.labelMedium
                                )
                            }
