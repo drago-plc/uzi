@@ -11,6 +11,10 @@ query GetTripDetails($id: UUID!) {
             avatar {
                 uri
             }
+            location {
+                lat
+                lng
+            }
         }
     }
 }
