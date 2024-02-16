@@ -215,8 +215,6 @@ type Trip {
 
   route: Route
 
-  preliminary_route: String
-
   recipient: Recipient!
 
   created_at: Time

@@ -16,5 +16,9 @@ query GetTripDetails($id: UUID!) {
                 lng
             }
         }
+        start_location {
+            lat
+            lng
+        }
     }
 }
