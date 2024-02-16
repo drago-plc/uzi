@@ -169,6 +169,7 @@ internal fun Map(
                         IconButton(
                             onClick = {
                                 scope.launch {
+                                    onReverseGeocode(deviceDetails.gps)
                                     cameraPositionState.animate(
                                         CameraUpdateFactory.newLatLngZoom(
                                             deviceDetails.gps,
