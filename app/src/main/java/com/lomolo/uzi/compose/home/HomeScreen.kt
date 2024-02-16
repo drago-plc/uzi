@@ -44,6 +44,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.PolyUtil
+import com.google.maps.android.SphericalUtil
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
@@ -128,7 +131,6 @@ private fun HomeSuccessScreen(
     tripUpdates: Trip
 ) {
 
-    println(tripUpdates)
     val isAuthed = session.token.isNotBlank()
     val isOnboarding = session.onboarding
 
@@ -136,24 +138,23 @@ private fun HomeSuccessScreen(
         isAuthed && isOnboarding -> {
             onNavigateTo(UserNameDestination.route)
         }
+        tripUpdates.id.isNotBlank() -> {
+            TripScreen(
+                tripViewModel = tripViewModel,
+                tripUpdates = tripUpdates
+            )
+        }
         else -> {
-            if (tripUpdates.id.isNotBlank()) {
-                TripScreen(
-                    tripViewModel = tripViewModel,
-                    tripUpdates = tripUpdates
-                )
-            } else {
-                DefaultHomeScreen(
-                    modifier = modifier,
-                    mainViewModel = mainViewModel,
-                    tripViewModel = tripViewModel,
-                    deviceDetails = deviceDetails,
-                    onGetStartedClick = onGetStartedClick,
-                    onEnterTripClick = onNavigateToTrip,
-                    onTripProceed = onNavigateTo,
-                    isAuthed = isAuthed
-                )
-            }
+            DefaultHomeScreen(
+                modifier = modifier,
+                mainViewModel = mainViewModel,
+                tripViewModel = tripViewModel,
+                deviceDetails = deviceDetails,
+                onGetStartedClick = onGetStartedClick,
+                onEnterTripClick = onNavigateToTrip,
+                onTripProceed = onNavigateTo,
+                isAuthed = isAuthed
+            )
         }
     }
 }
@@ -295,11 +296,33 @@ private fun HomeErrorScreen(
 private fun TripScreen(
     modifier: Modifier = Modifier,
     tripViewModel: TripViewModel,
-    tripUpdates: Trip
+    tripUpdates: Trip,
+    onCourierArriving: () -> Unit = {}
 ) {
+    LaunchedEffect(Unit) {
+        tripViewModel.getTripDetails()
+    }
+    var markerState = LatLng(0.0, 0.0)
+    var done by rememberSaveable {
+        mutableStateOf(false)
+    }
+    when(val s = tripViewModel.getTripDetailsUiState) {
+        is GetTripDetailsState.Success -> {
+            if(s.success != null) {
+                if (s.success.start_location != null)
+                    markerState = LatLng(s.success.start_location.lat, s.success.start_location.lng)
+                done = true
+            }
+        }
+    }
     val u = tripViewModel.getTripUpdates().collectAsState(initial = null)
     LaunchedEffect(key1 = u) {
-        println(u.value)
+        when(u.value?.data?.tripUpdates?.status.toString()) {
+            TripStatus.COURIER_ARRIVING.toString() -> {
+                onCourierArriving()
+            }
+            else -> {}
+        }
     }
     var mapLoaded by rememberSaveable {
         mutableStateOf(false)
@@ -311,14 +334,26 @@ private fun TripScreen(
         mutableStateOf(MapProperties(mapType = MapType.TERRAIN))
     }
 
-    GoogleMap(
-        uiSettings = uiSettings,
-        properties = mapProperties,
-        modifier = modifier,
-        onMapLoaded = {
-            mapLoaded = true
+    if (done) {
+        val cameraPosition = rememberCameraPositionState {
+            position = CameraPosition.fromLatLngZoom(markerState, 17f)
         }
-    )
+
+        GoogleMap(
+            uiSettings = uiSettings,
+            properties = mapProperties,
+            cameraPositionState = cameraPosition,
+            modifier = modifier,
+            onMapLoaded = {
+                mapLoaded = true
+            }
+        )
+    } else {
+        Loader(
+            modifier = Modifier
+                .fillMaxSize()
+        )
+    }
     AnimatedVisibility(
         visible = mapLoaded,
         enter = EnterTransition.None,
@@ -335,7 +370,9 @@ private fun TripScreen(
                    when (tripUpdates.status) {
                        TripStatus.CREATE.toString() -> {
                            Row(
-                               modifier = Modifier.fillMaxWidth(),
+                               modifier = Modifier
+                                   .fillMaxWidth()
+                                   .height(64.dp),
                                verticalAlignment = Alignment.CenterVertically
                            ) {
                                Text(
@@ -356,7 +393,9 @@ private fun TripScreen(
                                )
                            } else if (s is GetTripDetailsState.Loading) {
                                Row(
-                                   modifier = Modifier.fillMaxWidth(),
+                                   modifier = Modifier
+                                       .fillMaxWidth()
+                                       .height(64.dp),
                                    verticalAlignment = Alignment.CenterVertically
                                ) {
                                    Loader()
@@ -365,7 +404,9 @@ private fun TripScreen(
                        }
                        TripStatus.COURIER_NOT_FOUND.toString() -> {
                            Row(
-                               modifier = Modifier.fillMaxWidth(),
+                               modifier = Modifier
+                                   .fillMaxWidth()
+                                   .height(64.dp),
                                verticalAlignment = Alignment.CenterVertically,
                                horizontalArrangement = Arrangement.Center
                            ) {
@@ -379,7 +420,9 @@ private fun TripScreen(
                        }
                        TripStatus.COURIER_FOUND.toString() -> {
                            Row(
-                               modifier = Modifier.fillMaxWidth(),
+                               modifier = Modifier
+                                   .fillMaxWidth()
+                                   .height(64.dp),
                                verticalAlignment = Alignment.CenterVertically
                            ) {
                                Text(

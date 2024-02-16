@@ -46,10 +46,12 @@ class TripRepository(
         tripDao.updateTrip(
             Trip(
                 id = tripId,
-                status = res.data?.getTripDetails?.status.toString()
+                status = res.data?.getTripDetails?.status.toString(),
+                lat = res.data?.getTripDetails?.courier?.location?.lat ?: 0.0,
+                lng = res.data?.getTripDetails?.courier?.location?.lng ?: 0.0,
             )
         )
-        return uziGqlApi.getTripDetails(tripId)
+        return res
     }
 
     override suspend fun clearTrips() = tripDao.clearTrips()

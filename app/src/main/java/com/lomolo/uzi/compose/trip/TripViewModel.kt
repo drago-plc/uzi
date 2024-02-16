@@ -351,6 +351,7 @@ class TripViewModel(
             getTripDetailsUiState = GetTripDetailsState.Loading
             viewModelScope.launch {
                 getTripDetailsUiState = try {
+                    delay(4_000L)
                     val res = uziGqlApiRepository.getTripDetails(tripUpdatesUiState.value.id)
                         .dataOrThrow()
                     GetTripDetailsState.Success(res.getTripDetails)
