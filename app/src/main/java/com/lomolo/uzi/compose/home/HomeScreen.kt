@@ -17,11 +17,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.twotone.Call
 import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -43,11 +39,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
@@ -55,7 +49,6 @@ import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
-import com.google.maps.android.ktx.model.cameraPosition
 import com.lomolo.uzi.DeviceDetails
 import com.lomolo.uzi.DeviceDetailsUiState
 import com.lomolo.uzi.GetTripDetailsQuery
@@ -343,13 +336,14 @@ private fun TripScreen(
     val mapProperties by remember {
         mutableStateOf(MapProperties(mapType = MapType.TERRAIN))
     }
-    val cameraPosition = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(markerState, 17f)
-    }
-    val markerPosition = rememberMarkerState(
-        position = markerState
-    )
     if (done) {
+        val cameraPosition = rememberCameraPositionState {
+            position = CameraPosition.fromLatLngZoom(markerState, 17f)
+        }
+        val markerPosition = rememberMarkerState(
+            position = markerState
+        )
+
         GoogleMap(
             uiSettings = uiSettings,
             properties = mapProperties,
@@ -405,14 +399,6 @@ private fun TripScreen(
                        TripStatus.COURIER_ARRIVING.toString() -> {
                            val s = tripViewModel.getTripDetailsUiState
                            if (s is GetTripDetailsState.Success) {
-                               LaunchedEffect(key1 = tripUpdates) {
-                                   cameraPosition.move(
-                                       CameraUpdateFactory.newLatLngZoom(
-                                           LatLng(tripUpdates.lat, tripUpdates.lng),
-                                           17f
-                                       )
-                                   )
-                               }
                                Courier(
                                    courier = s.success!!,
                                    tripViewModel = tripViewModel
