@@ -49,13 +49,17 @@ class TripViewModel(
     val tripUpdatesUiState: StateFlow<com.lomolo.uzi.model.Trip> = tripRepository
         .getTrip()
         .filterNotNull()
-        .map {
-            com.lomolo.uzi.model.Trip(
-                id = it.id,
-                status = it.status,
-                lat = it.lat,
-                lng = it.lng
-            )
+        .map{
+            if (it.isNotEmpty()) {
+                com.lomolo.uzi.model.Trip(
+                    id = it[0].id,
+                    status = it[0].status,
+                    lat = it[0].lat,
+                    lng = it[0].lng,
+                )
+            } else {
+                com.lomolo.uzi.model.Trip()
+            }
         }
         .stateIn(
             scope = viewModelScope,
@@ -64,7 +68,7 @@ class TripViewModel(
         )
 
     companion object {
-        private const val TIMEOUT_MILLIS = 2_000L
+        private const val TIMEOUT_MILLIS = 5_000L
     }
     var searchQuery by mutableStateOf("")
         private set
@@ -362,12 +366,8 @@ class TripViewModel(
         }
     }
 
-    fun clearTrips() = viewModelScope.launch {
-        try {
-            tripRepository.clearTrips()
-        } catch(e: Throwable) {
-            e.printStackTrace()
-        }
+    fun clearTrips(cb: () -> Unit = {}) = viewModelScope.launch {
+        tripRepository.clearTrips().also { cb() }
     }
 
     fun resetTrip() {

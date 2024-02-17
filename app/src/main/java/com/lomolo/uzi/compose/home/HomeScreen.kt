@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.PolyUtil
@@ -51,7 +52,10 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
+import com.google.maps.android.compose.rememberMarkerState
 import com.lomolo.uzi.DeviceDetails
 import com.lomolo.uzi.DeviceDetailsUiState
 import com.lomolo.uzi.MainViewModel
@@ -133,28 +137,33 @@ private fun HomeSuccessScreen(
 
     val isAuthed = session.token.isNotBlank()
     val isOnboarding = session.onboarding
+    val tripInProgress = tripUpdates.id.isNotBlank()
 
     when {
         isAuthed && isOnboarding -> {
             onNavigateTo(UserNameDestination.route)
         }
-        tripUpdates.id.isNotBlank() -> {
-            TripScreen(
-                tripViewModel = tripViewModel,
-                tripUpdates = tripUpdates
-            )
-        }
         else -> {
-            DefaultHomeScreen(
-                modifier = modifier,
-                mainViewModel = mainViewModel,
-                tripViewModel = tripViewModel,
-                deviceDetails = deviceDetails,
-                onGetStartedClick = onGetStartedClick,
-                onEnterTripClick = onNavigateToTrip,
-                onTripProceed = onNavigateTo,
-                isAuthed = isAuthed
-            )
+            if (tripInProgress) {
+                TripScreen(
+                    tripViewModel = tripViewModel,
+                    tripUpdates = tripUpdates,
+                    onNavigateBackHome = {
+                        onNavigateTo(HomeScreenDestination.route)
+                    }
+                )
+            } else {
+                DefaultHomeScreen(
+                    modifier = modifier,
+                    mainViewModel = mainViewModel,
+                    tripViewModel = tripViewModel,
+                    deviceDetails = deviceDetails,
+                    onGetStartedClick = onGetStartedClick,
+                    onEnterTripClick = onNavigateToTrip,
+                    onTripProceed = onNavigateTo,
+                    isAuthed = isAuthed
+                )
+            }
         }
     }
 }
@@ -297,7 +306,8 @@ private fun TripScreen(
     modifier: Modifier = Modifier,
     tripViewModel: TripViewModel,
     tripUpdates: Trip,
-    onCourierArriving: () -> Unit = {}
+    onCourierArriving: () -> Unit = {},
+    onNavigateBackHome: () -> Unit = {}
 ) {
     LaunchedEffect(Unit) {
         tripViewModel.getTripDetails()
@@ -338,6 +348,9 @@ private fun TripScreen(
         val cameraPosition = rememberCameraPositionState {
             position = CameraPosition.fromLatLngZoom(markerState, 17f)
         }
+        val markerPosition = rememberMarkerState(
+            position = markerState
+        )
 
         GoogleMap(
             uiSettings = uiSettings,
@@ -347,7 +360,13 @@ private fun TripScreen(
             onMapLoaded = {
                 mapLoaded = true
             }
-        )
+        ) {
+            Marker(
+               state = markerPosition,
+                zIndex = 1f,
+                icon = BitmapDescriptorFactory.fromResource(R.drawable.icons8_filled_circle_30)
+            )
+        }
     } else {
         Loader(
             modifier = Modifier
@@ -403,6 +422,9 @@ private fun TripScreen(
                            }
                        }
                        TripStatus.COURIER_NOT_FOUND.toString() -> {
+                           tripViewModel.clearTrips {
+                               onNavigateBackHome()
+                           }
                            Row(
                                modifier = Modifier
                                    .fillMaxWidth()

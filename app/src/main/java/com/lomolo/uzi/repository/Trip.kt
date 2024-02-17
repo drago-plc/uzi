@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.onEach
 
 interface TripInterface {
     suspend fun createTrip(trip: Trip)
-    fun getTrip(): Flow<Trip>
+    fun getTrip(): Flow<List<Trip>>
     fun getTripUpdates(id: String): Flow<ApolloResponse<TripUpdatesSubscription.Data>>
     suspend fun updateTrip(trip: Trip)
     suspend fun getTripDetails(tripId: String): ApolloResponse<GetTripDetailsQuery.Data>

@@ -13,8 +13,8 @@ import kotlinx.coroutines.flow.Flow
 interface TripDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun createTrip(input: Trip)
-    @Query("SELECT * FROM trips LIMIT 1")
-    fun getTrip(): Flow<Trip>
+    @Query("SELECT * FROM trips")
+    fun getTrip(): Flow<List<Trip>>
     @Update
     suspend fun updateTrip(trip: Trip)
     @Query("DELETE FROM trips")

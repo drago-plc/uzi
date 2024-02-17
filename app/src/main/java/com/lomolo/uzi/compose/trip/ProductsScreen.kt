@@ -118,7 +118,7 @@ fun TripProducts(
                 Marker(
                     state = MarkerState(polyline[polyline.size-1]),
                     icon = BitmapDescriptorFactory.fromResource(R.drawable.icons8_location_pin_90___),
-                    zIndex = 1.0f
+                    zIndex = 1f
                 )
             }
         }
