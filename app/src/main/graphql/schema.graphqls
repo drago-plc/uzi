@@ -90,6 +90,8 @@ type Mutation {
   courierArriving(tripId: UUID!): Boolean!
 
   courierEnroute(tripId: UUID!): Boolean!
+
+  cancelTrip(tripId: UUID!): Boolean!
 }
 
 type Place {
@@ -258,6 +260,8 @@ enum TripStatus {
   ARRIVING
 
   EN_ROUTE
+
+  CANCELLED
 
   COMPLETE
 
