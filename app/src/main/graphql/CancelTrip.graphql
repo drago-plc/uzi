@@ -1,0 +1,3 @@
+mutation CancelTrip($tripId: UUID!) {
+    cancelTrip(tripId: $tripId)
+}

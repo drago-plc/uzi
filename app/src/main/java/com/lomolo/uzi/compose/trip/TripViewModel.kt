@@ -367,14 +367,37 @@ class TripViewModel(
     }
 
     fun clearTrips(cb: () -> Unit = {}) = viewModelScope.launch {
-        tripRepository.clearTrips().also { cb() }
+        tripRepository.clearTrips().also {
+            resetTrip()
+            cb()
+        }
     }
 
     fun resetTrip() {
-        //_trip.value = Trip() TODO just for testing(revert once ready)
+        _trip.value = Trip()
+        tripProductId = ""
+        confirmedPickup = ReverseGeocodeConfirmedPickup.Success(null)
     }
 
     fun getTripUpdates() = tripRepository.getTripUpdates(tripUpdatesUiState.value.id)
+
+    var cancelTripUiState: CancelTripState by mutableStateOf(CancelTripState.Success)
+        private set
+    fun cancelTrip(cb: () -> Unit = {}) {
+        cancelTripUiState = CancelTripState.Loading
+        viewModelScope.launch {
+            cancelTripUiState = try {
+                tripRepository.cancelTrip(tripUpdatesUiState.value.id).also {
+                    clearTrips {
+                        cb()
+                    }
+                }
+                CancelTripState.Success
+            } catch(e: ApolloException) {
+                CancelTripState.Error(e.message)
+            }
+        }
+    }
 }
 
 interface LocationPredicateState {
@@ -436,4 +459,10 @@ interface GetTripDetailsState {
     data class Success(val success: GetTripDetailsQuery.GetTripDetails?): GetTripDetailsState
     data object Loading: GetTripDetailsState
     data class Error(val message: String?): GetTripDetailsState
+}
+
+interface CancelTripState {
+    data object Success: CancelTripState
+    data object Loading: CancelTripState
+    data class Error(val message: String?): CancelTripState
 }

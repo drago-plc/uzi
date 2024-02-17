@@ -46,25 +46,22 @@ import coil.request.ImageRequest
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.PolyUtil
-import com.google.maps.android.SphericalUtil
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
-import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
 import com.lomolo.uzi.DeviceDetails
 import com.lomolo.uzi.DeviceDetailsUiState
 import com.lomolo.uzi.MainViewModel
 import com.lomolo.uzi.R
-import com.lomolo.uzi.TripUpdatesSubscription
 import com.lomolo.uzi.compose.loader.Loader
 import com.lomolo.uzi.compose.navigation.Navigation
 import com.lomolo.uzi.compose.signin.GetStarted
 import com.lomolo.uzi.compose.signin.UserNameDestination
+import com.lomolo.uzi.compose.trip.CancelTripState
 import com.lomolo.uzi.compose.trip.ComputeTripRouteState
 import com.lomolo.uzi.compose.trip.GetTripDetailsState
 import com.lomolo.uzi.compose.trip.SearchDropoffLocationScreenDestination
@@ -75,7 +72,6 @@ import com.lomolo.uzi.compose.trip.TripViewModel
 import com.lomolo.uzi.model.Session
 import com.lomolo.uzi.model.Trip
 import com.lomolo.uzi.model.TripStatus
-import kotlinx.coroutines.flow.collect
 
 object HomeScreenDestination: Navigation {
     override val route = "home"
@@ -425,20 +421,6 @@ private fun TripScreen(
                            tripViewModel.clearTrips {
                                onNavigateBackHome()
                            }
-                           Row(
-                               modifier = Modifier
-                                   .fillMaxWidth()
-                                   .height(64.dp),
-                               verticalAlignment = Alignment.CenterVertically,
-                               horizontalArrangement = Arrangement.Center
-                           ) {
-                               Text(
-                                   modifier = Modifier
-                                       .padding(start = 8.dp),
-                                   text = "Taking too long. It's not your fault. We are still onboarding more couriers.",
-                                   style = MaterialTheme.typography.labelMedium
-                               )
-                           }
                        }
                        TripStatus.COURIER_FOUND.toString() -> {
                            Row(
@@ -456,6 +438,36 @@ private fun TripScreen(
                                Spacer(modifier = Modifier.weight(1f))
                                Loader()
                            }
+                       }
+                       TripStatus.CANCELLED.toString() -> {
+                           tripViewModel.clearTrips {
+                               onNavigateBackHome()
+                           }
+                       }
+                   }
+                   if (
+                       tripUpdates.status == TripStatus.CREATE.toString() ||
+                       tripUpdates.status == TripStatus.COURIER_FOUND.toString()
+                       ) {
+                       Button(
+                           modifier = Modifier
+                               .fillMaxWidth()
+                               .height(54.dp),
+                           shape = MaterialTheme.shapes.small,
+                           onClick = {
+                               tripViewModel.cancelTrip {
+                                   onNavigateBackHome()
+                               }
+                           }
+                       ) {
+                          if (tripViewModel.cancelTripUiState !is CancelTripState.Loading) {
+                              Text(
+                                  "Cancel",
+                                  style = MaterialTheme.typography.labelMedium,
+                              )
+                          } else {
+                              Loader()
+                          }
                        }
                    }
                }
