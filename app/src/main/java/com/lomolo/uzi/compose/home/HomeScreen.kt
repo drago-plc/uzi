@@ -43,9 +43,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
@@ -53,8 +55,10 @@ import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
+import com.google.maps.android.ktx.model.cameraPosition
 import com.lomolo.uzi.DeviceDetails
 import com.lomolo.uzi.DeviceDetailsUiState
+import com.lomolo.uzi.GetTripDetailsQuery
 import com.lomolo.uzi.MainViewModel
 import com.lomolo.uzi.R
 import com.lomolo.uzi.compose.loader.Loader
@@ -339,15 +343,13 @@ private fun TripScreen(
     val mapProperties by remember {
         mutableStateOf(MapProperties(mapType = MapType.TERRAIN))
     }
-
+    val cameraPosition = rememberCameraPositionState {
+        position = CameraPosition.fromLatLngZoom(markerState, 17f)
+    }
+    val markerPosition = rememberMarkerState(
+        position = markerState
+    )
     if (done) {
-        val cameraPosition = rememberCameraPositionState {
-            position = CameraPosition.fromLatLngZoom(markerState, 17f)
-        }
-        val markerPosition = rememberMarkerState(
-            position = markerState
-        )
-
         GoogleMap(
             uiSettings = uiSettings,
             properties = mapProperties,
@@ -403,7 +405,16 @@ private fun TripScreen(
                        TripStatus.COURIER_ARRIVING.toString() -> {
                            val s = tripViewModel.getTripDetailsUiState
                            if (s is GetTripDetailsState.Success) {
+                               LaunchedEffect(key1 = tripUpdates) {
+                                   cameraPosition.move(
+                                       CameraUpdateFactory.newLatLngZoom(
+                                           LatLng(tripUpdates.lat, tripUpdates.lng),
+                                           17f
+                                       )
+                                   )
+                               }
                                Courier(
+                                   courier = s.success!!,
                                    tripViewModel = tripViewModel
                                )
                            } else if (s is GetTripDetailsState.Loading) {
@@ -411,7 +422,8 @@ private fun TripScreen(
                                    modifier = Modifier
                                        .fillMaxWidth()
                                        .height(64.dp),
-                                   verticalAlignment = Alignment.CenterVertically
+                                   verticalAlignment = Alignment.CenterVertically,
+                                   horizontalArrangement = Arrangement.Center
                                ) {
                                    Loader()
                                }
@@ -479,71 +491,73 @@ private fun TripScreen(
 @Composable
 private fun Courier(
     modifier: Modifier = Modifier,
-    tripViewModel: TripViewModel
+    tripViewModel: TripViewModel,
+    courier: GetTripDetailsQuery.GetTripDetails
 ) {
     val context = LocalContext.current
 
-    LaunchedEffect(Unit) {
-        tripViewModel.getTripDetails()
-    }
-
-    Row(
-        modifier = modifier
-            .fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data("https://uzi-images.s3.eu-west-2.amazonaws.com/FEEdsVaWQAQ76vr.jpeg")
-                .crossfade(true)
-                .build(),
-            placeholder = painterResource(id = R.drawable.loading_img),
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .padding(8.dp)
-                .size(68.dp)
-                .clip(MaterialTheme.shapes.small),
-            contentDescription = null
-        )
-        Column(
-            modifier = Modifier
-                .padding(start=8.dp)
+    Column {
+        Row(
+            modifier = modifier
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    "John Doe",
-                    style = MaterialTheme.typography.labelMedium
-                )
-                IconButton(
-                    onClick = {
-                        Intent(Intent.ACTION_DIAL).apply {
-                            data = Uri.parse("tel:0849828440")
-                        }.also { context.startActivity(it) }
-                    }
-                ) {
-                    Icon(Icons.TwoTone.Call, contentDescription = null)
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(courier.courier?.avatar?.uri)
+                    .crossfade(true)
+                    .build(),
+                placeholder = painterResource(id = R.drawable.loading_img),
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .padding(8.dp)
+                    .size(68.dp)
+                    .clip(MaterialTheme.shapes.small),
+                contentDescription = null
+            )
+            Column(
+                modifier = Modifier
+                    .padding(start=8.dp)
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        "${courier.courier?.user?.first_name} ${courier.courier?.user?.last_name}",
+                        style = MaterialTheme.typography.labelMedium
+                    )
                 }
             }
-            // TODO show based on product courier product(bike/boda)
-            Text(
-                "KDJ 425T",
-                style = MaterialTheme.typography.bodyLarge,
+
+            Spacer(modifier = Modifier.weight(1f))
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(courier.courier?.product?.icon_url)
+                    .crossfade(true)
+                    .build(),
+                placeholder = painterResource(id = R.drawable.loading_img),
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .padding(8.dp)
+                    .size(42.dp)
+                    .clip(MaterialTheme.shapes.small),
+                contentDescription = null
             )
         }
-
-        Spacer(modifier = Modifier.weight(1f))
-        AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data("https://uzi-images.s3.eu-west-2.amazonaws.com/icons8-bike-50.png")
-                .crossfade(true)
-                .build(),
-            placeholder = painterResource(id = R.drawable.loading_img),
-            contentScale = ContentScale.Crop,
+        Spacer(modifier = Modifier.size(16.dp))
+        Button(
             modifier = Modifier
-                .padding(8.dp)
-                .size(42.dp)
-                .clip(MaterialTheme.shapes.small),
-            contentDescription = null
-        )
+                .fillMaxWidth()
+                .height(54.dp),
+            shape = MaterialTheme.shapes.small,
+            onClick = {
+                Intent(Intent.ACTION_DIAL).apply {
+                    data = Uri.parse("tel:${courier.courier?.user?.phone}")
+                }.also { context.startActivity(it) }
+            }
+        ) {
+           Text(
+               "Call",
+               style = MaterialTheme.typography.labelMedium
+           )
+        }
     }
 }

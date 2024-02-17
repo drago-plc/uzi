@@ -12,8 +12,7 @@ data class Trip (
 )
 
 enum class TripStatus {
-    ARRIVING,
-    EN_ROUTE,
+    COURIER_EN_ROUTE,
     CANCELLED,
     CREATE,
     COMPLETE,

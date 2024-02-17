@@ -358,6 +358,7 @@ class TripViewModel(
                     delay(4_000L)
                     val res = uziGqlApiRepository.getTripDetails(tripUpdatesUiState.value.id)
                         .dataOrThrow()
+                    println(res.getTripDetails)
                     GetTripDetailsState.Success(res.getTripDetails)
                 } catch (e: ApolloException) {
                     GetTripDetailsState.Error(e.message)
