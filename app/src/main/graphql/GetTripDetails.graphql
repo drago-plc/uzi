@@ -20,6 +20,9 @@ query GetTripDetails($id: UUID!) {
                 icon_url
             }
         }
+        route {
+            polyline
+        }
         start_location {
             lat
             lng

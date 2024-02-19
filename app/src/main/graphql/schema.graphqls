@@ -213,9 +213,7 @@ type Trip {
 
   cost: String
 
-  route_id: UUID
-
-  route: Route
+  route: TripRoute
 
   recipient: Recipient!
 
@@ -257,15 +255,13 @@ input TripRouteInput {
 }
 
 enum TripStatus {
-  ARRIVING
-
-  EN_ROUTE
+  COURIER_EN_ROUTE
 
   CANCELLED
 
   COMPLETE
 
-  ASSIGNED
+  COURIER_ASSIGNED
 
   COURIER_ARRIVING
 
