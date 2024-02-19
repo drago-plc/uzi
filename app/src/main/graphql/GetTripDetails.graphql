@@ -23,6 +23,7 @@ query GetTripDetails($id: UUID!) {
         route {
             polyline
         }
+        cost
         start_location {
             lat
             lng

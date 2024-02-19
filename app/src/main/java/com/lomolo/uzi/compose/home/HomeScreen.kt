@@ -1,5 +1,6 @@
 package com.lomolo.uzi.compose.home
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
@@ -25,12 +26,15 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -41,14 +45,15 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
-import com.google.android.gms.maps.model.CustomCap
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.PolyUtil
+import com.google.maps.android.SphericalUtil
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
@@ -72,6 +77,7 @@ import com.lomolo.uzi.compose.trip.TripViewModel
 import com.lomolo.uzi.model.Session
 import com.lomolo.uzi.model.Trip
 import com.lomolo.uzi.model.TripStatus
+import kotlinx.coroutines.delay
 
 object HomeScreenDestination: Navigation {
     override val route = "home"
@@ -302,7 +308,6 @@ private fun TripScreen(
     modifier: Modifier = Modifier,
     tripViewModel: TripViewModel,
     tripUpdates: Trip,
-    onCourierArriving: () -> Unit = {},
     onNavigateBackHome: () -> Unit = {}
 ) {
     LaunchedEffect(Unit) {
@@ -323,20 +328,14 @@ private fun TripScreen(
             }
         }
     }
-    val u = tripViewModel.getTripUpdates().collectAsState(initial = null)
-    LaunchedEffect(key1 = u) {
-        when(u.value?.data?.tripUpdates?.status.toString()) {
-            TripStatus.COURIER_ARRIVING.toString() -> {
-                onCourierArriving()
-            }
-            else -> {}
-        }
-    }
     var mapLoaded by rememberSaveable {
         mutableStateOf(false)
     }
     val uiSettings by remember {
         mutableStateOf(MapUiSettings(zoomControlsEnabled = false))
+    }
+    var courierHeading by remember {
+        mutableFloatStateOf(0.0f)
     }
     val mapProperties by remember {
         mutableStateOf(MapProperties(mapType = MapType.TERRAIN))
@@ -345,10 +344,39 @@ private fun TripScreen(
         val cameraPosition = rememberCameraPositionState {
             position = CameraPosition.fromLatLngZoom(markerState, 17f)
         }
-        val markerPosition = rememberMarkerState(
-            position = markerState
+        var route by remember {
+            mutableStateOf(PolyUtil.decode(polyline) ?: listOf())
+        }
+        val courierPosition = rememberMarkerState(
+            position = LatLng(tripUpdates.lat, tripUpdates.lng)
         )
-        val route = PolyUtil.decode(polyline)
+
+        val u = tripViewModel.getTripUpdates().collectAsState(initial = null)
+        LaunchedEffect(key1 = tripUpdates) {
+            if (route.isNotEmpty()) {
+                courierPosition.position = route[route.size-1]
+                courierHeading = when (route.size-1) {
+                    0 -> SphericalUtil.computeHeading(
+                        LatLng(tripUpdates.lat, tripUpdates.lng),
+                        route[0],
+                    ).toFloat() - 45
+                    1 -> {
+                        SphericalUtil.computeHeading(
+                            LatLng(tripUpdates.lat, tripUpdates.lng),
+                            route[route.size - 1],
+                        ).toFloat() - 45
+                    }
+                    else -> {
+                        SphericalUtil.computeHeading(
+                            LatLng(tripUpdates.lat, tripUpdates.lng),
+                            route[route.size - 2],
+                        ).toFloat() - 45
+                    }
+                }
+                route = route.subList(0, route.size)
+                println(route)
+            }
+        }
 
         GoogleMap(
             uiSettings = uiSettings,
@@ -359,18 +387,25 @@ private fun TripScreen(
                 mapLoaded = true
             }
         ) {
-            Marker(
-               state = markerPosition,
-                zIndex = 1f,
-                icon = BitmapDescriptorFactory.fromResource(R.drawable.icons8_filled_circle_30)
-            )
-            if (polyline != null) {
+            if (polyline != null && route.isNotEmpty()) {
+                Marker(
+                    state = MarkerState(route[0]),
+                    zIndex = 1.0f,
+                    icon = BitmapDescriptorFactory.fromResource(R.drawable.icons8_filled_circle_30)
+                )
                 Polyline(
+                    zIndex = 1.0f,
                     width = 12f,
                     points = route,
                     geodesic = true,
-                    startCap = CustomCap(BitmapDescriptorFactory.fromResource(R.drawable.icons8_filled_circle_30)),
-                    endCap = CustomCap(BitmapDescriptorFactory.fromResource(R.drawable.icons8_filled_circle_30))
+                )
+                Marker(
+                    anchor = Offset(0.5f, 0.5f),
+                    state = courierPosition,
+                    zIndex = 1.0f,
+                    icon = BitmapDescriptorFactory.fromResource(R.drawable.icons8_navigation_90___),
+                    flat = true,
+                    rotation = courierHeading
                 )
             }
         }
@@ -413,6 +448,11 @@ private fun TripScreen(
                        }
                        TripStatus.COURIER_ARRIVING.toString() -> {
                            val s = tripViewModel.getTripDetailsUiState
+                           Text(
+                               text = "Your courier is arriving for pickup",
+                               style = MaterialTheme.typography.labelMedium
+                           )
+                           Spacer(modifier = Modifier.size(20.dp))
                            if (s is GetTripDetailsState.Success) {
                                Courier(
                                    courier = s.success!!,
