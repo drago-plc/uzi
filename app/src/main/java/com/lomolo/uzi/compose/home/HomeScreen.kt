@@ -41,12 +41,15 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.CustomCap
 import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.PolyUtil
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
 import com.lomolo.uzi.DeviceDetails
@@ -309,11 +312,13 @@ private fun TripScreen(
     var done by rememberSaveable {
         mutableStateOf(false)
     }
+    var polyline: String? = null
     when(val s = tripViewModel.getTripDetailsUiState) {
         is GetTripDetailsState.Success -> {
             if(s.success != null) {
                 if (s.success.start_location != null)
                     markerState = LatLng(s.success.start_location.lat, s.success.start_location.lng)
+                polyline = s.success.route?.polyline
                 done = true
             }
         }
@@ -343,6 +348,7 @@ private fun TripScreen(
         val markerPosition = rememberMarkerState(
             position = markerState
         )
+        val route = PolyUtil.decode(polyline)
 
         GoogleMap(
             uiSettings = uiSettings,
@@ -358,6 +364,15 @@ private fun TripScreen(
                 zIndex = 1f,
                 icon = BitmapDescriptorFactory.fromResource(R.drawable.icons8_filled_circle_30)
             )
+            if (polyline != null) {
+                Polyline(
+                    width = 12f,
+                    points = route,
+                    geodesic = true,
+                    startCap = CustomCap(BitmapDescriptorFactory.fromResource(R.drawable.icons8_filled_circle_30)),
+                    endCap = CustomCap(BitmapDescriptorFactory.fromResource(R.drawable.icons8_filled_circle_30))
+                )
+            }
         }
     } else {
         Loader(
