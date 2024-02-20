@@ -28,10 +28,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
@@ -57,6 +60,7 @@ import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
+import com.google.maps.android.ktx.utils.simplify
 import com.lomolo.uzi.DeviceDetails
 import com.lomolo.uzi.DeviceDetailsUiState
 import com.lomolo.uzi.GetTripDetailsQuery
@@ -78,6 +82,7 @@ import com.lomolo.uzi.model.Session
 import com.lomolo.uzi.model.Trip
 import com.lomolo.uzi.model.TripStatus
 import kotlinx.coroutines.delay
+import okhttp3.internal.toImmutableList
 
 object HomeScreenDestination: Navigation {
     override val route = "home"
@@ -340,41 +345,47 @@ private fun TripScreen(
     val mapProperties by remember {
         mutableStateOf(MapProperties(mapType = MapType.TERRAIN))
     }
+    var route by remember {
+        mutableStateOf(PolyUtil.decode(polyline ?: "") ?: listOf<LatLng>())
+    }
+    val courierPosition = rememberMarkerState(
+        position = LatLng(tripUpdates.lat, tripUpdates.lng)
+    )
+
     if (done) {
         val cameraPosition = rememberCameraPositionState {
             position = CameraPosition.fromLatLngZoom(markerState, 17f)
         }
-        var route by remember {
-            mutableStateOf(PolyUtil.decode(polyline) ?: listOf())
-        }
-        val courierPosition = rememberMarkerState(
-            position = LatLng(tripUpdates.lat, tripUpdates.lng)
-        )
-
         val u = tripViewModel.getTripUpdates().collectAsState(initial = null)
         LaunchedEffect(key1 = tripUpdates) {
+            if (route.isEmpty()) route = PolyUtil.decode(polyline ?: "").simplify(1.0)
             if (route.isNotEmpty()) {
-                courierPosition.position = route[route.size-1]
+                courierPosition.position = LatLng(tripUpdates.lat, tripUpdates.lng)
                 courierHeading = when (route.size-1) {
                     0 -> SphericalUtil.computeHeading(
-                        LatLng(tripUpdates.lat, tripUpdates.lng),
+                        courierPosition.position,
                         route[0],
                     ).toFloat() - 45
-                    1 -> {
-                        SphericalUtil.computeHeading(
-                            LatLng(tripUpdates.lat, tripUpdates.lng),
-                            route[route.size - 1],
-                        ).toFloat() - 45
-                    }
+
                     else -> {
                         SphericalUtil.computeHeading(
-                            LatLng(tripUpdates.lat, tripUpdates.lng),
-                            route[route.size - 2],
+                            courierPosition.position,
+                            route[route.size-1],
                         ).toFloat() - 45
                     }
                 }
-                route = route.subList(0, route.size)
-                println(route)
+                if (PolyUtil.isLocationOnPath(courierPosition.position, route, true)) {
+                    val newRoute = route.subList(
+                        0,
+                        PolyUtil.locationIndexOnPath(
+                            courierPosition.position,
+                            route.toMutableList(),
+                            true
+                        )+1
+                    ).simplify(1.0).toMutableList()
+                    newRoute.add(courierPosition.position)
+                    route = newRoute.toList()
+                }
             }
         }
 
