@@ -1,6 +1,5 @@
 package com.lomolo.uzi.compose.home
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
@@ -26,15 +25,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateList
-import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
@@ -81,8 +76,6 @@ import com.lomolo.uzi.compose.trip.TripViewModel
 import com.lomolo.uzi.model.Session
 import com.lomolo.uzi.model.Trip
 import com.lomolo.uzi.model.TripStatus
-import kotlinx.coroutines.delay
-import okhttp3.internal.toImmutableList
 
 object HomeScreenDestination: Navigation {
     override val route = "home"
