@@ -70,7 +70,7 @@ class DefaultContainer(private val context: Context): AppContainer {
                         "type" to "connection_init",
                         "payload" to mapOf(
                             "headers" to mapOf(
-                                "Authorization" to "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwaG9uZSI6IjI1NDc5MjkyMTQ0MCIsImlwIjoiMTAyLjIxNy4xMjQuMSIsImlzcyI6IlV6aSIsImV4cCI6MTcwODExMzQ1OSwiaWF0IjoxNzA4MDI3MDU5LCJqdGkiOiJkNTc0NzhlYy0zZTM1LTQ4YmUtYmY5NC05MWJlODEyZGU1MzcifQ.6goia_c_HAmmTD9tu7XaFMHNES2z_35wfC1tAhGtw_4")
+                                "Authorization" to "Bearer ")
                             )
                         )
                 }
