@@ -353,7 +353,8 @@ private fun TripScreen(
             position = CameraPosition.fromLatLngZoom(markerState, 17f)
         }
         LaunchedEffect(key1 = tripUpdates) {
-            if (tripUpdates.status == TripStatus.COURIER_ARRIVING.toString()) tripViewModel.getTripDetails()
+            if (tripUpdates.status == TripStatus.COURIER_ARRIVING.toString() ||
+                tripUpdates.status == TripStatus.COURIER_EN_ROUTE.toString()) tripViewModel.getTripDetails()
             if (route.isEmpty()) route = PolyUtil.decode(polyline ?: "")
             if (route.isNotEmpty()) {
                 courierPosition.position = LatLng(tripUpdates.lat, tripUpdates.lng)
@@ -453,7 +454,7 @@ private fun TripScreen(
                                Loader()
                            }
                        }
-                       TripStatus.COURIER_ARRIVING.toString() -> {
+                       TripStatus.COURIER_ARRIVING.toString(), TripStatus.COURIER_EN_ROUTE.toString() -> {
                            val s = tripViewModel.getTripDetailsUiState
                            Text(
                                text = "Your courier is arriving for pickup",
