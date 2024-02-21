@@ -499,7 +499,7 @@ private fun TripScreen(
                                Loader()
                            }
                        }
-                       TripStatus.CANCELLED.toString() -> {
+                       TripStatus.CANCELLED.toString(), TripStatus.COMPLETE.toString() -> {
                            tripViewModel.clearTrips {
                                onNavigateBackHome()
                            }
