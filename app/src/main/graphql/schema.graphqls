@@ -145,6 +145,8 @@ type Recipient {
 
   phone: String!
 
+  trip_note: String!
+
   trip_id: UUID!
 
   trip: Trip!
@@ -238,6 +240,8 @@ input TripRecipientInput {
   unit_name: String
 
   phone: String!
+
+  trip_note: String!
 }
 
 type TripRoute {
