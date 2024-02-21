@@ -311,6 +311,7 @@ private fun TripScreen(
     LaunchedEffect(Unit) {
         tripViewModel.getTripDetails()
     }
+    val u = tripViewModel.getTripUpdates().collectAsState(initial = null)
     var markerState = LatLng(0.0, 0.0)
     var done by rememberSaveable {
         mutableStateOf(false)
@@ -319,6 +320,7 @@ private fun TripScreen(
     when(val s = tripViewModel.getTripDetailsUiState) {
         is GetTripDetailsState.Success -> {
             if(s.success != null) {
+                println(s.success)
                 if (s.success.start_location != null)
                     markerState = LatLng(s.success.start_location.lat, s.success.start_location.lng)
                 polyline = s.success.route?.polyline
@@ -349,9 +351,9 @@ private fun TripScreen(
         val cameraPosition = rememberCameraPositionState {
             position = CameraPosition.fromLatLngZoom(markerState, 17f)
         }
-        val u = tripViewModel.getTripUpdates().collectAsState(initial = null)
         LaunchedEffect(key1 = tripUpdates) {
-            if (route.isEmpty()) route = PolyUtil.decode(polyline ?: "").simplify(1.0)
+            if (tripUpdates.status == TripStatus.COURIER_ARRIVING.toString()) tripViewModel.getTripDetails()
+            if (route.isEmpty()) route = PolyUtil.decode(polyline ?: "")
             if (route.isNotEmpty()) {
                 courierPosition.position = LatLng(tripUpdates.lat, tripUpdates.lng)
                 courierHeading = when (route.size-1) {
@@ -375,7 +377,7 @@ private fun TripScreen(
                             route.toMutableList(),
                             true
                         )+1
-                    ).simplify(1.0).toMutableList()
+                    ).toMutableList()
                     newRoute.add(courierPosition.position)
                     route = newRoute.toList()
                 }
@@ -420,7 +422,7 @@ private fun TripScreen(
         )
     }
     AnimatedVisibility(
-        visible = mapLoaded,
+        visible = mapLoaded && done,
         enter = EnterTransition.None,
         exit = fadeOut()
     ) {
@@ -459,8 +461,7 @@ private fun TripScreen(
                            Spacer(modifier = Modifier.size(20.dp))
                            if (s is GetTripDetailsState.Success) {
                                Courier(
-                                   courier = s.success!!,
-                                   tripViewModel = tripViewModel
+                                   courier = s.success!!
                                )
                            } else if (s is GetTripDetailsState.Loading) {
                                Row(
@@ -536,7 +537,6 @@ private fun TripScreen(
 @Composable
 private fun Courier(
     modifier: Modifier = Modifier,
-    tripViewModel: TripViewModel,
     courier: GetTripDetailsQuery.GetTripDetails
 ) {
     val context = LocalContext.current
@@ -547,62 +547,77 @@ private fun Courier(
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(courier.courier?.avatar?.uri)
-                    .crossfade(true)
-                    .build(),
-                placeholder = painterResource(id = R.drawable.loading_img),
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .padding(8.dp)
-                    .size(68.dp)
-                    .clip(MaterialTheme.shapes.small),
-                contentDescription = null
-            )
-            Column(
-                modifier = Modifier
-                    .padding(start=8.dp)
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        "${courier.courier?.user?.first_name} ${courier.courier?.user?.last_name}",
-                        style = MaterialTheme.typography.labelMedium
-                    )
+            if (courier.courier != null) {
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(courier.courier.avatar?.uri)
+                        .crossfade(true)
+                        .build(),
+                    placeholder = painterResource(id = R.drawable.loading_img),
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .size(68.dp)
+                        .clip(MaterialTheme.shapes.small),
+                    contentDescription = null
+                )
+            }
+            if (courier.courier?.user != null) {
+                Column(
+                    modifier = Modifier
+                        .padding(start=8.dp)
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            "${courier.courier.user.first_name} ${courier.courier.user.last_name}",
+                            style = MaterialTheme.typography.labelMedium
+                        )
+                    }
                 }
             }
 
             Spacer(modifier = Modifier.weight(1f))
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(courier.courier?.product?.icon_url)
-                    .crossfade(true)
-                    .build(),
-                placeholder = painterResource(id = R.drawable.loading_img),
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .padding(8.dp)
-                    .size(42.dp)
-                    .clip(MaterialTheme.shapes.small),
-                contentDescription = null
-            )
-        }
-        Spacer(modifier = Modifier.size(16.dp))
-        Button(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(54.dp),
-            shape = MaterialTheme.shapes.small,
-            onClick = {
-                Intent(Intent.ACTION_DIAL).apply {
-                    data = Uri.parse("tel:${courier.courier?.user?.phone}")
-                }.also { context.startActivity(it) }
+            if (courier.courier?.product != null) {
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(courier.courier.product.icon_url)
+                        .crossfade(true)
+                        .build(),
+                    placeholder = painterResource(id = R.drawable.loading_img),
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .size(42.dp)
+                        .clip(MaterialTheme.shapes.small),
+                    contentDescription = null
+                )
             }
-        ) {
-           Text(
-               "Call",
-               style = MaterialTheme.typography.labelMedium
-           )
+        }
+        Spacer(modifier = Modifier.size(32.dp))
+        Text(
+            "Trip cost KES 1,050",
+            style = MaterialTheme.typography.labelSmall,
+            modifier = Modifier
+                .padding(start=4.dp)
+        )
+        Spacer(modifier = Modifier.size(16.dp))
+        if (courier.courier?.user != null) {
+            Button(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(54.dp),
+                shape = MaterialTheme.shapes.small,
+                onClick = {
+                    Intent(Intent.ACTION_DIAL).apply {
+                        data = Uri.parse("tel:${courier.courier.user.phone}")
+                    }.also { context.startActivity(it) }
+                }
+            ) {
+                Text(
+                    "Call",
+                    style = MaterialTheme.typography.labelMedium
+                )
+            }
         }
     }
 }

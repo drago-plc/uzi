@@ -234,11 +234,8 @@ fun ConfirmTripDetails(
                         )
                     },
                     keyboardOptions = KeyboardOptions(
-                        imeAction = ImeAction.Done,
+                        imeAction = ImeAction.Next,
                         keyboardType = KeyboardType.Number
-                    ),
-                    keyboardActions = KeyboardActions(
-                        onDone = { keyboardController?.hide() }
                     ),
                     singleLine = true,
                     placeholder = {
@@ -253,6 +250,32 @@ fun ConfirmTripDetails(
                     value = tripDetailsUi.details.phone,
                     onValueChange = {
                         tripViewModel.setTripDetailsPhone(it)
+                    }
+                )
+                Spacer(modifier = Modifier.size(16.dp))
+                OutlinedTextField(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    placeholder = {
+                        Text(
+                            text = "Delivery note",
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    },
+                    keyboardOptions = KeyboardOptions(
+                        imeAction = ImeAction.Done,
+                        capitalization = KeyboardCapitalization.Words
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onDone = { keyboardController?.hide() }
+                    ),
+                    maxLines = 5,
+                    supportingText = {
+                        Text("Can be blank but it's an aid for the courier")
+                    },
+                    value = tripDetailsUi.details.tripNote,
+                    onValueChange = {
+                        tripViewModel.setTripDetailsNote(it)
                     }
                 )
             }

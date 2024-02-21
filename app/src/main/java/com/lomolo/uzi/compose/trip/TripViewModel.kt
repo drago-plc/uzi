@@ -264,6 +264,13 @@ class TripViewModel(
         }
     }
 
+    fun setTripDetailsNote(note: String) {
+        _trip.update {
+            val tripDetails = it.details.copy(tripNote = note)
+            it.copy(details = tripDetails)
+        }
+    }
+
     fun setTripDetailsPhone(phone: String) {
         _trip.update {
             val tripDetails = it.details.copy(phone = phone)
@@ -322,7 +329,8 @@ class TripViewModel(
                 name = _trip.value.details.name,
                 building_name = Optional.presentIfNotNull(_trip.value.details.buildName),
                 unit_name = Optional.presentIfNotNull(_trip.value.details.flatOrOffice),
-                phone = _trip.value.details.phone
+                phone = _trip.value.details.phone,
+                trip_note = _trip.value.details.tripNote
             ),
             tripProductId = tripProductId
         )
@@ -427,7 +435,8 @@ data class Trip(
      val name: String = "",
      var buildName: String = "",
      val flatOrOffice: String = "",
-     val phone: String = ""
+     val phone: String = "",
+     val tripNote: String = ""
  )
 
 interface ComputeTripRouteState {
