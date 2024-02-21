@@ -76,6 +76,7 @@ import com.lomolo.uzi.compose.trip.TripViewModel
 import com.lomolo.uzi.model.Session
 import com.lomolo.uzi.model.Trip
 import com.lomolo.uzi.model.TripStatus
+import java.text.NumberFormat
 
 object HomeScreenDestination: Navigation {
     override val route = "home"
@@ -595,7 +596,7 @@ private fun Courier(
         }
         Spacer(modifier = Modifier.size(32.dp))
         Text(
-            "Trip cost KES 1,050",
+            "Trip cost KES ${NumberFormat.getNumberInstance().format(courier.cost)}",
             style = MaterialTheme.typography.labelSmall,
             modifier = Modifier
                 .padding(start=4.dp)
