@@ -1,7 +1,7 @@
 package com.lomolo.uzi.repository
 
 import com.apollographql.apollo3.api.ApolloResponse
-import com.lomolo.uzi.CancelTripMutation
+import com.lomolo.uzi.ReportTripStatusMutation
 import com.lomolo.uzi.GetTripDetailsQuery
 import com.lomolo.uzi.TripUpdatesSubscription
 import com.lomolo.uzi.model.Trip
@@ -19,7 +19,7 @@ interface TripInterface {
     suspend fun updateTrip(trip: Trip)
     suspend fun getTripDetails(tripId: String): ApolloResponse<GetTripDetailsQuery.Data>
     suspend fun clearTrips()
-    suspend fun cancelTrip(tripId: String): ApolloResponse<CancelTripMutation.Data>
+    suspend fun cancelTrip(tripId: String): ApolloResponse<ReportTripStatusMutation.Data>
 }
 
 class TripRepository(
