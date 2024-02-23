@@ -191,7 +191,7 @@ type Session {
 type Subscription {
   tripUpdates(tripId: UUID!): TripUpdate!
 
-  assignTrip: TripUpdate!
+  assignTrip(userId: UUID!): TripUpdate!
 }
 
 scalar Time
