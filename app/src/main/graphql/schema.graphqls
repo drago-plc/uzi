@@ -128,8 +128,6 @@ type Query {
   getCourierNearPickupPoint(point: GpsInput!): [Courier!]!
 
   getTripDetails(tripId: UUID!): Trip!
-
-  getCourierTrip: Trip!
 }
 
 type Recipient {
