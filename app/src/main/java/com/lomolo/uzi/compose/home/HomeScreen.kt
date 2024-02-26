@@ -359,7 +359,8 @@ private fun TripScreen(
             if (route.isNotEmpty()) {
                 courierPosition.position = LatLng(tripUpdates.lat, tripUpdates.lng)
                 courierHeading = when (route.size-1) {
-                    0 -> SphericalUtil.computeHeading(
+                    0 -> 0f - 45
+                    1 -> SphericalUtil.computeHeading(
                         courierPosition.position,
                         route[0],
                     ).toFloat() - 45
