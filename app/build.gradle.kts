@@ -4,6 +4,8 @@ plugins {
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
     id("com.apollographql.apollo3") version "4.0.0-alpha.3"
     id("com.google.devtools.ksp")
+
+    id("io.sentry.android.gradle") version "4.3.1"
 }
 
 android {
@@ -97,4 +99,13 @@ apollo {
     service("uzi") {
         packageName.set("com.lomolo.uzi")
     }
+}
+
+sentry {
+    org.set("uzi-3b")
+    projectName.set("uzi")
+
+    // this will upload your source code to Sentry to show it as part of the stack traces
+    // disable if you don't want to expose your sources
+    includeSourceContext.set(true)
 }
