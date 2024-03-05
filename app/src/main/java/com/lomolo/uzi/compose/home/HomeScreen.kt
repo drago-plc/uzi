@@ -45,6 +45,7 @@ import coil.request.ImageRequest
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.maps.android.PolyUtil
 import com.google.maps.android.SphericalUtil
 import com.google.maps.android.compose.GoogleMap
@@ -181,12 +182,20 @@ private fun DefaultHomeScreen(
     onTripProceed: (String) -> Unit,
     isAuthed: Boolean
 ) {
+    val context = LocalContext.current
     val uiSettings by remember {
         mutableStateOf(MapUiSettings(zoomControlsEnabled = false))
     }
 
     val mapProperties by remember {
-        mutableStateOf(MapProperties(mapType = MapType.TERRAIN))
+        mutableStateOf(
+            MapProperties(
+                mapStyleOptions = MapStyleOptions.loadRawResourceStyle(
+                    context,
+                    R.raw.style_json
+                )
+            )
+        )
     }
 
     val cP = CameraPosition(deviceDetails.gps, 17f, 0f, 0f)
@@ -311,6 +320,7 @@ private fun TripScreen(
     tripUpdates: Trip,
     onNavigateBackHome: () -> Unit = {}
 ) {
+    val context = LocalContext.current
     LaunchedEffect(Unit) {
         tripViewModel.getTripDetails()
     }
@@ -341,7 +351,14 @@ private fun TripScreen(
         mutableFloatStateOf(0.0f)
     }
     val mapProperties by remember {
-        mutableStateOf(MapProperties(mapType = MapType.TERRAIN))
+        mutableStateOf(
+            MapProperties(
+                mapStyleOptions = MapStyleOptions.loadRawResourceStyle(
+                    context,
+                    R.raw.style_json
+                )
+            )
+        )
     }
     var route by remember {
         mutableStateOf(PolyUtil.decode(polyline ?: "") ?: listOf<LatLng>())

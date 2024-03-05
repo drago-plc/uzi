@@ -36,11 +36,13 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.maps.android.compose.CameraMoveStartedReason
 import com.google.maps.android.compose.DragState
 import com.google.maps.android.compose.GoogleMap
@@ -63,6 +65,7 @@ internal fun Map(
     onLocationConfirmation: (LatLng) -> Unit,
     onConfirmationClick: () -> Unit
 ) {
+    val context = LocalContext.current
     val deviceDetails by mainViewModel.deviceDetailsUiState.collectAsState()
     val uiSettings by remember {
         mutableStateOf(MapUiSettings(zoomControlsEnabled = false))
@@ -71,7 +74,14 @@ internal fun Map(
         mutableStateOf(false)
     }
     val mapProperties by remember {
-        mutableStateOf(MapProperties(mapType = MapType.TERRAIN))
+        mutableStateOf(
+            MapProperties(
+                mapStyleOptions = MapStyleOptions.loadRawResourceStyle(
+                    context,
+                    R.raw.style_json
+                )
+            )
+        )
     }
     val cP = CameraPosition(deviceDetails.gps, 17f, 0f, 0f)
     val cameraPositionState = rememberCameraPositionState {
