@@ -9,12 +9,12 @@ import retrofit2.http.Headers
 import retrofit2.http.POST
 
 interface UziRestApiServiceInterface {
-    @GET("ipinfo")
+    @GET("v1/ipinfo")
     suspend fun getIpinfo(): Ipinfo
     @Headers("Content-Type: application/json")
-    @POST("signin")
+    @POST("v1/signin")
     suspend fun signIn(@Body input: SignIn): Session
     @Headers("Content-Type: application/json")
-    @POST("user/onboard")
+    @POST("v1/user/onboard")
     suspend fun onboardUser(@Body input: SignIn): Session
 }
