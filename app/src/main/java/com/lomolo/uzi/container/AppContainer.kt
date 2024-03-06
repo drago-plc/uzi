@@ -3,7 +3,6 @@ package com.lomolo.uzi.container
 import android.content.Context
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.network.okHttpClient
-import com.apollographql.apollo3.network.ws.SubscriptionWsProtocol
 import com.lomolo.uzi.apollo.interceptors.AuthInterceptor
 import com.lomolo.uzi.network.UziGqlApiInterface
 import com.lomolo.uzi.network.UziRestApiServiceInterface
@@ -60,7 +59,7 @@ class DefaultContainer(private val context: Context): AppContainer {
 
     override val apolloClient = ApolloClient.Builder()
         .okHttpClient(okhttpClient)
-        .httpServerUrl("${baseApi}/api")
+        .httpServerUrl("${baseApi}/v1/api")
         .webSocketServerUrl("${wss}/subscription") //TODO add auth token header
         /*
         .wsProtocol(
