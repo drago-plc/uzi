@@ -336,7 +336,7 @@ class TripViewModel(
         )
     }
     fun createTrip(cb: () -> Unit = {}) {
-        if (createTripState !is CreateTripState.Loading) {
+        if (createTripState !is CreateTripState.Loading && confirmedPickup !is ReverseGeocodeConfirmedPickup.Loading) {
             createTripState = CreateTripState.Loading
             viewModelScope.launch {
                 createTripState = try {

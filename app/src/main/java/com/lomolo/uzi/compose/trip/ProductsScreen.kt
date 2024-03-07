@@ -41,10 +41,10 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.CustomCap
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.maps.android.PolyUtil
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
-import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
@@ -67,6 +67,7 @@ fun TripProducts(
     tripViewModel: TripViewModel,
     onConfirmTrip: (String) -> Unit
 ) {
+    val context = LocalContext.current
     var routeComputed = false
     var polyline: List<LatLng> = listOf()
     var nearbyProducts: List<ComputeTripRouteQuery.AvailableProduct> = listOf()
@@ -84,10 +85,17 @@ fun TripProducts(
     }
 
     val mapProperties by remember {
-        mutableStateOf(MapProperties(mapType = MapType.TERRAIN))
+        mutableStateOf(
+            MapProperties(
+                mapStyleOptions = MapStyleOptions.loadRawResourceStyle(
+                    context,
+                    R.raw.style_json
+                )
+            )
+        )
     }
     val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(polyline.first(), 15f)
+        position = CameraPosition.fromLatLngZoom(polyline.first(), 17f)
     }
     var isMapLoaded by rememberSaveable {
         mutableStateOf(false)
@@ -232,13 +240,13 @@ private fun NearbyProducts(
                 Button(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(54.dp),
+                        .height(48.dp),
                     shape = MaterialTheme.shapes.small,
                     onClick = { onConfirmTrip() }
                 ) {
                     Text(
                         "Confirm",
-                        style = MaterialTheme.typography.labelMedium
+                        style = MaterialTheme.typography.labelSmall
                     )
                 }
             }

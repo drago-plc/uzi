@@ -111,33 +111,21 @@ fun ConfirmTripPickup(
             cameraPositionState = cameraPositionState
         )
         Box(Modifier.padding(8.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                IconButton(
-                    modifier = Modifier
-                        .background(
-                            MaterialTheme.colorScheme.surfaceTint,
-                            CircleShape
-                        ),
-                    onClick = {
-                        onNavigateUp()
-                    }
-                ) {
-                    Icon(
-                        Icons.AutoMirrored.TwoTone.ArrowBack,
-                        tint = MaterialTheme.colorScheme.background,
-                        contentDescription = null
-                    )
+            IconButton(
+                modifier = Modifier
+                    .background(
+                        MaterialTheme.colorScheme.surfaceTint,
+                        CircleShape
+                    ),
+                onClick = {
+                    onNavigateUp()
                 }
-                Spacer(modifier = Modifier.size(16.dp))
-                Box(
-                    Modifier
-                        .fillMaxWidth()
-                ) {
-                    Text(
-                        text = "Confirm pickup location",
-                        style = MaterialTheme.typography.labelMedium
-                    )
-                }
+            ) {
+                Icon(
+                    Icons.AutoMirrored.TwoTone.ArrowBack,
+                    tint = MaterialTheme.colorScheme.background,
+                    contentDescription = null
+                )
             }
         }
         Image(
@@ -170,11 +158,12 @@ fun ConfirmTripPickup(
                     }
                 }
             ) {
-               if (tripViewModel.createTripState is CreateTripState.Loading) {
+               if (tripViewModel.createTripState is CreateTripState.Loading ||
+                   tripViewModel.confirmedPickup is ReverseGeocodeConfirmedPickup.Loading) {
                   Loader()
                } else {
                    Text(
-                       text = "Confirm",
+                       text = "Confirm pickup location",
                        style = MaterialTheme.typography.labelSmall
                    )
                }

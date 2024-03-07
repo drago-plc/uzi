@@ -288,13 +288,13 @@ fun ConfirmTripDetails(
             Button(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(54.dp),
+                    .height(48.dp),
                 shape = MaterialTheme.shapes.small,
                 onClick = { if (tripDetailsValid) onConfirm() }
             ) {
                 Text(
                     text = "Confirm",
-                    style = MaterialTheme.typography.labelMedium
+                    style = MaterialTheme.typography.labelSmall
                 )
             }
         }
