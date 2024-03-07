@@ -117,11 +117,12 @@ fun Name(
                         },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(54.dp),
+                            .height(48.dp),
+                        shape = MaterialTheme.shapes.small
                     ) {
                         Text(
                             text = stringResource(R.string.proceed),
-                            style = MaterialTheme.typography.labelMedium
+                            style = MaterialTheme.typography.labelSmall
                         )
                     }
                 }
@@ -145,11 +146,12 @@ fun Name(
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(60.dp),
+                                .height(48.dp),
+                            shape = MaterialTheme.shapes.small
                         ) {
                             Text(
                                 text = stringResource(R.string.retry),
-                                style = MaterialTheme.typography.labelMedium
+                                style = MaterialTheme.typography.labelSmall
                             )
                         }
                     }

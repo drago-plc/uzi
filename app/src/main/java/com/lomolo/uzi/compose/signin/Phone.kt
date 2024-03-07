@@ -107,11 +107,12 @@ fun Phone(
                         },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(60.dp),
+                            .height(48.dp),
+                        shape = MaterialTheme.shapes.small
                     ) {
                         Text(
                             text = stringResource(R.string.sign_in),
-                            style = MaterialTheme.typography.labelMedium
+                            style = MaterialTheme.typography.labelSmall
                         )
                     }
                 }
@@ -135,11 +136,12 @@ fun Phone(
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(60.dp),
+                                .height(48.dp),
+                            shape = MaterialTheme.shapes.small
                         ) {
                             Text(
                                 text = stringResource(R.string.retry),
-                                style = MaterialTheme.typography.labelMedium
+                                style = MaterialTheme.typography.labelSmall
                             )
                         }
                     }

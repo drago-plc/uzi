@@ -67,6 +67,7 @@ fun TripProducts(
     tripViewModel: TripViewModel,
     onConfirmTrip: (String) -> Unit
 ) {
+    var routeComputed = false
     var polyline: List<LatLng> = listOf()
     var nearbyProducts: List<ComputeTripRouteQuery.AvailableProduct> = listOf()
     when(val s = tripViewModel.makeTripRouteState) {
@@ -74,6 +75,7 @@ fun TripProducts(
             if (s.success?.polyline != null) {
                 polyline = PolyUtil.decode(s.success.polyline)
                 nearbyProducts = s.success.availableProducts
+                routeComputed = true
             }
         }
     }
@@ -159,10 +161,9 @@ fun TripProducts(
                        tripViewModel = tripViewModel
                    )
                } else {
-                   if (polyline.isNotEmpty()) {
+                   if (routeComputed) {
                        Text(
                            stringResource(R.string.still_onboarding_your_area),
-                           style = MaterialTheme.typography.labelMedium,
                            modifier = Modifier.padding(16.dp)
                        )
                    }

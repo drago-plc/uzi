@@ -213,9 +213,12 @@ internal fun Map(
                             shape = MaterialTheme.shapes.small,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(52.dp)
+                                .height(48.dp)
                         ) {
-                            Text("Confirm")
+                            Text(
+                                "Confirm",
+                                style = MaterialTheme.typography.labelSmall
+                            )
                         }
                     }
                 }

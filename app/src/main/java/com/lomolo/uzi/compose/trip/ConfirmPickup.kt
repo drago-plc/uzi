@@ -162,7 +162,7 @@ fun ConfirmTripPickup(
             Button(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(54.dp),
+                    .height(48.dp),
                 shape = MaterialTheme.shapes.small,
                 onClick = {
                     tripViewModel.createTrip {
@@ -175,7 +175,7 @@ fun ConfirmTripPickup(
                } else {
                    Text(
                        text = "Confirm",
-                       style = MaterialTheme.typography.labelMedium
+                       style = MaterialTheme.typography.labelSmall
                    )
                }
             }

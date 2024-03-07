@@ -21,14 +21,14 @@ fun GetStarted(
     ) {
         Button(
             onClick = onGetStartedClick,
+            shape = MaterialTheme.shapes.small,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(72.dp)
-                .padding(8.dp)
+                .height(48.dp)
         ) {
             Text(
                 text = "Get started",
-                style = MaterialTheme.typography.labelMedium
+                style = MaterialTheme.typography.labelSmall
             )
         }
     }

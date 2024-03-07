@@ -50,14 +50,12 @@ import com.google.maps.android.PolyUtil
 import com.google.maps.android.SphericalUtil
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
-import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
-import com.google.maps.android.ktx.utils.simplify
 import com.lomolo.uzi.DeviceDetails
 import com.lomolo.uzi.DeviceDetailsUiState
 import com.lomolo.uzi.GetTripDetailsQuery
@@ -275,7 +273,7 @@ private fun DefaultHomeScreen(
                             } else {
                                 Text(
                                     stringResource(id = R.string.proceed),
-                                    style = MaterialTheme.typography.labelMedium
+                                    style = MaterialTheme.typography.labelSmall
                                 )
                             }
                         }
@@ -304,6 +302,7 @@ private fun HomeErrorScreen(
         )
         Button(
             onClick = { mainViewModel.getIpinfo() },
+            shape = MaterialTheme.shapes.small
         ) {
             Text(
                 text = stringResource(R.string.retry),
@@ -532,7 +531,7 @@ private fun TripScreen(
                        Button(
                            modifier = Modifier
                                .fillMaxWidth()
-                               .height(54.dp),
+                               .height(48.dp),
                            shape = MaterialTheme.shapes.small,
                            onClick = {
                                tripViewModel.cancelTrip {
@@ -543,7 +542,7 @@ private fun TripScreen(
                           if (tripViewModel.cancelTripUiState !is CancelTripState.Loading) {
                               Text(
                                   "Cancel",
-                                  style = MaterialTheme.typography.labelMedium,
+                                  style = MaterialTheme.typography.labelSmall,
                               )
                           } else {
                               Loader()
@@ -627,7 +626,7 @@ private fun Courier(
             Button(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(54.dp),
+                    .height(48.dp),
                 shape = MaterialTheme.shapes.small,
                 onClick = {
                     Intent(Intent.ACTION_DIAL).apply {
@@ -637,7 +636,7 @@ private fun Courier(
             ) {
                 Text(
                     "Call",
-                    style = MaterialTheme.typography.labelMedium
+                    style = MaterialTheme.typography.labelSmall
                 )
             }
         }

@@ -66,7 +66,7 @@ fun StartTrip(
     ) {
         Text(
             stringResource(R.string.start_trip),
-            style = MaterialTheme.typography.labelMedium,
+            style = MaterialTheme.typography.titleSmall,
             textAlign = TextAlign.Start,
             modifier = Modifier
                 .fillMaxWidth()
