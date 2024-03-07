@@ -60,7 +60,7 @@ class DefaultContainer(private val context: Context): AppContainer {
     override val apolloClient = ApolloClient.Builder()
         .okHttpClient(okhttpClient)
         .httpServerUrl("${baseApi}/v1/api")
-        .webSocketServerUrl("${wss}/subscription") //TODO add auth token header
+        .webSocketServerUrl("${wss}/subscription")
         /*
         .wsProtocol(
             SubscriptionWsProtocol.Factory(
