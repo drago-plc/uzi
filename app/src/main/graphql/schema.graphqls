@@ -105,6 +105,8 @@ type Product {
 
   description: String!
 
+  weight_class: Int!
+
   icon_url: String!
 
   price: Int!
@@ -207,7 +209,11 @@ type Trip {
 
   end_location: Gps
 
+  confirmed_pickup: Gps
+
   status: TripStatus!
+
+  product_id: UUID!
 
   cost: Int!
 
