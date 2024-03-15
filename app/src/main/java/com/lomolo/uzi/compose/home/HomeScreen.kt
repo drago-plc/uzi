@@ -12,6 +12,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -25,6 +26,8 @@ import com.google.maps.android.SphericalUtil
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapUiSettings
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.lomolo.uzi.DeviceDetails
@@ -142,50 +145,41 @@ private fun HomeSuccessScreen(
                 cameraPositionState = cameraPositionState
             ) {
                 if (tripInProgress) {
+                    Polyline(
+                        width = 12f,
+                        geodesic = true,
+                        points = polyline,
+                        zIndex = 1f,
+                        endCap = CustomCap(BitmapDescriptorFactory.fromResource(R.drawable.icons8_filled_circle_30))
+                    )
                     if (polyline.isNotEmpty()) {
-                        Polyline(
-                            width = 12f,
-                            geodesic = true,
-                            points = polyline,
+                        Marker(
                             zIndex = 1f,
-                            startCap = CustomCap(BitmapDescriptorFactory.fromResource(R.drawable.icons8_filled_circle_30)),
-                            endCap = CustomCap(BitmapDescriptorFactory.fromResource(R.drawable.icons8_filled_circle_30))
+                            state = MarkerState(polyline[0]),
+                            icon = BitmapDescriptorFactory.fromResource(R.drawable.icons8_navigation_100__2_),
+                            flat = true,
+                            rotation = computeHeading,
+                            anchor = Offset(0.5f, 0.5f)
                         )
                     }
                 }
             }
             if (tripInProgress) {
-                val u = tripViewModel.getTripUpdates().collectAsState(initial = null)
+                tripViewModel.getTripUpdates().collectAsState(initial = null)
                 LaunchedEffect(Unit) {
                     tripViewModel.getTripDetails()
-                    polyline = when(val s = tripViewModel.getTripDetailsUiState) {
-                        is GetTripDetailsState.Success -> {
-                            val courierGps = s.success?.let { LatLng(s.success.courier!!.location.lat, s.success.courier.location.lng) }
-                            deviceCameraPosition = courierGps ?: LatLng(0.0, 0.0)
-                            cameraPositionState.move(CameraUpdateFactory.newCameraPosition(
-                                CameraPosition(deviceCameraPosition, 17f, 0f, 0f)
-                            ))
-                            PolyUtil.decode(s.success?.route?.polyline)
-                        }
-                        else -> {
-                            listOf()
-                        }
-                    }
-                    if (PolyUtil.isLocationOnPath(deviceCameraPosition, polyline, true)) {
-                        val newRoute = polyline.subList(
-                            0,
-                            PolyUtil.locationIndexOnPath(deviceCameraPosition, polyline.toMutableList(), true)+1
-                        ).toMutableList()
-                        newRoute.add(deviceCameraPosition)
-                        polyline = newRoute.toList()
-                    }
-                    computeHeading = when(polyline.size) {
-                        0 -> 0f - 45
-                        1 -> SphericalUtil.computeHeading(deviceCameraPosition, polyline[0]).toFloat()-45
-                        else -> SphericalUtil.computeHeading(deviceCameraPosition, polyline[polyline.size-1]).toFloat()-45
-                    }
                 }
-                LaunchedEffect(key1 = u) {
+                LaunchedEffect(key1 = tripViewModel.getTripDetailsUiState, key2 = deviceCameraPosition) {
+                    val s = tripViewModel.getTripDetailsUiState
+                    if (s is GetTripDetailsState.Success) {
+                        val courierGps = s.success?.let { LatLng(s.success.courier!!.location.lat, s.success.courier.location.lng) }
+                        deviceCameraPosition = courierGps ?: LatLng(0.0, 0.0)
+                        cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(
+                            deviceCameraPosition,
+                            17f
+                        ), 2500)
+                        polyline = PolyUtil.decode(s.success?.route?.polyline)
+                    }
                     if (PolyUtil.isLocationOnPath(deviceCameraPosition, polyline, true)) {
                         val newRoute = polyline.subList(
                             0,
@@ -195,9 +189,8 @@ private fun HomeSuccessScreen(
                         polyline = newRoute.toList()
                     }
                     computeHeading = when(polyline.size) {
-                        0 -> 0f - 45
-                        1 -> SphericalUtil.computeHeading(deviceCameraPosition, polyline[0]).toFloat()-45
-                        else -> SphericalUtil.computeHeading(deviceCameraPosition, polyline[polyline.size-1]).toFloat()-45
+                        0 -> 0f - 60
+                        else -> SphericalUtil.computeHeading(deviceCameraPosition, polyline.first()).toFloat()-45
                     }
                 }
 

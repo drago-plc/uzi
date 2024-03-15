@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -52,7 +53,7 @@ internal fun TripScreen(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(64.dp),
+                            .wrapContentHeight(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         when (tripUpdates.status) {
@@ -77,19 +78,16 @@ internal fun TripScreen(
                                 Loader()
                             }
                             TripStatus.COURIER_ARRIVING.toString(), TripStatus.COURIER_EN_ROUTE.toString() -> {
-                                val s = tripViewModel.getTripDetailsUiState
-                                Text(
-                                    text = "Your courier is arriving for pickup",
-                                    style = MaterialTheme.typography.labelMedium
-                                )
-                                Spacer(modifier = Modifier.size(20.dp))
-                                if (s is GetTripDetailsState.Success) {
-                                    Courier(
-                                        courier = s.success!!,
-                                        tripViewModel = tripViewModel
-                                    )
-                                } else if (s is GetTripDetailsState.Loading) {
-                                    Loader()
+                                when(val s = tripViewModel.getTripDetailsUiState) {
+                                    is GetTripDetailsState.Success -> {
+                                        Courier(
+                                            courier = s.success!!,
+                                            tripViewModel = tripViewModel
+                                        )
+                                    }
+                                    GetTripDetailsState.Loading -> Loader(modifier = Modifier.align(
+                                        Alignment.CenterVertically
+                                    ))
                                 }
                             }
                             TripStatus.COURIER_NOT_FOUND.toString() -> {

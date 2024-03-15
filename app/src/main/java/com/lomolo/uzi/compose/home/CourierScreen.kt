@@ -36,9 +36,6 @@ internal fun Courier(
 ) {
     val context = LocalContext.current
 
-    LaunchedEffect(Unit) {
-        tripViewModel.getTripDetails()
-    }
     Column {
         Row(
             modifier = modifier
@@ -94,7 +91,7 @@ internal fun Courier(
         Spacer(modifier = Modifier.size(32.dp))
         Text(
             "Trip cost KES ${NumberFormat.getNumberInstance().format(courier.cost)}",
-            style = MaterialTheme.typography.labelSmall,
+            style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier
                 .padding(start=4.dp)
         )
