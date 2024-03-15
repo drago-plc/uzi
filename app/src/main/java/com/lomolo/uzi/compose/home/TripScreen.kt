@@ -19,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.lomolo.uzi.compose.loader.Loader
 import com.lomolo.uzi.compose.trip.CancelTripState
@@ -77,32 +78,30 @@ internal fun TripScreen(
                                 Loader()
                             }
                             TripStatus.COURIER_ARRIVING.toString(), TripStatus.COURIER_EN_ROUTE.toString() -> {
-                                when(val s = tripViewModel.getTripDetailsUiState) {
-                                    is GetTripDetailsState.Success -> {
-                                        Courier(
-                                            courier = s.success!!,
-                                            tripViewModel = tripViewModel
+                                Column {
+                                    Text(
+                                        text = "Your courier is arriving for pickup",
+                                        textAlign = TextAlign.Start,
+                                        style = MaterialTheme.typography.titleSmall
+                                    )
+                                    when (val s = tripViewModel.getTripDetailsUiState) {
+                                        is GetTripDetailsState.Success -> {
+                                            Courier(
+                                                courier = s.success!!,
+                                                tripViewModel = tripViewModel
+                                            )
+                                        }
+
+                                        GetTripDetailsState.Loading -> Loader(
+                                            modifier = Modifier.align(Alignment.CenterHorizontally)
                                         )
                                     }
-                                    GetTripDetailsState.Loading -> Loader(modifier = Modifier.align(
-                                        Alignment.CenterVertically
-                                    ))
                                 }
                             }
                             TripStatus.COURIER_NOT_FOUND.toString() -> {
                                 tripViewModel.clearTrips {
                                     onNavigateBackHome()
                                 }
-                            }
-                            TripStatus.COURIER_FOUND.toString() -> {
-                                Text(
-                                    modifier = Modifier
-                                        .padding(start = 8.dp),
-                                    text = "Getting courier details",
-                                    style = MaterialTheme.typography.labelMedium
-                                )
-                                Spacer(modifier = Modifier.weight(1f))
-                                Loader()
                             }
                             TripStatus.CANCELLED.toString(), TripStatus.COMPLETE.toString() -> {
                                 tripViewModel.clearTrips {
@@ -111,10 +110,7 @@ internal fun TripScreen(
                             }
                         }
                     }
-                    if (
-                        tripUpdates.status == TripStatus.CREATE.toString() ||
-                        tripUpdates.status == TripStatus.COURIER_FOUND.toString()
-                    ) {
+                    if (tripUpdates.status == TripStatus.CREATE.toString()) {
                         Button(
                             modifier = Modifier
                                 .fillMaxWidth()

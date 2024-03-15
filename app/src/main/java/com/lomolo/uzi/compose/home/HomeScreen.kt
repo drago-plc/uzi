@@ -148,14 +148,14 @@ private fun HomeSuccessScreen(
                     Polyline(
                         width = 12f,
                         geodesic = true,
-                        points = polyline,
+                        points = polyline.toList(),
                         zIndex = 1f,
                         endCap = CustomCap(BitmapDescriptorFactory.fromResource(R.drawable.icons8_filled_circle_30))
                     )
                     if (polyline.isNotEmpty()) {
                         Marker(
                             zIndex = 1f,
-                            state = MarkerState(polyline[0]),
+                            state = MarkerState(polyline.first()),
                             icon = BitmapDescriptorFactory.fromResource(R.drawable.icons8_navigation_100__2_),
                             flat = true,
                             rotation = computeHeading,
@@ -169,28 +169,34 @@ private fun HomeSuccessScreen(
                 LaunchedEffect(Unit) {
                     tripViewModel.getTripDetails()
                 }
-                LaunchedEffect(key1 = tripViewModel.getTripDetailsUiState, key2 = deviceCameraPosition) {
+                LaunchedEffect(key1 = tripViewModel.getTripDetailsUiState, key3 = deviceCameraPosition, key2 = tripUpdates) {
                     val s = tripViewModel.getTripDetailsUiState
                     if (s is GetTripDetailsState.Success) {
-                        val courierGps = s.success?.let { LatLng(s.success.courier!!.location.lat, s.success.courier.location.lng) }
-                        deviceCameraPosition = courierGps ?: LatLng(0.0, 0.0)
-                        cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(
-                            deviceCameraPosition,
-                            17f
-                        ), 2500)
-                        polyline = PolyUtil.decode(s.success?.route?.polyline)
+                        if (tripUpdates.lat != 0.0 && tripUpdates.lng != 0.0) {
+                            val courierGps = LatLng(tripUpdates.lat, tripUpdates.lng)
+                            deviceCameraPosition = courierGps
+                            cameraPositionState.animate(
+                                CameraUpdateFactory.newLatLngZoom(
+                                    deviceCameraPosition,
+                                    17f
+                                ), 2500
+                            )
+                        }
+                        if (polyline.isEmpty()) polyline = PolyUtil.decode(s.success?.route?.polyline)
                     }
                     if (PolyUtil.isLocationOnPath(deviceCameraPosition, polyline, true)) {
                         val newRoute = polyline.subList(
-                            0,
-                            PolyUtil.locationIndexOnPath(deviceCameraPosition, polyline.toMutableList(), true)+1
+                            PolyUtil.locationIndexOnPath(deviceCameraPosition, polyline, true),
+                            polyline.size
                         ).toMutableList()
-                        newRoute.add(deviceCameraPosition)
-                        polyline = newRoute.toList()
+                        newRoute.add(polyline.indexOf(polyline.first()), deviceCameraPosition)
+                        polyline = newRoute
                     }
                     computeHeading = when(polyline.size) {
                         0 -> 0f - 60
-                        else -> SphericalUtil.computeHeading(deviceCameraPosition, polyline.first()).toFloat()-45
+                        1 -> SphericalUtil.computeHeading(deviceCameraPosition, polyline[polyline.indexOf(polyline.first())]).toFloat()-45
+                        2 -> SphericalUtil.computeHeading(deviceCameraPosition, polyline[polyline.indexOf(polyline.first())+1]).toFloat()-45
+                        else -> SphericalUtil.computeHeading(deviceCameraPosition, polyline[polyline.indexOf(polyline.first())+2]).toFloat()-45
                     }
                 }
 
