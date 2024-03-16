@@ -171,6 +171,7 @@ private fun HomeSuccessScreen(
                 }
                 LaunchedEffect(key1 = tripViewModel.getTripDetailsUiState, key3 = deviceCameraPosition, key2 = tripUpdates) {
                     val s = tripViewModel.getTripDetailsUiState
+                    // Repopulates data for genesis notification
                     if (s is GetTripDetailsState.Success && s.success == null) tripViewModel.getTripDetails()
                     var courierIndex = 0
                     if (s is GetTripDetailsState.Success) {
