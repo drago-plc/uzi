@@ -102,7 +102,7 @@ internal fun TripScreen(
                                         }
 
                                         GetTripDetailsState.Loading -> Loader(
-                                            modifier = Modifier.align(Alignment.CenterHorizontally)
+                                            modifier = Modifier.padding(16.dp).align(Alignment.CenterHorizontally)
                                         )
                                     }
                                 }
