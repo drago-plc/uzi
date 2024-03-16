@@ -172,7 +172,7 @@ private fun HomeSuccessScreen(
                 }
                 LaunchedEffect(key1 = tripViewModel.getTripDetailsUiState, key3 = deviceCameraPosition, key2 = tripUpdates) {
                     val s = tripViewModel.getTripDetailsUiState
-                    // Repopulates data for genesis notification
+                    // Repopulates trip data for genesis trip update
                     if (tripUpdates.lat == 0.0 && tripUpdates.lng == 0.0) tripViewModel.getTripDetails()
                     var courierIndex = 0
                     if (s is GetTripDetailsState.Success) {
@@ -190,12 +190,14 @@ private fun HomeSuccessScreen(
                             if (polyline.isEmpty()) polyline =
                                 PolyUtil.decode(s.success.route?.polyline ?: "")
                             when {
+                                // Recycle trip details with courier_en_route update
                                 tripUpdates.status == TripStatus.COURIER_EN_ROUTE.toString() -> {
                                     tripViewModel.getTripDetails()
                                 }
                             }
                         }
                     }
+                    // Recompute route polyline - lay courier position on the polyline
                     if (PolyUtil.isLocationOnPath(deviceCameraPosition, polyline, true)) {
                         courierIndex = PolyUtil.locationIndexOnPath(deviceCameraPosition, polyline, true)
                         val newRoute = polyline.subList(
@@ -204,6 +206,7 @@ private fun HomeSuccessScreen(
                         ).toMutableList()
                         polyline = newRoute
                     }
+                    // Compute courier position marker relative to the next position on the polyline
                     computeHeading = when(polyline.size) {
                         0 -> 0f - 60
                         1 -> SphericalUtil.computeHeading(deviceCameraPosition, polyline[0]).toFloat()-45
