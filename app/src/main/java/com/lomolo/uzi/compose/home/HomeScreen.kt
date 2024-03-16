@@ -41,6 +41,7 @@ import com.lomolo.uzi.compose.trip.GetTripDetailsState
 import com.lomolo.uzi.compose.trip.TripViewModel
 import com.lomolo.uzi.model.Session
 import com.lomolo.uzi.model.Trip
+import com.lomolo.uzi.type.TripStatus
 
 object HomeScreenDestination: Navigation {
     override val route = "home"
@@ -185,7 +186,15 @@ private fun HomeSuccessScreen(
                                 ), 2500
                             )
                         }
-                        if (polyline.isEmpty()) polyline = PolyUtil.decode(s.success?.route?.polyline ?: "")
+                        if (s.success != null) {
+                            if (polyline.isEmpty()) polyline =
+                                PolyUtil.decode(s.success.route?.polyline ?: "")
+                            when {
+                                tripUpdates.status == TripStatus.COURIER_EN_ROUTE.toString() -> {
+                                    tripViewModel.getTripDetails()
+                                }
+                            }
+                        }
                     }
                     if (PolyUtil.isLocationOnPath(deviceCameraPosition, polyline, true)) {
                         courierIndex = PolyUtil.locationIndexOnPath(deviceCameraPosition, polyline, true)
