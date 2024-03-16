@@ -189,12 +189,6 @@ private fun HomeSuccessScreen(
                         if (s.success != null) {
                             if (polyline.isEmpty() && s.success.route != null) polyline =
                                 PolyUtil.decode(s.success.route.polyline)
-                            when {
-                                // Recycle trip details with courier_en_route update
-                                tripUpdates.status == TripStatus.COURIER_EN_ROUTE.toString() -> {
-                                    tripViewModel.getTripDetails()
-                                }
-                            }
                         }
                     }
                     // Recompute route polyline - lay courier position on the polyline
