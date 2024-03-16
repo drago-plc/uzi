@@ -79,31 +79,29 @@ internal fun TripScreen(
                                 Loader()
                             }
                             TripStatus.COURIER_ARRIVING.toString(), TripStatus.COURIER_EN_ROUTE.toString() -> {
-                                Column {
-                                    if (!courierArrived) {
-                                        Text(
-                                            text = "Your courier is arriving for pickup",
-                                            textAlign = TextAlign.Start,
-                                            style = MaterialTheme.typography.titleSmall
-                                        )
-                                    } else {
-                                        Text(
-                                            text = "Your courier has arrived",
-                                            textAlign = TextAlign.Start,
-                                            style = MaterialTheme.typography.titleSmall
-                                        )
-                                    }
-                                    when (val s = tripViewModel.getTripDetailsUiState) {
-                                        is GetTripDetailsState.Success -> {
-                                            Courier(
-                                                courier = s.success!!,
-                                                tripViewModel = tripViewModel
-                                            )
+                                when (val s = tripViewModel.getTripDetailsUiState) {
+                                    is GetTripDetailsState.Success -> {
+                                        if (s.success != null) {
+                                            Column {
+                                                if (!courierArrived) {
+                                                    Text(
+                                                        text = "Your courier is arriving for pickup",
+                                                        textAlign = TextAlign.Start,
+                                                        style = MaterialTheme.typography.titleSmall
+                                                    )
+                                                } else {
+                                                    Text(
+                                                        text = "Your courier has arrived",
+                                                        textAlign = TextAlign.Start,
+                                                        style = MaterialTheme.typography.titleSmall
+                                                    )
+                                                }
+                                                Courier(
+                                                    courier = s.success,
+                                                    tripViewModel = tripViewModel
+                                                )
+                                            }
                                         }
-
-                                        GetTripDetailsState.Loading -> Loader(
-                                            modifier = Modifier.padding(16.dp).align(Alignment.CenterHorizontally)
-                                        )
                                     }
                                 }
                             }

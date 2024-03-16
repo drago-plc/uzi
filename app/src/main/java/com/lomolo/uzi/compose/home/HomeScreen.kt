@@ -170,7 +170,7 @@ private fun HomeSuccessScreen(
                 LaunchedEffect(Unit) {
                     tripViewModel.getTripDetails()
                 }
-                LaunchedEffect(key1 = tripViewModel.getTripDetailsUiState, key3 = deviceCameraPosition, key2 = tripUpdates) {
+                LaunchedEffect(key1 = tripViewModel.getTripDetailsUiState, key3 = polyline, key2 = tripUpdates) {
                     val s = tripViewModel.getTripDetailsUiState
                     // Repopulates trip data for genesis trip update
                     if (tripUpdates.lat == 0.0 && tripUpdates.lng == 0.0) tripViewModel.getTripDetails()
@@ -187,8 +187,8 @@ private fun HomeSuccessScreen(
                             )
                         }
                         if (s.success != null) {
-                            if (polyline.isEmpty()) polyline =
-                                PolyUtil.decode(s.success.route?.polyline ?: "")
+                            if (polyline.isEmpty() && s.success.route != null) polyline =
+                                PolyUtil.decode(s.success.route.polyline)
                             when {
                                 // Recycle trip details with courier_en_route update
                                 tripUpdates.status == TripStatus.COURIER_EN_ROUTE.toString() -> {
@@ -198,19 +198,25 @@ private fun HomeSuccessScreen(
                         }
                     }
                     // Recompute route polyline - lay courier position on the polyline
-                    if (PolyUtil.isLocationOnPath(deviceCameraPosition, polyline, true)) {
-                        courierIndex = PolyUtil.locationIndexOnPath(deviceCameraPosition, polyline, true)
-                        val newRoute = polyline.subList(
-                            courierIndex+1,
-                            polyline.size
-                        ).toMutableList()
-                        polyline = newRoute
+                    if (polyline.isNotEmpty()) {
+                        if (PolyUtil.isLocationOnPath(deviceCameraPosition, polyline, true)) {
+                            courierIndex =
+                                PolyUtil.locationIndexOnPath(deviceCameraPosition, polyline, true)
+                            val newRoute = polyline.subList(
+                                courierIndex + 1,
+                                polyline.size
+                            ).toMutableList()
+                            polyline = newRoute
+                        }
                     }
                     // Compute courier position marker relative to the next position on the polyline
                     computeHeading = when(polyline.size) {
                         0 -> 0f - 60
                         1 -> SphericalUtil.computeHeading(deviceCameraPosition, polyline[0]).toFloat()-45
-                        else -> SphericalUtil.computeHeading(deviceCameraPosition, polyline[courierIndex+1]).toFloat()-45
+                        else -> {
+                            val i = PolyUtil.locationIndexOnPath(deviceCameraPosition, polyline, true)
+                            SphericalUtil.computeHeading(deviceCameraPosition, polyline[i+1]).toFloat()-45
+                        }
                     }
                 }
 
