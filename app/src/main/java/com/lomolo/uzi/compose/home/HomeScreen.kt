@@ -183,7 +183,7 @@ private fun HomeSuccessScreen(
                                 ), 2500
                             )
                         }
-                        if (polyline.isEmpty()) polyline = PolyUtil.decode(s.success?.route?.polyline)
+                        if (polyline.isEmpty()) polyline = PolyUtil.decode(s.success?.route?.polyline ?: "")
                     }
                     if (PolyUtil.isLocationOnPath(deviceCameraPosition, polyline, true)) {
                         courierIndex = PolyUtil.locationIndexOnPath(deviceCameraPosition, polyline, true)

@@ -61,12 +61,12 @@ internal fun TripScreen(
                             TripStatus.CREATE.toString() -> {
                                 Text(
                                     modifier = Modifier
-                                        .padding(start = 8.dp),
+                                        .padding(bottom = 8.dp),
                                     text = "Finding courier",
                                     style = MaterialTheme.typography.labelMedium
                                 )
                                 Spacer(modifier = Modifier.weight(1f))
-                                Loader()
+                                Loader(modifier = Modifier.padding(bottom=8.dp))
                             }
                             TripStatus.COURIER_ASSIGNED.toString() -> {
                                 Text(
@@ -133,7 +133,7 @@ internal fun TripScreen(
                         ) {
                             if (tripViewModel.cancelTripUiState !is CancelTripState.Loading) {
                                 Text(
-                                    "Cancel",
+                                    "Cancel trip",
                                     style = MaterialTheme.typography.labelSmall,
                                 )
                             } else {
