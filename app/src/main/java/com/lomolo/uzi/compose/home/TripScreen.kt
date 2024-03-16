@@ -32,6 +32,7 @@ import com.lomolo.uzi.model.TripStatus
 internal fun TripScreen(
     modifier: Modifier = Modifier,
     tripViewModel: TripViewModel,
+    courierArrived: Boolean,
     mapLoaded: Boolean,
     tripUpdates: Trip,
     onNavigateBackHome: () -> Unit = {}
@@ -79,11 +80,19 @@ internal fun TripScreen(
                             }
                             TripStatus.COURIER_ARRIVING.toString(), TripStatus.COURIER_EN_ROUTE.toString() -> {
                                 Column {
-                                    Text(
-                                        text = "Your courier is arriving for pickup",
-                                        textAlign = TextAlign.Start,
-                                        style = MaterialTheme.typography.titleSmall
-                                    )
+                                    if (!courierArrived) {
+                                        Text(
+                                            text = "Your courier is arriving for pickup",
+                                            textAlign = TextAlign.Start,
+                                            style = MaterialTheme.typography.titleSmall
+                                        )
+                                    } else {
+                                        Text(
+                                            text = "Your courier has arrived",
+                                            textAlign = TextAlign.Start,
+                                            style = MaterialTheme.typography.titleSmall
+                                        )
+                                    }
                                     when (val s = tripViewModel.getTripDetailsUiState) {
                                         is GetTripDetailsState.Success -> {
                                             Courier(

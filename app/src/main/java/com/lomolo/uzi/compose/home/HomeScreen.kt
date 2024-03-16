@@ -171,6 +171,7 @@ private fun HomeSuccessScreen(
                 }
                 LaunchedEffect(key1 = tripViewModel.getTripDetailsUiState, key3 = deviceCameraPosition, key2 = tripUpdates) {
                     val s = tripViewModel.getTripDetailsUiState
+                    var courierIndex = 0
                     if (s is GetTripDetailsState.Success) {
                         if (tripUpdates.lat != 0.0 && tripUpdates.lng != 0.0) {
                             val courierGps = LatLng(tripUpdates.lat, tripUpdates.lng)
@@ -185,18 +186,17 @@ private fun HomeSuccessScreen(
                         if (polyline.isEmpty()) polyline = PolyUtil.decode(s.success?.route?.polyline)
                     }
                     if (PolyUtil.isLocationOnPath(deviceCameraPosition, polyline, true)) {
+                        courierIndex = PolyUtil.locationIndexOnPath(deviceCameraPosition, polyline, true)
                         val newRoute = polyline.subList(
-                            PolyUtil.locationIndexOnPath(deviceCameraPosition, polyline, true),
+                            courierIndex+1,
                             polyline.size
                         ).toMutableList()
-                        newRoute.add(polyline.indexOf(polyline.first()), deviceCameraPosition)
                         polyline = newRoute
                     }
                     computeHeading = when(polyline.size) {
                         0 -> 0f - 60
-                        1 -> SphericalUtil.computeHeading(deviceCameraPosition, polyline[polyline.indexOf(polyline.first())]).toFloat()-45
-                        2 -> SphericalUtil.computeHeading(deviceCameraPosition, polyline[polyline.indexOf(polyline.first())+1]).toFloat()-45
-                        else -> SphericalUtil.computeHeading(deviceCameraPosition, polyline[polyline.indexOf(polyline.first())+2]).toFloat()-45
+                        1 -> SphericalUtil.computeHeading(deviceCameraPosition, polyline[0]).toFloat()-45
+                        else -> SphericalUtil.computeHeading(deviceCameraPosition, polyline[courierIndex+1]).toFloat()-45
                     }
                 }
 
@@ -204,6 +204,7 @@ private fun HomeSuccessScreen(
                     tripViewModel = tripViewModel,
                     tripUpdates = tripUpdates,
                     mapLoaded = deviceDetails.mapLoaded,
+                    courierArrived = polyline.size == 1,
                     onNavigateBackHome = {
                         onNavigateTo(HomeScreenDestination.route)
                     }

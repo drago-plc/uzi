@@ -33,7 +33,6 @@ fun UziNavHost(
     val session by sessionViewModel.sessionUiState.collectAsState()
     val deviceDetails by mainViewModel.deviceDetailsUiState.collectAsState()
     val tripUpdates by tripViewModel.tripUpdatesUiState.collectAsState()
-    println(tripUpdates)
 
     NavHost(
         modifier = modifier,
