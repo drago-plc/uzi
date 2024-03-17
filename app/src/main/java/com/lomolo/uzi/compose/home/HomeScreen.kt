@@ -41,7 +41,6 @@ import com.lomolo.uzi.compose.trip.GetTripDetailsState
 import com.lomolo.uzi.compose.trip.TripViewModel
 import com.lomolo.uzi.model.Session
 import com.lomolo.uzi.model.Trip
-import com.lomolo.uzi.type.TripStatus
 
 object HomeScreenDestination: Navigation {
     override val route = "home"
