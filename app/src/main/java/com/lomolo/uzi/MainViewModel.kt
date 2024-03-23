@@ -1,5 +1,6 @@
 package com.lomolo.uzi
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -12,10 +13,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.io.IOException
 
 class MainViewModel(
     private val uziRestApiService: UziRestApiServiceInterface
 ): ViewModel() {
+    private val _logTag = "MainViewModel"
     private val _deviceDetails: MutableStateFlow<DeviceDetails> = MutableStateFlow(DeviceDetails())
     val deviceDetailsUiState = _deviceDetails.asStateFlow()
 
@@ -40,12 +43,14 @@ class MainViewModel(
                         gps = LatLng(ipGps[0].toDouble(), ipGps[1].toDouble()),
                         country = response.country,
                         countryFlag = response.countryFlag,
-                        countryPhoneCode = countryPhoneCode[response.country]!!
+                        countryPhoneCode = countryPhoneCode[response.country] ?: ""
                     )
                 }
-            } catch (e: Throwable) {
-                deviceDetailsState = DeviceDetailsUiState.Error(e.localizedMessage)
-                e.printStackTrace()
+            } catch (e: IOException) {
+                e.message?.let {
+                    deviceDetailsState = DeviceDetailsUiState.Error(it)
+                    e.message?.let { Log.d(_logTag, "Something went wrong $e") }
+                }
             }
         }
     }
