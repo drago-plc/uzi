@@ -60,6 +60,13 @@ class SessionViewModel(
     private val phoneUtil = PhoneNumberUtil.getInstance()
     private val deviceDetails = mainViewModel.deviceDetailsUiState
 
+    var signingIn: Boolean by mutableStateOf(false)
+        private set
+
+    fun signingIn() {
+        signingIn = true
+    }
+
     fun setFirstname(name: String) {
         _signInInput.update {
             it.copy(firstName = name)
@@ -113,7 +120,10 @@ class SessionViewModel(
                         courier = signInInput.value.courier
                     )
                 )
-                SignInUiState.Success.also { cb() }
+                SignInUiState.Success.also {
+                    cb()
+                    resetSignIn()
+                }
             } catch(e: Exception) {
                 SignInUiState.Error(e.localizedMessage)
             }
@@ -132,7 +142,10 @@ class SessionViewModel(
                         phone = sessionUiState.value.phone
                     )
                 )
-                SignInUiState.Success.also { cb() }
+                SignInUiState.Success.also {
+                    cb()
+                    resetSignIn()
+                }
             } catch(e: Exception) {
                 println(e)
                 SignInUiState.Error(e.localizedMessage)
@@ -144,7 +157,7 @@ class SessionViewModel(
         private const val TIMEOUT_MILLIS = 5_000L
     }
 
-    fun resetSignIn() {
+    private fun resetSignIn() {
         _signInInput.value = SignIn()
     }
 }

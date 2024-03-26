@@ -1,46 +1,28 @@
 package com.lomolo.uzi.compose.signin
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.lomolo.uzi.R
-import com.lomolo.uzi.compose.home.HomeScreenDestination
-import com.lomolo.uzi.compose.loader.Loader
-import com.lomolo.uzi.compose.navigation.Navigation
-
-object UserNameDestination: Navigation {
-    override val route ="signin/name"
-    override val title = R.string.enter_your_details
-}
 
 @Composable
 fun Name(
     modifier: Modifier = Modifier,
-    sessionViewModel: SessionViewModel = viewModel(),
-    onNavigateTo: (String) -> Unit = {}
+    sessionViewModel: SessionViewModel,
 ) {
     val signInUiState by sessionViewModel.signInInput.collectAsState()
     val isFirstnameValid = sessionViewModel.isNameValid(signInUiState.firstName)
@@ -48,10 +30,8 @@ fun Name(
 
     Column(
         modifier = modifier
-            .fillMaxSize()
-            .padding(20.dp)
     ) {
-        TextField(
+        OutlinedTextField(
             isError = signInUiState.firstName.isNotBlank() && !isFirstnameValid,
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = if (signInUiState.firstName.isNotBlank() && !isFirstnameValid) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.background,
@@ -65,14 +45,14 @@ fun Name(
             },
             onValueChange = { sessionViewModel.setFirstname(it) },
             singleLine = true,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp),
             keyboardOptions = KeyboardOptions(
                 imeAction = ImeAction.Next,
                 capitalization = KeyboardCapitalization.Words
             ),
         )
         Spacer(modifier = Modifier.size(16.dp))
-        TextField(
+        OutlinedTextField(
             isError = signInUiState.lastName.isNotBlank() && !isLastnameValid,
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = if (signInUiState.lastName.isNotBlank() && !isLastnameValid) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.background,
@@ -86,77 +66,16 @@ fun Name(
             },
             onValueChange = { sessionViewModel.setLastname(it) },
             singleLine = true,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp),
             keyboardOptions = KeyboardOptions(
                 imeAction = ImeAction.Next,
                 capitalization = KeyboardCapitalization.Words
             ),
             keyboardActions = KeyboardActions(
                 onNext = {
-                    if (isFirstnameValid &&
-                        isLastnameValid) sessionViewModel.onboardUser {
-                        onNavigateTo(HomeScreenDestination.route)
-                    }
+                    if (isFirstnameValid && isLastnameValid) sessionViewModel.onboardUser()
                 }
             )
         )
-        Spacer(modifier = Modifier.size(16.dp))
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center
-        ) {
-            when (val s = sessionViewModel.signInUiState) {
-                is SignInUiState.Success -> {
-                    Button(
-                        onClick = {
-                            if (isFirstnameValid && isLastnameValid)
-                                sessionViewModel.onboardUser {
-                                    onNavigateTo(HomeScreenDestination.route)
-                                    sessionViewModel.resetSignIn()
-                                }
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(48.dp),
-                        shape = MaterialTheme.shapes.small
-                    ) {
-                        Text(
-                            text = stringResource(R.string.proceed),
-                            style = MaterialTheme.typography.labelSmall
-                        )
-                    }
-                }
-                is SignInUiState.Loading -> {
-                    Loader()
-                }
-                is SignInUiState.Error -> {
-                    Column {
-                        Text(
-                            text = stringResource(R.string.not_your_fault_err),
-                            color = MaterialTheme.colorScheme.error,
-                            textAlign = TextAlign.Center,
-                            style = MaterialTheme.typography.labelSmall
-                        )
-                        Button(
-                            onClick = {
-                                if (isFirstnameValid && isLastnameValid)
-                                    sessionViewModel.onboardUser {
-                                        onNavigateTo(HomeScreenDestination.route)
-                                    }
-                            },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(48.dp),
-                            shape = MaterialTheme.shapes.small
-                        ) {
-                            Text(
-                                text = stringResource(R.string.retry),
-                                style = MaterialTheme.typography.labelSmall
-                            )
-                        }
-                    }
-                }
-            }
-        }
     }
 }

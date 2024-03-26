@@ -23,7 +23,6 @@ import com.lomolo.uzi.compose.trip.ConfirmTripPickupDestination
 import com.lomolo.uzi.compose.trip.TripProducts
 import com.lomolo.uzi.compose.trip.TripProductsScreenDestination
 import com.lomolo.uzi.compose.trip.TripViewModel
-import com.lomolo.uzi.model.Session
 
 object TripGraphDestination: Navigation {
     override val route = "trip/graph"

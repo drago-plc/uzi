@@ -26,6 +26,8 @@ import com.lomolo.uzi.MainViewModel
 import com.lomolo.uzi.R
 import com.lomolo.uzi.compose.loader.Loader
 import com.lomolo.uzi.compose.signin.GetStarted
+import com.lomolo.uzi.compose.signin.SessionViewModel
+import com.lomolo.uzi.compose.signin.User
 import com.lomolo.uzi.compose.trip.ComputeTripRouteState
 import com.lomolo.uzi.compose.trip.SearchDropoffLocationScreenDestination
 import com.lomolo.uzi.compose.trip.SearchPickupLocationScreenDestination
@@ -36,7 +38,7 @@ import com.lomolo.uzi.compose.trip.TripViewModel
 @Composable
 internal fun DefaultHomeScreen(
     modifier: Modifier = Modifier,
-    mainViewModel: MainViewModel,
+    sessionViewModel: SessionViewModel,
     tripViewModel: TripViewModel,
     deviceDetails: DeviceDetails,
     onGetStartedClick: () -> Unit,
@@ -64,7 +66,7 @@ internal fun DefaultHomeScreen(
         enter = EnterTransition.None
     ) {
         Box(modifier = modifier) {
-            if (!isAuthed) {
+            if (!isAuthed && !sessionViewModel.signingIn) {
                 Box(
                     modifier = Modifier
                         .padding(bottom = 28.dp, start = 8.dp, end = 8.dp)
@@ -76,6 +78,8 @@ internal fun DefaultHomeScreen(
                         onGetStartedClick = onGetStartedClick
                     )
                 }
+            } else if (sessionViewModel.signingIn) {
+                User(sessionViewModel = sessionViewModel, deviceDetails = deviceDetails)
             } else {
                 StartTrip(
                     Modifier.background(MaterialTheme.colorScheme.background),
@@ -83,7 +87,11 @@ internal fun DefaultHomeScreen(
                     onEnterDropoffClick = { onEnterTripClick(SearchDropoffLocationScreenDestination.route) },
                     tripViewModel = tripViewModel
                 )
-                Box(Modifier.align(Alignment.BottomCenter)) {
+                Box(
+                    Modifier
+                        .padding(start = 8.dp, end = 8.dp, bottom = 28.dp)
+                        .align(Alignment.BottomCenter)
+                ) {
                     LaunchedEffect(key1 = trip.pickup, key2 = trip.dropoff) {
                         if (tripViewModel.callTripEndpoint() && deviceDetails.mapLoaded) tripViewModel.makeTripRoute()
                     }
@@ -98,7 +106,6 @@ internal fun DefaultHomeScreen(
                         Button(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
                                 .height(48.dp),
                             shape = MaterialTheme.shapes.small,
                             onClick = {

@@ -16,9 +16,7 @@ import com.lomolo.uzi.MainViewModel
 import com.lomolo.uzi.UziViewModelProvider
 import com.lomolo.uzi.compose.home.HomeScreen
 import com.lomolo.uzi.compose.home.HomeScreenDestination
-import com.lomolo.uzi.compose.navigation.graphs.UserGraphDestination
 import com.lomolo.uzi.compose.navigation.graphs.trip
-import com.lomolo.uzi.compose.navigation.graphs.user
 import com.lomolo.uzi.compose.signin.SessionViewModel
 import com.lomolo.uzi.compose.trip.TripViewModel
 
@@ -30,9 +28,13 @@ fun UziNavHost(
     sessionViewModel: SessionViewModel = viewModel(factory = UziViewModelProvider.Factory),
     tripViewModel: TripViewModel = viewModel(factory = UziViewModelProvider.Factory)
 ) {
+    val initialState by mainViewModel.deviceDetailsUiState.collectAsState()
     val session by sessionViewModel.sessionUiState.collectAsState()
-    val deviceDetails by mainViewModel.deviceDetailsUiState.collectAsState()
-    val tripUpdates by tripViewModel.tripUpdatesUiState.collectAsState()
+    val tripProgress by tripViewModel.tripUpdatesUiState.collectAsState()
+
+    val auth = session
+    val deviceDetails = initialState
+    val tripUpdates = tripProgress
 
     NavHost(
         modifier = modifier,
@@ -48,9 +50,9 @@ fun UziNavHost(
                     HomeScreen(
                         mainViewModel = mainViewModel,
                         tripViewModel = tripViewModel,
-                        session = session,
+                        sessionViewModel = sessionViewModel,
+                        session = auth,
                         deviceDetails = deviceDetails,
-                        onGetStartedClick = { navController.navigate(UserGraphDestination.route) },
                         onNavigateToTrip = {
                             navController.navigate(it)
                         },
@@ -74,11 +76,6 @@ fun UziNavHost(
                 }
             }
         }
-        user(
-            navController = navController,
-            sessionViewModel = sessionViewModel,
-            mainViewModel = mainViewModel
-        )
         trip(
             navController = navController,
             tripViewModel = tripViewModel,
