@@ -11,4 +11,4 @@
 
 [API](https://github.com/elc49/uzi-api)
 
-[Courier App](https://github.com/drago-plc/uzi-courier)
+[Rider App](https://github.com/drago-plc/uzi-courier)
